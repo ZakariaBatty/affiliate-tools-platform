@@ -60,9 +60,8 @@ export default function BlogSlider({ title, posts }: BlogSliderProps) {
           <Button
             variant="outline"
             size="icon"
-            className={`rounded-full border-white/10 text-white ${
-              !canScrollLeft ? "opacity-50 cursor-not-allowed" : "hover:bg-white/10"
-            }`}
+            className={`rounded-full border-white/10 hover:text-white ${!canScrollLeft ? "opacity-50 cursor-not-allowed" : "hover:bg-white/10"
+              }`}
             onClick={scrollLeft}
             disabled={!canScrollLeft}
           >
@@ -72,9 +71,8 @@ export default function BlogSlider({ title, posts }: BlogSliderProps) {
           <Button
             variant="outline"
             size="icon"
-            className={`rounded-full border-white/10 text-white ${
-              !canScrollRight ? "opacity-50 cursor-not-allowed" : "hover:bg-white/10"
-            }`}
+            className={`rounded-full border-white/10 hover:text-white ${!canScrollRight ? "opacity-50 cursor-not-allowed" : "hover:bg-white/10"
+              }`}
             onClick={scrollRight}
             disabled={!canScrollRight}
           >

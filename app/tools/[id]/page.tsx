@@ -91,8 +91,8 @@ export default function ToolDetailsPage() {
 
   // Calculate overall score
   const overallScore = Math.round(
-    Object.values(tool.performance).reduce((sum: number, val: number) => sum + val, 0) /
-      Object.keys(tool.performance).length,
+    Object.values(tool.performance as Record<string, number>).reduce((sum, val) => sum + val, 0) /
+    Object.keys(tool.performance).length,
   )
 
   // Handle share functionality
@@ -136,7 +136,7 @@ export default function ToolDetailsPage() {
         <Button
           variant="outline"
           size="sm"
-          className="mb-6 border-white/10 text-white hover:bg-white/10"
+          className="mb-6 border-white/10 hover:text-white hover:bg-white/10"
           onClick={() => router.back()}
         >
           <ArrowLeft className="mr-2 h-4 w-4" />
@@ -181,7 +181,7 @@ export default function ToolDetailsPage() {
                     </Button>
                     <Button
                       variant="outline"
-                      className="border-white/10 text-white hover:bg-white/10"
+                      className="border-white/10 hover:text-white hover:bg-white/10"
                       onClick={() => setIsBookmarked(!isBookmarked)}
                     >
                       <Bookmark className={`mr-2 h-4 w-4 ${isBookmarked ? "fill-purple-500 text-purple-500" : ""}`} />
@@ -189,7 +189,7 @@ export default function ToolDetailsPage() {
                     </Button>
                     <Button
                       variant="outline"
-                      className="border-white/10 text-white hover:bg-white/10"
+                      className="border-white/10 hover:text-white hover:bg-white/10"
                       onClick={handleShare}
                     >
                       <Share2 className="mr-2 h-4 w-4" />
@@ -255,7 +255,7 @@ export default function ToolDetailsPage() {
                                 style={{ width: `${Number(value)}%` }}
                               />
                             </div>
-                            <span className="text-sm font-medium text-white">{value}%</span>
+                            <span className="text-sm font-medium text-white">{String(value)}%</span>
                           </div>
                         </div>
                       ))}
@@ -416,7 +416,7 @@ export default function ToolDetailsPage() {
                           Custom integrations
                         </li>
                       </ul>
-                      <Button variant="outline" className="w-full border-white/10 text-white hover:bg-white/10">
+                      <Button variant="outline" className="w-full border-white/10 hover:text-white hover:bg-white/10">
                         Contact Sales
                       </Button>
                     </div>
@@ -529,7 +529,7 @@ export default function ToolDetailsPage() {
                     </div>
                   </div>
 
-                  <Button variant="outline" className="w-full border-white/10 text-white hover:bg-white/10">
+                  <Button variant="outline" className="w-full border-white/10 hover:text-white hover:bg-white/10">
                     Load More Reviews
                   </Button>
                 </div>
@@ -625,7 +625,7 @@ export default function ToolDetailsPage() {
                             <Button
                               size="sm"
                               variant="outline"
-                              className="border-white/10 text-white hover:bg-white/10"
+                              className="border-white/10 hover:text-white hover:bg-white/10"
                               onClick={() => router.push(`/tools/${similarTool.id}`)}
                             >
                               Compare
@@ -640,7 +640,7 @@ export default function ToolDetailsPage() {
               <div className="mt-4 flex justify-center">
                 <Button
                   variant="outline"
-                  className="border-white/10 text-white hover:bg-white/10"
+                  className="border-white/10 hover:text-white hover:bg-white/10"
                   onClick={() => router.push(`/tools?category=${tool.category}`)}
                 >
                   <BarChart3 className="mr-2 h-4 w-4" />

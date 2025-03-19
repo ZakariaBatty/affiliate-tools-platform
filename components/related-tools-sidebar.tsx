@@ -79,11 +79,10 @@ export function RelatedToolsSidebar({ currentToolId, category }: RelatedToolsSid
                     <span className="text-xs text-white/50">${tool.price.monthly}/mo</span>
                     <button
                       onClick={() => toggleToolSelection(tool.id)}
-                      className={`flex h-5 w-5 items-center justify-center rounded-full ${
-                        selectedTools.includes(tool.id)
-                          ? "bg-purple-600 text-white"
-                          : "bg-white/10 text-white/70 hover:bg-white/20 hover:text-white"
-                      }`}
+                      className={`flex h-5 w-5 items-center justify-center rounded-full ${selectedTools.includes(tool.id)
+                        ? "bg-purple-600 text-white"
+                        : "bg-white/10 text-white/70 hover:bg-white/20 hover:text-white"
+                        }`}
                       aria-label={selectedTools.includes(tool.id) ? "Remove from comparison" : "Add to comparison"}
                     >
                       {selectedTools.includes(tool.id) ? <Check className="h-3 w-3" /> : <Plus className="h-3 w-3" />}
@@ -96,7 +95,7 @@ export function RelatedToolsSidebar({ currentToolId, category }: RelatedToolsSid
 
           <div className="mt-4">
             <Link href={`/tools?category=${category}`}>
-              <Button variant="outline" size="sm" className="w-full border-white/10 text-white hover:bg-white/10">
+              <Button variant="outline" size="sm" className="w-full border-white/10 hover:text-white hover:bg-white/10">
                 View All {category} Tools
                 <ArrowRight className="ml-2 h-3 w-3" />
               </Button>
@@ -138,16 +137,16 @@ export function RelatedToolsSidebar({ currentToolId, category }: RelatedToolsSid
       </Card>
 
       {/* Newsletter Signup */}
-      <Card className="border-white/10 bg-gradient-to-br from-purple-900/20 to-blue-900/20">
+      <Card className="border-white/10 bg-gradient-to-br  from-purple-900/20 to-blue-900/20">
         <CardContent className="p-4">
-          <h2 className="mb-2 text-lg font-bold text-white">Stay Updated</h2>
-          <p className="mb-4 text-sm text-white/70">Get the latest updates on new tools and features in your inbox.</p>
+          <h2 className="mb-2 text-lg font-bold ">Stay Updated</h2>
+          <p className="mb-4 text-sm ">Get the latest updates on new tools and features in your inbox.</p>
 
           <div className="space-y-2">
             <input
               type="email"
               placeholder="Your email"
-              className="w-full rounded-md border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/50 focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
+              className="w-full rounded-md border border-white/10 bg-white/5 px-3 py-2 text-sm   focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
             />
             <Button
               size="sm"

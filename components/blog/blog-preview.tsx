@@ -16,7 +16,7 @@ export default function BlogPreview() {
             <p className="mt-2 text-white/70">Insights and guides about AI tools and technologies</p>
           </div>
           <Link href="/blog">
-            <Button variant="outline" className="group border-white/10 text-white hover:bg-white/10">
+            <Button variant="outline" className="group border-white/10 hover:text-white hover:bg-white/10">
               View All Articles
               <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
             </Button>

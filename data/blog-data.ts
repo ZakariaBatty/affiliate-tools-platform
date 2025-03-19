@@ -1,29 +1,30 @@
 export interface BlogPost {
-  id: number
-  title: string
-  slug: string
-  excerpt: string
-  content: string
-  author: {
-    name: string
-    avatar: string
-    role: string
-  }
-  date: string
-  readTime: string
-  category: string
-  tags: string[]
-  image: string
-  featured?: boolean
+   id: number;
+   title: string;
+   slug: string;
+   excerpt: string;
+   content: string;
+   author: {
+      name: string;
+      avatar: string;
+      role: string;
+   };
+   date: string;
+   readTime: string;
+   category: string;
+   tags: string[];
+   image: string;
+   featured?: boolean;
 }
 
 export const blogPosts: BlogPost[] = [
-  {
-    id: 1,
-    title: "The Future of AI Tools in Content Creation",
-    slug: "future-ai-tools-content-creation",
-    excerpt: "Discover how AI is revolutionizing content creation and what this means for creators in 2025 and beyond.",
-    content: `
+   {
+      id: 1,
+      title: 'The Future of AI Tools in Content Creation',
+      slug: 'future-ai-tools-content-creation',
+      excerpt:
+         'Discover how AI is revolutionizing content creation and what this means for creators in 2025 and beyond.',
+      content: `
       <p>Artificial Intelligence has made remarkable strides in content creation over the past few years. From generating blog posts to creating images and videos, AI tools are becoming increasingly sophisticated and accessible.</p>
       
       <h2>The Current Landscape</h2>
@@ -75,25 +76,25 @@ export const blogPosts: BlogPost[] = [
       
       <p>As with any technological revolution, there will be challenges and adjustments along the way. But for those willing to adapt and learn, AI content creation tools offer exciting new possibilities for creative expression and communication.</p>
     `,
-    author: {
-      name: "Alex Johnson",
-      avatar: "/placeholder.svg?height=100&width=100",
-      role: "AI Research Analyst",
-    },
-    date: "March 15, 2025",
-    readTime: "8 min read",
-    category: "AI Technology",
-    tags: ["AI", "Content Creation", "Future Tech", "Digital Marketing"],
-    image: "/placeholder.svg?height=600&width=1200",
-    featured: true,
-  },
-  {
-    id: 2,
-    title: "How to Choose the Right Analytics Tool for Your Business",
-    slug: "choose-right-analytics-tool-business",
-    excerpt:
-      "A comprehensive guide to selecting the perfect analytics solution based on your business needs and goals.",
-    content: `
+      author: {
+         name: 'Alex Johnson',
+         avatar: '/placeholder.svg?height=100&width=100',
+         role: 'AI Research Analyst',
+      },
+      date: 'March 15, 2025',
+      readTime: '8 min read',
+      category: 'AI Technology',
+      tags: ['AI', 'Content Creation', 'Future Tech', 'Digital Marketing'],
+      image: '/placeholder.svg?height=600&width=1200',
+      featured: true,
+   },
+   {
+      id: 2,
+      title: 'How to Choose the Right Analytics Tool for Your Business',
+      slug: 'choose-right-analytics-tool-business',
+      excerpt:
+         'A comprehensive guide to selecting the perfect analytics solution based on your business needs and goals.',
+      content: `
       <p>Selecting the right analytics tool for your business is a critical decision that can significantly impact your ability to make data-driven decisions. With countless options available, from free tools like Google Analytics to enterprise solutions like Adobe Analytics, how do you choose the one that's right for your specific needs?</p>
       
       <h2>Understanding Your Analytics Needs</h2>
@@ -242,24 +243,30 @@ export const blogPosts: BlogPost[] = [
       
       <p>Remember that analytics is not a one-time implementation but an ongoing process of refinement and optimization. The right tool should grow with your business and adapt to your evolving analytics needs.</p>
     `,
-    author: {
-      name: "Sarah Chen",
-      avatar: "/placeholder.svg?height=100&width=100",
-      role: "Data Analytics Consultant",
-    },
-    date: "March 10, 2025",
-    readTime: "12 min read",
-    category: "Analytics",
-    tags: ["Data Analytics", "Business Intelligence", "Marketing Tools", "Decision Making"],
-    image: "/placeholder.svg?height=600&width=1200",
-  },
-  {
-    id: 3,
-    title: "7 Marketing Automation Workflows That Save Hours Every Week",
-    slug: "marketing-automation-workflows-save-time",
-    excerpt:
-      "Implement these proven marketing automation workflows to reclaim your time and boost your campaign effectiveness.",
-    content: `
+      author: {
+         name: 'Sarah Chen',
+         avatar: '/placeholder.svg?height=100&width=100',
+         role: 'Data Analytics Consultant',
+      },
+      date: 'March 10, 2025',
+      readTime: '12 min read',
+      category: 'Analytics',
+      tags: [
+         'Data Analytics',
+         'Business Intelligence',
+         'Marketing Tools',
+         'Decision Making',
+      ],
+      image: '/placeholder.svg?height=600&width=1200',
+      featured: true,
+   },
+   {
+      id: 3,
+      title: '7 Marketing Automation Workflows That Save Hours Every Week',
+      slug: 'marketing-automation-workflows-save-time',
+      excerpt:
+         'Implement these proven marketing automation workflows to reclaim your time and boost your campaign effectiveness.',
+      content: `
       <p>Marketing automation has transformed from a luxury to a necessity for teams of all sizes. By implementing the right automation workflows, marketers can save countless hours while delivering more personalized and effective campaigns. Here are seven automation workflows that can dramatically improve your marketing efficiency.</p>
       
       <h2>1. Lead Nurturing Sequences</h2>
@@ -391,25 +398,30 @@ export const blogPosts: BlogPost[] = [
       
       <p>Remember that the goal of automation is not to remove the human element from marketing but to enhance it by eliminating repetitive tasks and ensuring consistent execution of your marketing strategy.</p>
     `,
-    author: {
-      name: "Michael Rodriguez",
-      avatar: "/placeholder.svg?height=100&width=100",
-      role: "Marketing Automation Specialist",
-    },
-    date: "March 5, 2025",
-    readTime: "10 min read",
-    category: "Marketing",
-    tags: ["Marketing Automation", "Productivity", "Email Marketing", "Lead Generation"],
-    image: "/placeholder.svg?height=600&width=1200",
-    featured: true,
-  },
-  {
-    id: 4,
-    title: "Productivity Tools That Actually Make You More Productive",
-    slug: "productivity-tools-that-work",
-    excerpt:
-      "Cut through the noise and discover productivity tools that deliver real results, based on scientific research and user testing.",
-    content: `
+      author: {
+         name: 'Michael Rodriguez',
+         avatar: '/placeholder.svg?height=100&width=100',
+         role: 'Marketing Automation Specialist',
+      },
+      date: 'March 5, 2025',
+      readTime: '10 min read',
+      category: 'Marketing',
+      tags: [
+         'Marketing Automation',
+         'Productivity',
+         'Email Marketing',
+         'Lead Generation',
+      ],
+      image: '/placeholder.svg?height=600&width=1200',
+      featured: true,
+   },
+   {
+      id: 4,
+      title: 'Productivity Tools That Actually Make You More Productive',
+      slug: 'productivity-tools-that-work',
+      excerpt:
+         'Cut through the noise and discover productivity tools that deliver real results, based on scientific research and user testing.',
+      content: `
       <p>In a world overflowing with productivity apps and tools, it's easy to fall into the trap of "productivity porn" – endlessly trying new tools without actually becoming more productive. This article cuts through the noise to highlight tools that genuinely improve productivity, backed by research and real-world results.</p>
       
       <h2>The Productivity Tool Paradox</h2>
@@ -564,24 +576,30 @@ export const blogPosts: BlogPost[] = [
       
       <p>Finally, no tool can replace the fundamentals of productivity: clear goals, focused work, and consistent habits. Use these tools to enhance your productivity system, not as a substitute for one.</p>
     `,
-    author: {
-      name: "Emily Taylor",
-      avatar: "/placeholder.svg?height=100&width=100",
-      role: "Productivity Coach",
-    },
-    date: "February 28, 2025",
-    readTime: "11 min read",
-    category: "Productivity",
-    tags: ["Productivity Tools", "Time Management", "Focus", "Work Efficiency"],
-    image: "/placeholder.svg?height=600&width=1200",
-  },
-  {
-    id: 5,
-    title: "Design Tools Revolutionizing UX/UI in 2025",
-    slug: "design-tools-revolutionizing-ux-ui-2025",
-    excerpt:
-      "Explore the cutting-edge design tools that are transforming how designers create exceptional user experiences.",
-    content: `
+      author: {
+         name: 'Emily Taylor',
+         avatar: '/placeholder.svg?height=100&width=100',
+         role: 'Productivity Coach',
+      },
+      date: 'February 28, 2025',
+      readTime: '11 min read',
+      category: 'Productivity',
+      tags: [
+         'Productivity Tools',
+         'Time Management',
+         'Focus',
+         'Work Efficiency',
+      ],
+      image: '/placeholder.svg?height=600&width=1200',
+      featured: true,
+   },
+   {
+      id: 5,
+      title: 'Design Tools Revolutionizing UX/UI in 2025',
+      slug: 'design-tools-revolutionizing-ux-ui-2025',
+      excerpt:
+         'Explore the cutting-edge design tools that are transforming how designers create exceptional user experiences.',
+      content: `
       <p>The landscape of UX/UI design tools is evolving rapidly, with new technologies enabling designers to create more intuitive, accessible, and engaging digital experiences. This article explores the most innovative design tools of 2025 that are reshaping the industry.</p>
       
       <h2>The Evolution of Design Tools</h2>
@@ -766,24 +784,31 @@ export const blogPosts: BlogPost[] = [
       
       <p>The future of design tools is not just about better software—it's about creating new workflows and processes that leverage technology to create more human-centered digital experiences.</p>
     `,
-    author: {
-      name: "David Kim",
-      avatar: "/placeholder.svg?height=100&width=100",
-      role: "UX Design Director",
-    },
-    date: "February 20, 2025",
-    readTime: "9 min read",
-    category: "Design",
-    tags: ["UX/UI Design", "Design Tools", "Prototyping", "3D Design", "AR/VR"],
-    image: "/placeholder.svg?height=600&width=1200",
-  },
-  {
-    id: 6,
-    title: "The Developer's Guide to AI-Assisted Coding in 2025",
-    slug: "developers-guide-ai-assisted-coding-2025",
-    excerpt:
-      "Learn how AI coding assistants are transforming software development and how to leverage them effectively in your workflow.",
-    content: `
+      author: {
+         name: 'David Kim',
+         avatar: '/placeholder.svg?height=100&width=100',
+         role: 'UX Design Director',
+      },
+      date: 'February 20, 2025',
+      readTime: '9 min read',
+      category: 'Design',
+      tags: [
+         'UX/UI Design',
+         'Design Tools',
+         'Prototyping',
+         '3D Design',
+         'AR/VR',
+      ],
+      image: '/placeholder.svg?height=600&width=1200',
+      featured: true,
+   },
+   {
+      id: 6,
+      title: "The Developer's Guide to AI-Assisted Coding in 2025",
+      slug: 'developers-guide-ai-assisted-coding-2025',
+      excerpt:
+         'Learn how AI coding assistants are transforming software development and how to leverage them effectively in your workflow.',
+      content: `
       <p>Artificial intelligence has fundamentally transformed software development. What began with simple code completion has evolved into sophisticated AI pair programmers that can generate entire functions, refactor complex code, and even architect systems. This guide explores the current state of AI-assisted coding and how developers can effectively integrate these tools into their workflows.</p>
       
       <h2>The Evolution of AI Coding Assistants</h2>
@@ -992,24 +1017,30 @@ export const blogPosts: BlogPost[] = [
       
       <p>The future of coding is collaborative, with human developers and AI assistants each contributing their unique strengths to create better software more efficiently than either could alone.</p>
     `,
-    author: {
-      name: "James Wilson",
-      avatar: "/placeholder.svg?height=100&width=100",
-      role: "Senior Software Engineer",
-    },
-    date: "February 15, 2025",
-    readTime: "13 min read",
-    category: "Development",
-    tags: ["AI Coding", "Software Development", "Programming", "Developer Tools", "Productivity"],
-    image: "/placeholder.svg?height=600&width=1200",
-  },
-  {
-    id: 7,
-    title: "Cybersecurity Tools Every Business Needs in 2025",
-    slug: "cybersecurity-tools-business-needs-2025",
-    excerpt:
-      "Protect your business from evolving cyber threats with these essential security tools and best practices.",
-    content: `
+      author: {
+         name: 'James Wilson',
+         avatar: '/placeholder.svg?height=100&width=100',
+         role: 'Senior Software Engineer',
+      },
+      date: 'February 15, 2025',
+      readTime: '13 min read',
+      category: 'Development',
+      tags: [
+         'AI Coding',
+         'Software Development',
+         'Programming',
+         'Developer Tools',
+         'Productivity',
+      ],
+      image: '/placeholder.svg?height=600&width=1200',
+   },
+   {
+      id: 7,
+      title: 'Cybersecurity Tools Every Business Needs in 2025',
+      slug: 'cybersecurity-tools-business-needs-2025',
+      excerpt:
+         'Protect your business from evolving cyber threats with these essential security tools and best practices.',
+      content: `
       <p>As cyber threats continue to evolve in sophistication and scale, businesses of all sizes need robust security measures to protect their data and systems. This article outlines the essential cybersecurity tools that every business should consider implementing in 2025.</p>
       
       <h2>The Evolving Threat Landscape</h2>
@@ -1181,24 +1212,30 @@ export const blogPosts: BlogPost[] = [
       
       <p>Remember that cybersecurity is not a one-time project but an ongoing process that requires regular assessment, updating, and improvement. The investment in proper security tools and practices is far less costly than recovering from a major security breach.</p>
     `,
-    author: {
-      name: "Sophia Martinez",
-      avatar: "/placeholder.svg?height=100&width=100",
-      role: "Cybersecurity Analyst",
-    },
-    date: "February 8, 2025",
-    readTime: "12 min read",
-    category: "Security",
-    tags: ["Cybersecurity", "Data Protection", "Network Security", "Threat Prevention", "Risk Management"],
-    image: "/placeholder.svg?height=600&width=1200",
-  },
-  {
-    id: 8,
-    title: "Building Effective Remote Teams with the Right Collaboration Tools",
-    slug: "building-effective-remote-teams-collaboration-tools",
-    excerpt:
-      "Discover the best practices and tools for creating high-performing remote teams in today's distributed work environment.",
-    content: `
+      author: {
+         name: 'Sophia Martinez',
+         avatar: '/placeholder.svg?height=100&width=100',
+         role: 'Cybersecurity Analyst',
+      },
+      date: 'February 8, 2025',
+      readTime: '12 min read',
+      category: 'Security',
+      tags: [
+         'Cybersecurity',
+         'Data Protection',
+         'Network Security',
+         'Threat Prevention',
+         'Risk Management',
+      ],
+      image: '/placeholder.svg?height=600&width=1200',
+   },
+   {
+      id: 8,
+      title: 'Building Effective Remote Teams with the Right Collaboration Tools',
+      slug: 'building-effective-remote-teams-collaboration-tools',
+      excerpt:
+         "Discover the best practices and tools for creating high-performing remote teams in today's distributed work environment.",
+      content: `
       <p>Remote work has evolved from a temporary solution to a permanent fixture in the business landscape. Building effective remote teams requires more than just video conferencing software—it demands a thoughtful approach to collaboration, communication, and culture. This article explores the essential tools and strategies for creating high-performing remote teams.</p>
       
       <h2>The Foundation of Effective Remote Teams</h2>
@@ -1473,32 +1510,41 @@ export const blogPosts: BlogPost[] = [
       
       <p>The most successful remote teams don't try to replicate the office experience online—they embrace the unique advantages of remote work while finding creative solutions to its challenges. With the right approach, remote teams can achieve levels of productivity, creativity, and satisfaction that rival or exceed their in-office counterparts.</p>
     `,
-    author: {
-      name: "Thomas Lee",
-      avatar: "/placeholder.svg?height=100&width=100",
-      role: "Remote Work Strategist",
-    },
-    date: "February 1, 2025",
-    readTime: "14 min read",
-    category: "HR & Team",
-    tags: ["Remote Work", "Team Collaboration", "Communication Tools", "Company Culture", "Productivity"],
-    image: "/placeholder.svg?height=600&width=1200",
-  },
-]
+      author: {
+         name: 'Thomas Lee',
+         avatar: '/placeholder.svg?height=100&width=100',
+         role: 'Remote Work Strategist',
+      },
+      date: 'February 1, 2025',
+      readTime: '14 min read',
+      category: 'HR & Team',
+      tags: [
+         'Remote Work',
+         'Team Collaboration',
+         'Communication Tools',
+         'Company Culture',
+         'Productivity',
+      ],
+      image: '/placeholder.svg?height=600&width=1200',
+   },
+];
 
 // Get featured blog posts
-export const featuredPosts = blogPosts.filter((post) => post.featured)
+export const featuredPosts = blogPosts.filter((post) => post.featured);
 
 // Get recent blog posts
 export const recentPosts = [...blogPosts]
-  .sort((a, b) => {
-    return new Date(b.date).getTime() - new Date(a.date).getTime()
-  })
-  .slice(0, 5)
+   .sort((a, b) => {
+      return new Date(b.date).getTime() - new Date(a.date).getTime();
+   })
+   .slice(0, 5);
 
 // Get all categories
-export const categories = Array.from(new Set(blogPosts.map((post) => post.category)))
+export const categories = Array.from(
+   new Set(blogPosts.map((post) => post.category))
+);
 
 // Get all tags
-export const allTags = Array.from(new Set(blogPosts.flatMap((post) => post.tags)))
-
+export const allTags = Array.from(
+   new Set(blogPosts.flatMap((post) => post.tags))
+);

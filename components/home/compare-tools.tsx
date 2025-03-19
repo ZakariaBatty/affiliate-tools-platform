@@ -16,190 +16,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
 import { Check, X, BarChart3 } from "lucide-react"
+import { allTools } from "@/data/tools"
 
 // Sample data for tools
-const allTools = [
-  {
-    id: 1,
-    name: "AI Writer Pro",
-    description: "Advanced AI writing assistant for content creation and optimization",
-    category: "AI Tools",
-    image: "/placeholder.svg?height=300&width=300",
-    rating: 4.8,
-    price: {
-      monthly: 29,
-      yearly: 290,
-      hasFree: true,
-    },
-    features: {
-      "AI Content Generation": true,
-      "Grammar Checking": true,
-      "Plagiarism Detection": true,
-      "SEO Optimization": true,
-      "Multiple Languages": true,
-      "Team Collaboration": false,
-      "API Access": false,
-      "Custom Templates": true,
-    },
-    performance: {
-      userSatisfaction: 92,
-      reliability: 95,
-      speedScore: 88,
-      supportQuality: 85,
-      valueForMoney: 90,
-    },
-  },
-  {
-    id: 2,
-    name: "Analytics Master",
-    description: "Comprehensive analytics platform for data-driven decisions",
-    category: "Analytics",
-    image: "/placeholder.svg?height=300&width=300",
-    rating: 4.7,
-    price: {
-      monthly: 49,
-      yearly: 490,
-      hasFree: false,
-    },
-    features: {
-      "Real-time Analytics": true,
-      "Custom Dashboards": true,
-      "User Behavior Tracking": true,
-      "Conversion Tracking": true,
-      "Multiple Languages": false,
-      "Team Collaboration": true,
-      "API Access": true,
-      "Custom Templates": true,
-    },
-    performance: {
-      userSatisfaction: 89,
-      reliability: 92,
-      speedScore: 94,
-      supportQuality: 82,
-      valueForMoney: 85,
-    },
-  },
-  {
-    id: 3,
-    name: "MarketBoost",
-    description: "All-in-one marketing automation platform for growth",
-    category: "Marketing",
-    image: "/placeholder.svg?height=300&width=300",
-    rating: 4.9,
-    price: {
-      monthly: 59,
-      yearly: 590,
-      hasFree: true,
-    },
-    features: {
-      "Email Marketing": true,
-      "Social Media Scheduling": true,
-      "A/B Testing": true,
-      "Landing Page Builder": true,
-      "Multiple Languages": true,
-      "Team Collaboration": true,
-      "API Access": true,
-      "Custom Templates": true,
-    },
-    performance: {
-      userSatisfaction: 95,
-      reliability: 90,
-      speedScore: 85,
-      supportQuality: 92,
-      valueForMoney: 94,
-    },
-  },
-  {
-    id: 4,
-    name: "TaskFlow",
-    description: "Streamline your workflow with intelligent task management",
-    category: "Productivity",
-    image: "/placeholder.svg?height=300&width=300",
-    rating: 4.6,
-    price: {
-      monthly: 19,
-      yearly: 190,
-      hasFree: true,
-    },
-    features: {
-      "Task Management": true,
-      "Project Planning": true,
-      "Time Tracking": true,
-      "Team Collaboration": true,
-      "Multiple Languages": true,
-      "File Sharing": true,
-      "API Access": false,
-      "Custom Templates": false,
-    },
-    performance: {
-      userSatisfaction: 88,
-      reliability: 93,
-      speedScore: 90,
-      supportQuality: 85,
-      valueForMoney: 92,
-    },
-  },
-  {
-    id: 5,
-    name: "DesignAI",
-    description: "Create stunning designs with AI-powered design tools",
-    category: "Design",
-    image: "/placeholder.svg?height=300&width=300",
-    rating: 4.5,
-    price: {
-      monthly: 39,
-      yearly: 390,
-      hasFree: false,
-    },
-    features: {
-      "AI Design Generation": true,
-      "Template Library": true,
-      "Brand Kit": true,
-      "Photo Editing": true,
-      "Multiple Languages": false,
-      "Team Collaboration": true,
-      "API Access": true,
-      "Custom Templates": true,
-    },
-    performance: {
-      userSatisfaction: 87,
-      reliability: 85,
-      speedScore: 82,
-      supportQuality: 80,
-      valueForMoney: 88,
-    },
-  },
-  {
-    id: 6,
-    name: "CodeAssist",
-    description: "AI-powered coding assistant for developers",
-    category: "Development",
-    image: "/placeholder.svg?height=300&width=300",
-    rating: 4.8,
-    price: {
-      monthly: 25,
-      yearly: 250,
-      hasFree: true,
-    },
-    features: {
-      "Code Completion": true,
-      "Error Detection": true,
-      "Code Refactoring": true,
-      "Multiple Languages": true,
-      "Team Collaboration": false,
-      "API Access": true,
-      "Custom Templates": false,
-      "Git Integration": true,
-    },
-    performance: {
-      userSatisfaction: 91,
-      reliability: 89,
-      speedScore: 95,
-      supportQuality: 83,
-      valueForMoney: 90,
-    },
-  },
-]
+
 
 export default function CompareTools() {
   const [selectedTools, setSelectedTools] = useState<number[]>([1, 2]) // Default selected tools
@@ -244,7 +64,7 @@ export default function CompareTools() {
                   Compare Now
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-4xl bg-black text-white">
+              <DialogContent className="max-w-[90vw] h-min bg-black text-white">
                 <DialogHeader>
                   <DialogTitle className="text-2xl">Tool Comparison</DialogTitle>
                   <DialogDescription className="text-white/70">
@@ -260,49 +80,51 @@ export default function CompareTools() {
 
                   <TabsContent value="features" className="mt-4">
                     <div className="rounded-lg border border-white/10">
-                      <Table>
-                        <TableHeader>
-                          <TableRow className="border-white/10 hover:bg-white/5">
-                            <TableHead className="text-white">Feature</TableHead>
-                            {selectedToolsData.map((tool) => (
-                              <TableHead key={tool.id} className="text-center text-white">
-                                {tool.name}
-                              </TableHead>
-                            ))}
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          <TableRow className="border-white/10 hover:bg-white/5">
-                            <TableCell className="font-medium text-white">Pricing</TableCell>
-                            {selectedToolsData.map((tool) => (
-                              <TableCell key={`${tool.id}-price`} className="text-center text-white">
-                                <div className="flex flex-col items-center">
-                                  <span>${tool.price.monthly}/mo</span>
-                                  <span className="text-xs text-white/50">${tool.price.yearly}/yr</span>
-                                  {tool.price.hasFree && (
-                                    <Badge className="mt-1 bg-green-600 text-white hover:bg-green-700">Free Plan</Badge>
-                                  )}
-                                </div>
-                              </TableCell>
-                            ))}
-                          </TableRow>
-
-                          {allFeatures.map((feature) => (
-                            <TableRow key={feature} className="border-white/10 hover:bg-white/5">
-                              <TableCell className="font-medium text-white">{feature}</TableCell>
+                      <div className="max-h-[65vh] overflow-auto">
+                        <Table>
+                          <TableHeader>
+                            <TableRow className="border-white/10 hover:bg-white/5">
+                              <TableHead className="text-white">Feature</TableHead>
                               {selectedToolsData.map((tool) => (
-                                <TableCell key={`${tool.id}-${feature}`} className="text-center text-white">
-                                  {tool.features[feature as keyof typeof tool.features] ? (
-                                    <Check className="mx-auto h-5 w-5 text-green-500" />
-                                  ) : (
-                                    <X className="mx-auto h-5 w-5 text-red-500" />
-                                  )}
+                                <TableHead key={tool.id} className="text-center text-white">
+                                  {tool.name}
+                                </TableHead>
+                              ))}
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            <TableRow className="border-white/10 hover:bg-white/5">
+                              <TableCell className="font-medium text-white">Pricing</TableCell>
+                              {selectedToolsData.map((tool) => (
+                                <TableCell key={`${tool.id}-price`} className="text-center text-white">
+                                  <div className="flex flex-col items-center">
+                                    <span>${tool.price.monthly}/mo</span>
+                                    <span className="text-xs text-white/50">${tool.price.yearly}/yr</span>
+                                    {tool.price.hasFree && (
+                                      <Badge className="mt-1 bg-green-600 text-white hover:bg-green-700">Free Plan</Badge>
+                                    )}
+                                  </div>
                                 </TableCell>
                               ))}
                             </TableRow>
-                          ))}
-                        </TableBody>
-                      </Table>
+
+                            {allFeatures.map((feature) => (
+                              <TableRow key={feature} className="border-white/10 hover:bg-white/5">
+                                <TableCell className="font-medium text-white">{feature}</TableCell>
+                                {selectedToolsData.map((tool) => (
+                                  <TableCell key={`${tool.id}-${feature}`} className="text-center text-white">
+                                    {tool.features[feature as keyof typeof tool.features] ? (
+                                      <Check className="mx-auto h-5 w-5 text-green-500" />
+                                    ) : (
+                                      <X className="mx-auto h-5 w-5 text-red-500" />
+                                    )}
+                                  </TableCell>
+                                ))}
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      </div>
                     </div>
                   </TabsContent>
 
