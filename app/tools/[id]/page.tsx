@@ -1,27 +1,28 @@
 import type { Metadata } from "next"
 import { allTools } from "@/data/tools"
 import { constructMetadata } from "@/lib/seo-config"
-import ToolDetailsClientPage from "./ToolDetailsClientPage"
+import ToolDetailsClientPage from "./tool-details-client-page"
 
 type Props = {
-  params: { id: string }
+  params: Promise<{ id: string }>
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  if (!params?.id) {
-    return constructMetadata({ title: "Tool Not Found", noIndex: true });
+  const resolvedParams = await params
+  if (!resolvedParams?.id) {
+    return constructMetadata({ title: "Tool Not Found", noIndex: true })
   }
 
-  const toolId = Number(params?.id);
+  const toolId = Number(resolvedParams.id)
   if (isNaN(toolId)) {
-    return constructMetadata({ title: "Invalid Tool", noIndex: true });
+    return constructMetadata({ title: "Invalid Tool", noIndex: true })
   }
 
   // Fetch tool data properly
-  const tool = allTools.find((t) => t.id === toolId);
+  const tool = allTools.find((t) => t.id === toolId)
 
   if (!tool) {
-    return constructMetadata({ title: "Tool Not Found", noIndex: true });
+    return constructMetadata({ title: "Tool Not Found", noIndex: true })
   }
 
   return constructMetadata({
@@ -29,12 +30,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     description: tool.description,
     image: tool.image,
     url: `/tools/${tool.id}`,
-    type: "website", // Change to "website" or add OpenGraph product properties
+    type: "website",
     keywords: [tool.category, "tool", "software", "affiliate marketing"],
-  });
+  })
 }
-
-
 
 export function generateStaticParams() {
   return allTools.map((tool) => ({
@@ -42,7 +41,8 @@ export function generateStaticParams() {
   }))
 }
 
-export default function ToolDetailsPage({ params }: Props) {
-  return <ToolDetailsClientPage params={params} />
+export default async function ToolDetailsPage({ params }: Props) {
+  const resolvedParams = await params
+  return <ToolDetailsClientPage params={resolvedParams} />
 }
 

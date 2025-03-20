@@ -94,7 +94,7 @@ export default function ContactPage() {
           <div className="order-1 md:order-2">
             <h2 className="mb-6 text-2xl font-bold text-white">Contact Information</h2>
 
-            <div className="space-y-8">
+            <div className="space-y-8 grid grid-cols-2 gap-2">
               <div className="flex items-start">
                 <div className="mr-4 flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-r from-purple-600 to-blue-500">
                   <Mail className="h-5 w-5 text-white" />
