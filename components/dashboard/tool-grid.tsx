@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Star, Check, Plus, Trash2, ArrowRight } from "lucide-react"
 import type { Tool } from "@/types/tool"
+import Link from "next/link"
 
 interface ToolGridProps {
   toolsData: Tool[]

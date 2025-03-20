@@ -18,8 +18,6 @@ import { Badge } from "@/components/ui/badge"
 import { Check, X, BarChart3 } from "lucide-react"
 import { allTools } from "@/data/tools"
 
-// Sample data for tools
-
 
 export default function CompareTools() {
   const [selectedTools, setSelectedTools] = useState<number[]>([1, 2]) // Default selected tools
@@ -64,7 +62,7 @@ export default function CompareTools() {
                   Compare Now
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-[90vw] h-min bg-black text-white">
+              <DialogContent className="max-w-[90vw] bg-black text-white">
                 <DialogHeader>
                   <DialogTitle className="text-2xl">Tool Comparison</DialogTitle>
                   <DialogDescription className="text-white/70">
@@ -80,7 +78,7 @@ export default function CompareTools() {
 
                   <TabsContent value="features" className="mt-4">
                     <div className="rounded-lg border border-white/10">
-                      <div className="max-h-[65vh] overflow-auto">
+                     <div className="max-h-[65vh] overflow-auto">
                         <Table>
                           <TableHeader>
                             <TableRow className="border-white/10 hover:bg-white/5">

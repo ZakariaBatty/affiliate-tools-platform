@@ -438,7 +438,7 @@ export default function CompanyToolsPage() {
       </Sheet>
 
       {/* Edit Tool Sheet */}
-      <Sheet open={isEditOpen} onOpenChange={setIsEditOpen}>
+      <Sheet open={isEditOpen} onOpenChange={setIsEditOpen} side="right">
         <SheetContent className="w-full max-w-lg overflow-y-auto border-white/10 bg-black sm:max-w-2xl">
           {selectedTool && (
             <div className="flex h-full flex-col">
@@ -463,7 +463,7 @@ export default function CompanyToolsPage() {
                           className="h-full w-full object-cover"
                         />
                       </div>
-                      <Button variant="outline" className="border-white/10 hover:text-white hover:bg-white/10">
+                      <Button variant="outline" className="border-white/10 text-white hover:bg-white/10">
                         <UploadCloud className="mr-2 h-4 w-4" />
                         Upload Image
                       </Button>
@@ -595,7 +595,7 @@ export default function CompanyToolsPage() {
                 <div className="flex flex-wrap justify-end gap-2">
                   <Button
                     variant="outline"
-                    className="border-white/10 hover:text-white hover:bg-white/10"
+                    className="border-white/10 text-white hover:bg-white/10"
                     onClick={() => setIsEditOpen(false)}
                   >
                     Cancel
@@ -638,7 +638,7 @@ export default function CompanyToolsPage() {
       </Dialog>
 
       {/* Add Tool Sheet */}
-      <Sheet open={isAddToolOpen} onOpenChange={setIsAddToolOpen} >
+      <Sheet open={isAddToolOpen} onOpenChange={setIsAddToolOpen} side="right">
         <SheetContent className="w-full max-w-lg overflow-y-auto border-white/10 bg-black sm:max-w-2xl">
           <div className="flex h-full flex-col">
             <SheetHeader className="border-b border-white/10 pb-4">
@@ -797,7 +797,7 @@ export default function CompanyToolsPage() {
               <div className="flex flex-wrap justify-end gap-2">
                 <Button
                   variant="outline"
-                  className="border-white/10 text-white hover:bg-white/10"
+                  className="border-white/10 hover:text-white hover:bg-white/10"
                   onClick={() => setIsAddToolOpen(false)}
                 >
                   Cancel

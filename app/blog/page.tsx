@@ -7,6 +7,14 @@ import { Search } from "lucide-react"
 import BlogSlider from "@/components/blog/blog-slider"
 import BlogCard from "@/components/blog/blog-card"
 import { blogPosts, featuredPosts, categories, allTags } from "@/data/blog-data"
+import type { Metadata } from "next"
+import { constructMetadata } from "@/lib/seo-config"
+
+export const metadata: Metadata = constructMetadata({
+  title: "Blog",
+  description: "Insights, guides, and news about affiliate marketing tools and strategies",
+  keywords: ["affiliate marketing blog", "marketing guides", "tool reviews", "affiliate strategies"],
+})
 
 export default function BlogPage() {
   return (

@@ -1,3 +1,4 @@
+import type { Metadata } from "next"
 import Navbar from "@/components/navbar"
 import Footer from "@/components/footer"
 import { Button } from "@/components/ui/button"
@@ -5,6 +6,13 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Check, X, HelpCircle } from "lucide-react"
+import { constructMetadata } from "@/lib/seo-config"
+
+export const metadata: Metadata = constructMetadata({
+  title: "Pricing",
+  description: "Explore ToolsHub pricing plans and find the perfect option for your affiliate marketing needs",
+  keywords: ["toolshub pricing", "affiliate marketing plans", "tool comparison subscription"],
+})
 
 export default function PricingPage() {
   return (
@@ -82,6 +90,7 @@ export default function PricingPage() {
           </Card>
 
           {/* Pro Plan */}
+
           <Card className="relative border-purple-500/50 bg-gradient-to-br from-purple-900/20 to-blue-900/20 transition-all duration-300 hover:border-purple-500">
             <div className="absolute -top-5 left-0 right-0 mx-auto w-fit rounded-full bg-gradient-to-r from-purple-600 to-blue-500 px-4 py-1 text-xs font-medium text-white">
               Most Popular

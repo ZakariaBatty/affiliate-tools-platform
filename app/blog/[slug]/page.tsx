@@ -1,3 +1,4 @@
+import type { Metadata } from "next"
 import Image from "next/image"
 import Link from "next/link"
 import { notFound } from "next/navigation"
@@ -9,11 +10,36 @@ import { TracingBeam } from "@/components/tracing-beam"
 import BlogCard from "@/components/blog/blog-card"
 import { Calendar, Clock, ArrowLeft, Share2, Bookmark, Facebook, Twitter, Linkedin } from "lucide-react"
 import { blogPosts } from "@/data/blog-data"
+import { ArticleSchema, BreadcrumbSchema } from "@/components/seo/json-ld"
+import { constructMetadata } from "@/lib/seo-config"
 
 interface BlogPostPageProps {
   params: {
     slug: string
   }
+}
+
+export async function generateMetadata({ params }: BlogPostPageProps): Promise<Metadata> {
+  const post = blogPosts.find((post) => post.slug === params.slug)
+
+  if (!post) {
+    return constructMetadata({ title: "Blog Post Not Found", noIndex: true })
+  }
+
+  return constructMetadata({
+    title: post.title,
+    description: post.excerpt,
+    image: post.image,
+    url: `/blog/${post.slug}`,
+    type: "article",
+    keywords: [...post.tags, post.category, "blog", "article"],
+  })
+}
+
+export function generateStaticParams() {
+  return blogPosts.map((post) => ({
+    slug: post.slug,
+  }))
 }
 
 export default function BlogPostPage({ params }: BlogPostPageProps) {
@@ -28,9 +54,25 @@ export default function BlogPostPage({ params }: BlogPostPageProps) {
     .filter((p) => p.id !== post.id && (p.category === post.category || p.tags.some((tag) => post.tags.includes(tag))))
     .slice(0, 5)
 
+  const breadcrumbItems = [
+    { name: "Home", url: "/" },
+    { name: "Blog", url: "/blog" },
+    { name: post.title, url: `/blog/${post.slug}` },
+  ]
+
   return (
     <div className="min-h-screen bg-black">
       <Navbar />
+
+      <BreadcrumbSchema items={breadcrumbItems} />
+      <ArticleSchema
+        title={post.title}
+        description={post.excerpt}
+        image={post.image || "/placeholder.svg"}
+        url={`/blog/${post.slug}`}
+        datePublished={post.date}
+        authorName={post.author.name}
+      />
 
       <main className="container mx-auto px-4 py-16">
         {/* Back button */}
@@ -66,7 +108,7 @@ export default function BlogPostPage({ params }: BlogPostPageProps) {
                 <div className="h-12 w-12 overflow-hidden rounded-full">
                   <Image
                     src={post.author.avatar || "/placeholder.svg"}
-                    alt={post.author.name}
+                    alt={`Avatar of ${post.author.name}`}
                     width={48}
                     height={48}
                     className="h-full w-full object-cover"
@@ -83,9 +125,10 @@ export default function BlogPostPage({ params }: BlogPostPageProps) {
             <div className="mb-8 overflow-hidden rounded-xl">
               <Image
                 src={post.image || "/placeholder.svg"}
-                alt={post.title}
+                alt={`Featured image for ${post.title}`}
                 width={1200}
                 height={600}
+                priority
                 className="w-full object-cover"
               />
             </div>
@@ -117,7 +160,7 @@ export default function BlogPostPage({ params }: BlogPostPageProps) {
             {/* Share and Save */}
             <div className="mb-12 flex flex-wrap items-center justify-between gap-4 rounded-xl border border-white/10 bg-white/5 p-6">
               <div>
-                <h3 className="mb-2 text-lg font-medium hover:text-white">Share this article</h3>
+                <h3 className="mb-2 text-lg font-medium text-white">Share this article</h3>
                 <div className="flex gap-2">
                   <Button
                     variant="outline"
@@ -150,7 +193,7 @@ export default function BlogPostPage({ params }: BlogPostPageProps) {
                 </div>
               </div>
 
-              <Button variant="outline" className="border-white/10 hover:text-white hover:bg-white/10">
+              <Button variant="outline" className="border-white/10 text-white hover:bg-white/10">
                 <Bookmark className="mr-2 h-4 w-4" />
                 Save for later
               </Button>
