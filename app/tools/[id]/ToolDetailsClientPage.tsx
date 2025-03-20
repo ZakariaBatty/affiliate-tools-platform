@@ -96,7 +96,7 @@ export default function ToolDetailsClientPage({ params }: Props) {
   // Calculate overall score
   const overallScore = Math.round(
     Object.values(tool.performance as Record<string, number>).reduce((sum, val) => sum + val, 0) /
-      Object.keys(tool.performance).length,
+    Object.keys(tool.performance).length,
   )
 
   // Handle share functionality

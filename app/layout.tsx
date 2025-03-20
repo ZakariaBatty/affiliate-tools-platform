@@ -1,5 +1,5 @@
 import { Metadata } from "next"
-import { Inter } from 'next/font/google'
+import { Inter } from "next/font/google"
 import { constructMetadata } from "@/lib/seo-config"
 import { OrganizationSchema, WebsiteSchema } from "@/components/seo/json-ld"
 import { ThemeProvider } from "@/components/theme-provider"
@@ -19,7 +19,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className={inter.variable}>
+    <html lang="en" className={`${inter.variable} dark`}>
       <head>
         <OrganizationSchema />
         <WebsiteSchema />
