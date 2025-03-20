@@ -2,8 +2,8 @@ export const siteConfig = {
    name: 'ToolsHub',
    description:
       'Discover and compare the best affiliate marketing tools for your business',
-   url: 'https://toolshub.com', // Replace with your actual domain
-   ogImage: '/images/og-image.jpg', // Default OG image
+   url: 'https://toolshub.com',
+   ogImage: '/images/og-image.jpg',
    links: {
       twitter: 'https://twitter.com/toolshub',
       github: 'https://github.com/toolshub',
@@ -71,8 +71,8 @@ export function constructMetadata({
          googleBot: {
             index: !noIndex,
             follow: !noIndex,
-            'max-image-preview': 'large' | 'none' | 'standard',
-            'max-snippet': -1,
+            maxImagePreview: 'large', // ✅ Fix here
+            maxSnippet: -1,
          },
       },
       icons: {
