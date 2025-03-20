@@ -128,7 +128,7 @@ export default function CompanyToolsPage() {
                 />
               </div>
 
-              <Button variant="outline" size="icon" className="border-white/10 text-white hover:bg-white/10">
+              <Button variant="outline" size="icon" className="border-white/10 hover:text-white hover:bg-white/10">
                 <Filter className="h-4 w-4" />
               </Button>
             </div>
@@ -410,14 +410,14 @@ export default function CompanyToolsPage() {
                 <div className="flex flex-wrap justify-end gap-2">
                   <Button
                     variant="outline"
-                    className="border-white/10 text-white hover:bg-white/10"
+                    className="border-white/10 hover:text-white hover:bg-white/10"
                     onClick={() => setIsDetailOpen(false)}
                   >
                     Close
                   </Button>
                   <Button
                     variant="outline"
-                    className="border-white/10 text-white hover:bg-white/10"
+                    className="border-white/10 hover:text-white hover:bg-white/10"
                     onClick={() => {
                       setIsDetailOpen(false)
                       editTool(selectedTool.id)
@@ -438,7 +438,7 @@ export default function CompanyToolsPage() {
       </Sheet>
 
       {/* Edit Tool Sheet */}
-      <Sheet open={isEditOpen} onOpenChange={setIsEditOpen} side="right">
+      <Sheet open={isEditOpen} onOpenChange={setIsEditOpen}>
         <SheetContent className="w-full max-w-lg overflow-y-auto border-white/10 bg-black sm:max-w-2xl">
           {selectedTool && (
             <div className="flex h-full flex-col">
@@ -463,7 +463,7 @@ export default function CompanyToolsPage() {
                           className="h-full w-full object-cover"
                         />
                       </div>
-                      <Button variant="outline" className="border-white/10 text-white hover:bg-white/10">
+                      <Button variant="outline" className="border-white/10 hover:text-white hover:bg-white/10">
                         <UploadCloud className="mr-2 h-4 w-4" />
                         Upload Image
                       </Button>
@@ -595,7 +595,7 @@ export default function CompanyToolsPage() {
                 <div className="flex flex-wrap justify-end gap-2">
                   <Button
                     variant="outline"
-                    className="border-white/10 text-white hover:bg-white/10"
+                    className="border-white/10 hover:text-white hover:bg-white/10"
                     onClick={() => setIsEditOpen(false)}
                   >
                     Cancel
@@ -638,7 +638,7 @@ export default function CompanyToolsPage() {
       </Dialog>
 
       {/* Add Tool Sheet */}
-      <Sheet open={isAddToolOpen} onOpenChange={setIsAddToolOpen} side="right">
+      <Sheet open={isAddToolOpen} onOpenChange={setIsAddToolOpen} >
         <SheetContent className="w-full max-w-lg overflow-y-auto border-white/10 bg-black sm:max-w-2xl">
           <div className="flex h-full flex-col">
             <SheetHeader className="border-b border-white/10 pb-4">

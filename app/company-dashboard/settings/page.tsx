@@ -118,7 +118,7 @@ export default function CompanySettingsPage() {
                 </Avatar>
 
                 <div>
-                  <Button variant="outline" size="sm" className="border-white/10 text-white hover:bg-white/10">
+                  <Button variant="outline" size="sm" className="border-white/10 hover:text-white hover:bg-white/10">
                     <Upload className="mr-2 h-4 w-4" />
                     Change Logo
                   </Button>
@@ -374,7 +374,7 @@ export default function CompanySettingsPage() {
                           <AvatarImage src={companyData.logo} alt={companyData.name} />
                           <AvatarFallback className="bg-purple-600 text-white">AC</AvatarFallback>
                         </Avatar>
-                        <Button variant="outline" size="sm" className="border-white/10 text-white hover:bg-white/10">
+                        <Button variant="outline" size="sm" className="border-white/10 hover:text-white hover:bg-white/10">
                           <Upload className="mr-2 h-4 w-4" />
                           Upload Logo
                         </Button>
@@ -387,7 +387,7 @@ export default function CompanySettingsPage() {
                       </Label>
                       <div className="flex flex-col items-center justify-center rounded-md border border-dashed border-white/20 bg-white/5 p-6">
                         <div className="mb-4 h-16 w-full rounded-md bg-gradient-to-r from-purple-600 to-blue-500" />
-                        <Button variant="outline" size="sm" className="border-white/10 text-white hover:bg-white/10">
+                        <Button variant="outline" size="sm" className="border-white/10 hover:text-white hover:bg-white/10">
                           <Upload className="mr-2 h-4 w-4" />
                           Upload Banner
                         </Button>
@@ -478,7 +478,7 @@ export default function CompanySettingsPage() {
                 <div className="rounded-lg border border-white/10 bg-white/5 p-4">
                   <h4 className="mb-2 text-sm font-medium text-white">Two-Factor Authentication</h4>
                   <p className="mb-4 text-sm text-white/70">Add an extra layer of security to your account</p>
-                  <Button variant="outline" className="border-white/10 text-white hover:bg-white/10">
+                  <Button variant="outline" className="border-white/10 hover:text-white hover:bg-white/10">
                     Enable 2FA
                   </Button>
                 </div>
@@ -533,7 +533,7 @@ export default function CompanySettingsPage() {
                         <p className="text-sm font-medium text-white">Mobile App</p>
                         <p className="text-xs text-white/70">iOS • iPhone • Last active 2 days ago</p>
                       </div>
-                      <Button size="sm" variant="outline" className="border-white/10 text-white hover:bg-white/10">
+                      <Button size="sm" variant="outline" className="border-white/10 hover:text-white hover:bg-white/10">
                         Sign Out
                       </Button>
                     </div>
@@ -570,7 +570,7 @@ export default function CompanySettingsPage() {
                           <p className="text-sm font-medium text-white">Production API Key</p>
                           <p className="text-xs text-white/70">Created on Mar 10, 2025</p>
                         </div>
-                        <Button variant="outline" size="sm" className="border-white/10 text-white hover:bg-white/10">
+                        <Button variant="outline" size="sm" className="border-white/10 hover:text-white hover:bg-white/10">
                           Revoke
                         </Button>
                       </div>
@@ -617,7 +617,7 @@ export default function CompanySettingsPage() {
                   <p className="mb-4 text-sm text-white/70">
                     Learn how to integrate with our API and access your data programmatically
                   </p>
-                  <Button variant="outline" className="border-white/10 text-white hover:bg-white/10">
+                  <Button variant="outline" className="border-white/10 hover:text-white hover:bg-white/10">
                     View Documentation
                   </Button>
                 </div>

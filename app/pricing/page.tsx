@@ -87,38 +87,38 @@ export default function PricingPage() {
               Most Popular
             </div>
             <CardHeader>
-              <CardTitle className="text-white">Pro</CardTitle>
-              <CardDescription className="text-white/70">For professionals and power users</CardDescription>
+              <CardTitle className="text-black/70">Pro</CardTitle>
+              <CardDescription className="text-black/70">For professionals and power users</CardDescription>
               <div className="mt-4">
-                <span className="text-4xl font-bold text-white">$9.99</span>
-                <span className="text-white/70">/month</span>
+                <span className="text-4xl font-bold text-black/70">$9.99</span>
+                <span className="text-black/60">/month</span>
               </div>
             </CardHeader>
             <CardContent>
               <ul className="space-y-3">
                 <li className="flex items-start">
                   <Check className="mr-2 mt-0.5 h-5 w-5 shrink-0 text-green-500" />
-                  <span className="text-white/90">Save unlimited tools</span>
+                  <span className="text-black/90">Save unlimited tools</span>
                 </li>
                 <li className="flex items-start">
                   <Check className="mr-2 mt-0.5 h-5 w-5 shrink-0 text-green-500" />
-                  <span className="text-white/90">Advanced comparison features</span>
+                  <span className="text-black/90">Advanced comparison features</span>
                 </li>
                 <li className="flex items-start">
                   <Check className="mr-2 mt-0.5 h-5 w-5 shrink-0 text-green-500" />
-                  <span className="text-white/90">Full tool details</span>
+                  <span className="text-black/90">Full tool details</span>
                 </li>
                 <li className="flex items-start">
                   <Check className="mr-2 mt-0.5 h-5 w-5 shrink-0 text-green-500" />
-                  <span className="text-white/90">Performance tracking</span>
+                  <span className="text-black/90">Performance tracking</span>
                 </li>
                 <li className="flex items-start">
                   <Check className="mr-2 mt-0.5 h-5 w-5 shrink-0 text-green-500" />
-                  <span className="text-white/90">Advanced filtering</span>
+                  <span className="text-black/90">Advanced filtering</span>
                 </li>
                 <li className="flex items-start">
                   <X className="mr-2 mt-0.5 h-5 w-5 shrink-0 text-red-500" />
-                  <span className="text-white/50">Team collaboration</span>
+                  <span className="text-black/50">Team collaboration</span>
                 </li>
               </ul>
             </CardContent>
@@ -333,7 +333,7 @@ export default function PricingPage() {
             <Button className="w-full bg-gradient-to-r from-purple-600 to-blue-500 text-white hover:opacity-90 sm:w-auto">
               Sign Up Now
             </Button>
-            <Button variant="outline" className="w-full border-white/10 text-white hover:bg-white/10 sm:w-auto">
+            <Button variant="outline" className="w-full border-white/10 hover:text-white hover:bg-white/10 sm:w-auto">
               Contact Sales
             </Button>
           </div>

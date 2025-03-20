@@ -151,10 +151,10 @@ export default function CompanyPaymentsPage() {
               </div>
 
               <div className="mt-6 flex flex-wrap gap-3">
-                <Button variant="outline" className="border-white/10 text-white hover:bg-white/10">
+                <Button variant="outline" className="border-white/10 hover:text-white hover:bg-white/10">
                   Change Plan
                 </Button>
-                <Button variant="outline" className="border-white/10 text-white hover:bg-white/10">
+                <Button variant="outline" className="border-white/10 hover:text-white hover:bg-white/10">
                   Cancel Subscription
                 </Button>
               </div>
@@ -221,7 +221,7 @@ export default function CompanyPaymentsPage() {
                 </TabsList>
               </Tabs>
 
-              <Button variant="outline" size="icon" className="border-white/10 text-white hover:bg-white/10">
+              <Button variant="outline" size="icon" className="border-white/10 hover:text-white hover:bg-white/10">
                 <Filter className="h-4 w-4" />
               </Button>
             </div>

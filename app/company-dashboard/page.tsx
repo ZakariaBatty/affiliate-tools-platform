@@ -25,7 +25,7 @@ import CompanyDashboardLayout from "@/components/company-dashboard-layout"
 import { allTools } from "@/data/tools"
 
 export default function CompanyDashboardPage() {
-  const [timeRange, setTimeRange] = useState("7d")
+  const [timeRange, setTimeRange] = useState<"7d" | "30d" | "90d">("7d")
   const [viewTab, setViewTab] = useState("overview")
 
   // Filter for only the company's tools (in a real app, this would be based on the logged-in company)
@@ -85,7 +85,7 @@ export default function CompanyDashboardPage() {
         </div>
 
         <div className="flex items-center gap-4">
-          <Tabs value={timeRange} onValueChange={setTimeRange} className="w-[300px]">
+          <Tabs value={timeRange} onValueChange={(value) => setTimeRange(value as "7d" | "30d" | "90d")} className="w-[300px]">
             <TabsList className="grid w-full grid-cols-3 bg-white/5">
               <TabsTrigger value="7d">7 Days</TabsTrigger>
               <TabsTrigger value="30d">30 Days</TabsTrigger>

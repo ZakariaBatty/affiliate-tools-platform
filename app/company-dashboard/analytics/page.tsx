@@ -9,7 +9,7 @@ import { BarChart3, LineChart, PieChart, TrendingUp, Download, Calendar, Filter,
 import CompanyDashboardLayout from "@/components/company-dashboard-layout"
 
 export default function CompanyAnalyticsPage() {
-  const [timeRange, setTimeRange] = useState("7d")
+  const [timeRange, setTimeRange] = useState<"7d" | "30d" | "90d">("7d")
   const [viewTab, setViewTab] = useState("overview")
 
   // Mock data for charts
@@ -69,7 +69,7 @@ export default function CompanyAnalyticsPage() {
         </div>
 
         <div className="flex items-center gap-4">
-          <Tabs value={timeRange} onValueChange={setTimeRange} className="w-[300px]">
+          <Tabs value={timeRange} onValueChange={(value) => setTimeRange(value as "7d" | "30d" | "90d")} className="w-[300px]">
             <TabsList className="grid w-full grid-cols-3 bg-white/5">
               <TabsTrigger value="7d">7 Days</TabsTrigger>
               <TabsTrigger value="30d">30 Days</TabsTrigger>
@@ -77,11 +77,11 @@ export default function CompanyAnalyticsPage() {
             </TabsList>
           </Tabs>
 
-          <Button variant="outline" size="icon" className="border-white/10 text-white hover:bg-white/10">
+          <Button variant="outline" size="icon" className="border-white/10 hover:text-white hover:bg-white/10">
             <Filter className="h-4 w-4" />
           </Button>
 
-          <Button variant="outline" className="border-white/10 text-white hover:bg-white/10">
+          <Button variant="outline" className="border-white/10 hover:text-white hover:bg-white/10">
             <Calendar className="mr-2 h-4 w-4" />
             Custom Range
           </Button>
