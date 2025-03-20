@@ -14,6 +14,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { ChevronLeft, Filter, X, Check, Plus, BarChart3, ArrowRight, Star, Search, ChevronDown } from "lucide-react"
 import { allTools } from "@/data/tools"
 import Link from "next/link"
+import Navbar from "@/components/navbar"
 
 // Get all categories from tools
 const allCategories = Array.from(new Set(allTools.map((tool) => tool.category)))
@@ -98,6 +99,8 @@ export default function ToolsClientPage() {
 
   return (
     <div className="min-h-screen bg-black">
+      <Navbar />
+
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
           <h1 className="mb-2 text-3xl font-bold text-white md:text-4xl">All Tools</h1>
@@ -208,11 +211,10 @@ export default function ToolsClientPage() {
                         <button
                           key={rating}
                           onClick={() => setRatingFilter(rating)}
-                          className={`flex h-8 items-center rounded-md px-2 text-xs ${
-                            ratingFilter === rating
-                              ? "bg-purple-600 text-white"
-                              : "bg-white/10 text-white/70 hover:bg-white/20"
-                          }`}
+                          className={`flex h-8 items-center rounded-md px-2 text-xs ${ratingFilter === rating
+                            ? "bg-purple-600 text-white"
+                            : "bg-white/10 text-white/70 hover:bg-white/20"
+                            }`}
                         >
                           {rating > 0 ? (
                             <>
@@ -312,11 +314,10 @@ export default function ToolsClientPage() {
                   <div className="absolute right-3 top-3 z-10">
                     <button
                       onClick={() => toggleToolSelection(tool.id)}
-                      className={`flex h-8 w-8 items-center justify-center rounded-full ${
-                        selectedTools.includes(tool.id)
-                          ? "bg-purple-600 text-white"
-                          : "bg-white/10 text-white/70 hover:bg-white/20 hover:text-white"
-                      }`}
+                      className={`flex h-8 w-8 items-center justify-center rounded-full ${selectedTools.includes(tool.id)
+                        ? "bg-purple-600 text-white"
+                        : "bg-white/10 text-white/70 hover:bg-white/20 hover:text-white"
+                        }`}
                       aria-label={selectedTools.includes(tool.id) ? "Remove from comparison" : "Add to comparison"}
                     >
                       {selectedTools.includes(tool.id) ? <Check className="h-4 w-4" /> : <Plus className="h-4 w-4" />}

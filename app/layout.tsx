@@ -1,4 +1,5 @@
-import { Metadata } from "next"
+import type React from "react"
+import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import { constructMetadata } from "@/lib/seo-config"
 import { OrganizationSchema, WebsiteSchema } from "@/components/seo/json-ld"
@@ -19,12 +20,12 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className={`${inter.variable} dark`}>
+    <html lang="en" suppressHydrationWarning>
       <head>
         <OrganizationSchema />
         <WebsiteSchema />
       </head>
-      <body className="min-h-screen bg-black font-sans antialiased">
+      <body className={`min-h-screen bg-black font-sans antialiased ${inter.variable}`}>
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
           {children}
         </ThemeProvider>
@@ -32,3 +33,4 @@ export default function RootLayout({
     </html>
   )
 }
+

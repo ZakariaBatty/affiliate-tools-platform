@@ -76,6 +76,7 @@ export default function ToolDetailsClientPage({ params }: Props) {
       />
 
       <main className="container mx-auto px-4 py-8">
+
         {/* Breadcrumbs */}
         <div className="mb-6 flex items-center text-sm text-white/50">
           <Link href="/" className="hover:text-white">
