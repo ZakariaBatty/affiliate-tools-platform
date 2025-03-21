@@ -10,11 +10,11 @@ import Footer from "@/components/footer"
 import { Button } from "@/components/ui/button"
 import { ArrowLeft, ChevronRight } from "lucide-react"
 import Link from "next/link"
-import { ToolNotFound } from "@/components/tool/tool-not-found"
-import { ToolLoading } from "@/components/tool/tool-loading"
-import { ToolHeader } from "@/components/tool/tool-header"
-import { ToolTabs } from "@/components/tool/tool-tabs"
-import { ToolComparison } from "@/components/tool/tool-comparison"
+import { ToolNotFound } from "@/components/tools/tool-not-found"
+import { ToolLoading } from "@/components/tools/tool-loading"
+import { ToolHeader } from "@/components/tools/tool-header"
+import { ToolTabs } from "@/components/tools/tool-tabs"
+import { ToolComparison } from "@/components/tools/tool-comparison"
 
 type Props = {
   params: { id: string }
