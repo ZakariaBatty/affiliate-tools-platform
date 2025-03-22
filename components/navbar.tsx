@@ -51,12 +51,14 @@ export default function Navbar() {
         <nav className="hidden md:flex items-center gap-6">
           <Link
             href="/"
+            aria-label="Home page"
             className={cn("text-sm transition-colors", isActive("/") ? "text-white" : "text-white/70 hover:text-white")}
           >
             Home
           </Link>
           <Link
             href="/tools"
+            aria-label="Browse tools"
             className={cn(
               "text-sm transition-colors",
               isActive("/tools") ? "text-white" : "text-white/70 hover:text-white",
@@ -131,7 +133,12 @@ export default function Navbar() {
         </div>
 
         {/* Mobile Menu Button */}
-        <button className="md:hidden text-white" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+        <button
+          className="md:hidden text-white"
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
+          aria-expanded={mobileMenuOpen}
+        >
           {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
       </div>

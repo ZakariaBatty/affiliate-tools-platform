@@ -20,7 +20,7 @@ export default function SettingsPage() {
   const [confirmDisconnectSheet, setConfirmDisconnectSheet] = useState(false)
   const [paymentProvider, setPaymentProvider] = useState(null)
 
-  const handleDisconnectProvider = (provider) => {
+  const handleDisconnectProvider = (provider: any) => {
     setPaymentProvider(provider)
     setConfirmDisconnectSheet(true)
   }

@@ -4,7 +4,14 @@ import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { CheckCircle, Users, Award, TrendingUp, Globe } from "lucide-react"
 import LampSection from "@/components/home/lamp-section"
+import type { Metadata } from "next"
+import { constructMetadata } from "@/lib/seo-config"
 
+export const metadata: Metadata = constructMetadata({
+  title: "About Us",
+  description: "Learn about ToolsHub, our mission, and how we help affiliate marketers find the best tools",
+  keywords: ["about toolshub", "affiliate marketing platform", "tool comparison site"],
+})
 
 export default function AboutPage() {
   return (
@@ -184,7 +191,7 @@ export default function AboutPage() {
                 <Button className="bg-gradient-to-r from-purple-600 to-blue-500 text-white hover:opacity-90">
                   Contact Us
                 </Button>
-                <Button variant="outline" className="border-white/10 hover:text-white hover:bg-white/10">
+                <Button variant="outline" className="border-white/10 text-white hover:bg-white/10">
                   List Your Tool
                 </Button>
               </div>

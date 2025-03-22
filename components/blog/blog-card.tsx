@@ -31,8 +31,9 @@ export default function BlogCard({ post, index = 0, variant = "default", classNa
           <div className="relative h-60 w-full md:h-auto md:w-1/2">
             <Image
               src={post.image || "/placeholder.svg"}
-              alt={post.title}
+              alt={`Featured image for ${post.title}`}
               fill
+              sizes="(max-width: 768px) 100vw, 50vw"
               className="object-cover transition-transform duration-500 group-hover:scale-105"
             />
             <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/30 to-transparent md:bg-gradient-to-l" />
@@ -93,7 +94,13 @@ export default function BlogCard({ post, index = 0, variant = "default", classNa
     return (
       <div className={cn("group flex gap-3 border-b border-white/10 pb-4 last:border-0", className)}>
         <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-md">
-          <Image src={post.image || "/placeholder.svg"} alt={post.title} fill className="object-cover" />
+          <Image
+            src={post.image || "/placeholder.svg"}
+            alt={`Thumbnail for ${post.title}`}
+            fill
+            sizes="64px"
+            className="object-cover"
+          />
         </div>
 
         <div className="flex-1 min-w-0">
@@ -120,8 +127,9 @@ export default function BlogCard({ post, index = 0, variant = "default", classNa
         <div className="relative h-full w-full">
           <Image
             src={post.image || "/placeholder.svg"}
-            alt={post.title}
+            alt={`Featured image for ${post.title}`}
             fill
+            sizes="280px"
             className="object-cover transition-transform duration-500 group-hover:scale-105"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
@@ -162,8 +170,9 @@ export default function BlogCard({ post, index = 0, variant = "default", classNa
       <div className="relative h-48 w-full overflow-hidden">
         <Image
           src={post.image || "/placeholder.svg"}
-          alt={post.title}
+          alt={`Featured image for ${post.title}`}
           fill
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           className="object-cover transition-transform duration-500 group-hover:scale-105"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />

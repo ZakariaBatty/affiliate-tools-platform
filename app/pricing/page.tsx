@@ -1,3 +1,4 @@
+import type { Metadata } from "next"
 import Navbar from "@/components/navbar"
 import Footer from "@/components/footer"
 import { Button } from "@/components/ui/button"
@@ -5,6 +6,13 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Check, X, HelpCircle } from "lucide-react"
+import { constructMetadata } from "@/lib/seo-config"
+
+export const metadata: Metadata = constructMetadata({
+  title: "Pricing",
+  description: "Explore ToolsHub pricing plans and find the perfect option for your affiliate marketing needs",
+  keywords: ["toolshub pricing", "affiliate marketing plans", "tool comparison subscription"],
+})
 
 export default function PricingPage() {
   return (
@@ -82,43 +90,44 @@ export default function PricingPage() {
           </Card>
 
           {/* Pro Plan */}
+
           <Card className="relative border-purple-500/50 bg-gradient-to-br from-purple-900/20 to-blue-900/20 transition-all duration-300 hover:border-purple-500">
             <div className="absolute -top-5 left-0 right-0 mx-auto w-fit rounded-full bg-gradient-to-r from-purple-600 to-blue-500 px-4 py-1 text-xs font-medium text-white">
               Most Popular
             </div>
             <CardHeader>
-              <CardTitle className="text-black/70">Pro</CardTitle>
-              <CardDescription className="text-black/70">For professionals and power users</CardDescription>
+              <CardTitle className="text-white/70">Pro</CardTitle>
+              <CardDescription className="text-white/70">For professionals and power users</CardDescription>
               <div className="mt-4">
-                <span className="text-4xl font-bold text-black/70">$9.99</span>
-                <span className="text-black/60">/month</span>
+                <span className="text-4xl font-bold text-white/70">$9.99</span>
+                <span className="text-white/60">/month</span>
               </div>
             </CardHeader>
             <CardContent>
               <ul className="space-y-3">
                 <li className="flex items-start">
                   <Check className="mr-2 mt-0.5 h-5 w-5 shrink-0 text-green-500" />
-                  <span className="text-black/90">Save unlimited tools</span>
+                  <span className="text-white/90">Save unlimited tools</span>
                 </li>
                 <li className="flex items-start">
                   <Check className="mr-2 mt-0.5 h-5 w-5 shrink-0 text-green-500" />
-                  <span className="text-black/90">Advanced comparison features</span>
+                  <span className="text-white/90">Advanced comparison features</span>
                 </li>
                 <li className="flex items-start">
                   <Check className="mr-2 mt-0.5 h-5 w-5 shrink-0 text-green-500" />
-                  <span className="text-black/90">Full tool details</span>
+                  <span className="text-white/90">Full tool details</span>
                 </li>
                 <li className="flex items-start">
                   <Check className="mr-2 mt-0.5 h-5 w-5 shrink-0 text-green-500" />
-                  <span className="text-black/90">Performance tracking</span>
+                  <span className="text-white/90">Performance tracking</span>
                 </li>
                 <li className="flex items-start">
                   <Check className="mr-2 mt-0.5 h-5 w-5 shrink-0 text-green-500" />
-                  <span className="text-black/90">Advanced filtering</span>
+                  <span className="text-white/90">Advanced filtering</span>
                 </li>
                 <li className="flex items-start">
                   <X className="mr-2 mt-0.5 h-5 w-5 shrink-0 text-red-500" />
-                  <span className="text-black/50">Team collaboration</span>
+                  <span className="text-white/50">Team collaboration</span>
                 </li>
               </ul>
             </CardContent>

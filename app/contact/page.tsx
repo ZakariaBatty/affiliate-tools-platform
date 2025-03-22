@@ -1,3 +1,5 @@
+import type { Metadata } from "next"
+import { constructMetadata } from "@/lib/seo-config"
 import Navbar from "@/components/navbar"
 import Footer from "@/components/footer"
 import { Button } from "@/components/ui/button"
@@ -5,6 +7,12 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent } from "@/components/ui/card"
 import { Mail, Phone, MapPin, Clock, Send, MessageSquare } from "lucide-react"
+
+export const metadata: Metadata = constructMetadata({
+  title: "Contact Us",
+  description: "Get in touch with the ToolsHub team for questions, partnerships, or support",
+  keywords: ["contact toolshub", "support", "partnership", "affiliate marketing help"],
+})
 
 export default function ContactPage() {
   return (
@@ -86,7 +94,7 @@ export default function ContactPage() {
           <div className="order-1 md:order-2">
             <h2 className="mb-6 text-2xl font-bold text-white">Contact Information</h2>
 
-            <div className="space-y-8 grid grid-cols-2 gap-4 ">
+            <div className="space-y-8 grid grid-cols-2 gap-2">
               <div className="flex items-start">
                 <div className="mr-4 flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-r from-purple-600 to-blue-500">
                   <Mail className="h-5 w-5 text-white" />
