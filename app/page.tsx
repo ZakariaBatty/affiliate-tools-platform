@@ -12,6 +12,7 @@ import BlogPreview from "@/components/blog/blog-preview"
 import Testimonials from "@/components/home/testimonials"
 import CallToAction from "@/components/home/call-to-action"
 import Footer from "@/components/footer"
+import StickyQuickAccessTools from "@/components/home/sticky-quick-access-rools"
 
 export const metadata: Metadata = constructMetadata({
   title: "Home",
@@ -25,6 +26,7 @@ export default function HomePage() {
       <Navbar />
       <Hero />
       <FeaturedTools />
+      <StickyQuickAccessTools />
       <QuickAccessTools />
       <div id="categories">
         <PopularCategories />
