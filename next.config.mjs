@@ -15,6 +15,7 @@ const nextConfig = {
   },
   images: {
     unoptimized: true,
+    dangerouslyAllowSVG: true,
   },
   experimental: {
     webpackBuildWorker: true,
