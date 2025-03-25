@@ -11,6 +11,8 @@ import BlogPreview from "@/components/blog/blog-preview"
 import Testimonials from "@/components/home/testimonials"
 import CallToAction from "@/components/home/call-to-action"
 import StickyQuickAccessTools from "@/components/home/sticky-quick-access-rools"
+import Footer from "@/components/footer"
+import Navbar from "@/components/navbar"
 
 export const metadata: Metadata = constructMetadata({
   title: "Home",
@@ -21,6 +23,7 @@ export const metadata: Metadata = constructMetadata({
 export default function HomePage() {
   return (
     <div className="min-h-screen bg-black">
+      <Navbar />
       <Hero />
       <FeaturedTools />
       <StickyQuickAccessTools />
@@ -36,6 +39,7 @@ export default function HomePage() {
       <BlogPreview />
       <Testimonials />
       <CallToAction />
+      <Footer />
     </div>
   )
 }

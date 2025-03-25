@@ -17,7 +17,6 @@ export default function AboutPage() {
   return (
     <div className="min-h-screen bg-black">
       <Navbar />
-
       <main>
         {/* Lamp Section */}
         <LampSection />

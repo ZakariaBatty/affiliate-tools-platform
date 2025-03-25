@@ -28,42 +28,53 @@ export function SignupForm({ switchToLogin, csrfToken }: SignupFormProps) {
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault()
     setError("")
-    setIsLoading(true)
 
     if (!name || !email || !password) {
       setError("Please fill in all fields")
-      setIsLoading(false)
       return
     }
 
-    const formData = new FormData()
-    formData.append("name", name)
-    formData.append("email", email)
-    formData.append("password", password)
-    formData.append("csrfToken", csrfToken || "")
+    setIsLoading(true)
 
     try {
+      const formData = new FormData()
+      formData.append("name", name)
+      formData.append("email", email)
+      formData.append("password", password)
+      formData.append("csrfToken", csrfToken || "")
+
       const result = await register(formData)
       console.log("Registration result:", result)
 
-      if (result.success) {
-        // Sign in the user after successful registration
-        const signInResult = await signIn("credentials", {
-          email,
-          password,
-          redirect: false,
-        })
-
-        console.log("Sign in result:", signInResult)
-
-        if (signInResult?.error) {
-          setError(signInResult.error || "Failed to sign in after registration")
-        } else {
-          // Successfully signed in
-          router.push("/dashboard") // Redirect to dashboard or home page
-        }
-      } else {
+      if (result.error) {
         setError(typeof result.error === "string" ? result.error : "Registration failed")
+        setIsLoading(false)
+        return
+      }
+
+      if (result.success) {
+        try {
+          // Sign in the user after successful registration
+          const signInResult = await signIn("credentials", {
+            email,
+            password,
+            redirect: false,
+          })
+
+          console.log("Sign in result:", signInResult)
+
+          if (signInResult?.error) {
+            setError(signInResult.error || "Failed to sign in after registration")
+          } else {
+            // Successfully signed in
+            // router.push("/") //
+            // router.refresh()
+          }
+        } catch (signInError) {
+          console.error("Sign in error:", signInError)
+          setError("Registration successful, but sign-in failed. Please try logging in.")
+          switchToLogin()
+        }
       }
     } catch (error) {
       console.error("Registration error:", error)

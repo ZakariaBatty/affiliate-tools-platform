@@ -3,20 +3,35 @@
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Menu, X } from "lucide-react"
+import { Menu, X, LogOut, LayoutDashboard, Settings } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { AddToolDialog } from "@/components/add-tool-dialog"
 import { AuthDialog } from "./auth/auth-dialog"
+import { useSession, signOut, signIn } from "next-auth/react"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const pathname = usePathname()
-
+  const { data: session, status } = useSession()
+  const isLoading = status === "loading"
+  const isAuthenticated = status === "authenticated"
+  console.log(session, status)
   // Close mobile menu when route changes
   useEffect(() => {
     setMobileMenuOpen(false)
   }, [pathname])
+
 
   // Function to scroll to section if on homepage
   const scrollToSection = (id: string) => {
@@ -31,6 +46,21 @@ export default function Navbar() {
   // Check if link is active
   const isActive = (path: string) => {
     return pathname === path
+  }
+
+  // Handle logout
+  const handleLogout = async () => {
+    await signOut({ redirect: true, callbackUrl: "/" })
+  }
+
+  // Get user initials for avatar
+  const getUserInitials = () => {
+    if (!session?.user?.name) return "U"
+
+    const nameParts = session.user.name.split(" ")
+    if (nameParts.length === 1) return nameParts[0].charAt(0).toUpperCase()
+
+    return (nameParts[0].charAt(0) + nameParts[nameParts.length - 1].charAt(0)).toUpperCase()
   }
 
   return (
@@ -128,7 +158,16 @@ export default function Navbar() {
         </nav>
 
         <div className="hidden md:flex items-center gap-4">
-          <AuthDialog />
+          {isLoading ? (
+            // Show loading state
+            <div className="h-9 w-9 rounded-full bg-white/10 animate-pulse"></div>
+          ) : isAuthenticated ? (
+            // Show user profile dropdown when authenticated
+            <UserProfileDropdown user={session.user} onLogout={handleLogout} initials={getUserInitials()} />
+          ) : (
+            // Show login dialog when not authenticated
+            <AuthDialog />
+          )}
           <AddToolDialog />
         </div>
 
@@ -150,7 +189,7 @@ export default function Navbar() {
           mobileMenuOpen ? "translate-x-0" : "translate-x-full",
         )}
       >
-        <nav className="flex flex-col gap-6">
+        <nav className="flex flex-col gap-6 bg-black p-6">
           <Link
             href="/"
             className={cn("text-lg transition-colors", isActive("/") ? "text-white" : "text-white/70 hover:text-white")}
@@ -226,7 +265,53 @@ export default function Navbar() {
             Contact
           </Link>
           <div className="flex flex-col gap-4 mt-6">
-            <AuthDialog />
+            {isAuthenticated ? (
+              // Show mobile user profile when authenticated
+              <div className="space-y-4">
+                <div className="flex items-center gap-3 p-2 rounded-md bg-white/5">
+                  <Avatar className="h-10 w-10 border border-white/10">
+                    <AvatarImage src={'/placeholder-user.jpg'} alt={session.user.name || "User"} />
+                    <AvatarFallback className="bg-gradient-to-br from-purple-600 to-blue-500 text-white">
+                      {getUserInitials()}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="flex flex-col">
+                    <span className="text-sm font-medium text-white">{session.user.name}</span>
+                    <span className="text-xs text-white/70">{session.user.email}</span>
+                  </div>
+                </div>
+                <Button
+                  variant="outline"
+                  className="w-full justify-start border-white/10 text-white hover:bg-white/10"
+                  asChild
+                >
+                  <Link href="/dashboard">
+                    <LayoutDashboard className="mr-2 h-4 w-4" />
+                    Dashboard
+                  </Link>
+                </Button>
+                <Button
+                  variant="outline"
+                  className="w-full justify-start border-white/10 text-white hover:bg-white/10"
+                  asChild
+                >
+                  <Link href="/settings">
+                    <Settings className="mr-2 h-4 w-4" />
+                    Settings
+                  </Link>
+                </Button>
+                <Button
+                  variant="outline"
+                  className="w-full justify-start border-white/10 text-white hover:bg-white/10"
+                  onClick={handleLogout}
+                >
+                  <LogOut className="mr-2 h-4 w-4" />
+                  Logout
+                </Button>
+              </div>
+            ) : (
+              <AuthDialog />
+            )}
             <AddToolDialog
               trigger={
                 <Button className="w-full bg-gradient-to-r from-purple-600 to-blue-500 text-white hover:opacity-90">
@@ -238,6 +323,68 @@ export default function Navbar() {
         </nav>
       </div>
     </div>
+  )
+}
+
+// User Profile Dropdown Component
+interface UserProfileDropdownProps {
+  user: {
+    name?: string | null
+    email?: string | null
+    image?: string | null
+    role?: string
+  }
+  onLogout: () => void
+  initials: string
+}
+
+function UserProfileDropdown({ user, onLogout, initials }: UserProfileDropdownProps) {
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" className="relative h-9 w-9 rounded-full">
+          <Avatar className="h-9 w-9 border border-white/10">
+            <AvatarImage src={user.image || '/placeholder-user.jpg'} alt={user.name || "User"} />
+            <AvatarFallback className="bg-gradient-to-br from-purple-600 to-blue-500 text-white">
+              {initials}
+            </AvatarFallback>
+          </Avatar>
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="w-56" align="end" forceMount>
+        <DropdownMenuLabel>
+          <div className="flex flex-col space-y-1">
+            <p className="text-sm font-medium leading-none">{user.name}</p>
+            <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
+            {user.role && (
+              <p className="mt-1 text-xs text-muted-foreground">
+                Role: <span className="font-medium">{user.role}</span>
+              </p>
+            )}
+          </div>
+        </DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuGroup>
+          <DropdownMenuItem asChild>
+            <Link href="/dashboard" className="cursor-pointer">
+              <LayoutDashboard className="mr-2 h-4 w-4" />
+              <span>Dashboard</span>
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link href="/settings" className="cursor-pointer">
+              <Settings className="mr-2 h-4 w-4" />
+              <span>Settings</span>
+            </Link>
+          </DropdownMenuItem>
+        </DropdownMenuGroup>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem onClick={onLogout} className="cursor-pointer">
+          <LogOut className="mr-2 h-4 w-4" />
+          <span>Log out</span>
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   )
 }
 

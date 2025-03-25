@@ -13,6 +13,7 @@ declare module 'next-auth' {
          email: string;
          name: string;
          role: string;
+         image?: string | null;
       };
    }
 
@@ -87,8 +88,14 @@ export const authOptions: NextAuthOptions = {
    callbacks: {
       async jwt({ token, user }) {
          if (user) {
-            token.id = user.id;
-            token.role = user.role;
+            return {
+               ...token,
+               id: user.id,
+               role: user.role,
+               email: user.email,
+               name: user.name,
+               image: user.image,
+            };
          }
          return token;
       },
@@ -96,17 +103,19 @@ export const authOptions: NextAuthOptions = {
          if (session.user) {
             session.user.id = token.id as string;
             session.user.role = token.role as string;
+            session.user.email = token.email as string;
+            session.user.name = token.name as string;
+            session.user.image = token.picture as string;
          }
          return session;
       },
    },
    pages: {
       signIn: '/',
-      error: '/auth/error',
    },
    session: {
       strategy: 'jwt',
-      maxAge: 30 * 24 * 60 * 60, // 30 days
+      maxAge: 30 * 24 * 60 * 60,
    },
    debug: process.env.NODE_ENV === 'development',
    cookies: {
