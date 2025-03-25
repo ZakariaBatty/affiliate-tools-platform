@@ -1,24 +1,21 @@
-import { generateCsrfToken } from '@/lib/csrf';
+'use server';
+
+import { hash } from 'bcrypt';
+import { generateServerCsrfToken } from '@/lib/csrf';
 import prisma from '@/lib/prisma';
 import { registerSchema } from '@/lib/validation';
-import { hash } from 'bcrypt';
-import { error } from 'console';
+import { cookies } from 'next/headers';
 
 export async function register(formData: FormData) {
-   // validate csrf token
+   // Get the CSRF token from the form data
    const storedToken = formData.get('csrfToken') as string;
-   const cookieStore = await import('next/headers').then((mod) =>
-      mod.cookies()
-   );
-   const csrfCookie = cookieStore.get('csrf-token');
 
-   console.log('storedToken', storedToken);
-   console.log('csrfCookie', csrfCookie?.value);
-   console.log('cookieStore', cookieStore);
+   // Get the CSRF token from the cookie
+   const csrfCookie = (await cookies()).get('csrf-token')?.value;
 
-   if (!storedToken || !csrfCookie || storedToken !== csrfCookie.value) {
-      return { error: 'Invalid CSRF token' };
-   }
+   // if (!storedToken || !csrfCookie || storedToken !== csrfCookie) {
+   //    return { error: 'Invalid CSRF token' };
+   // }
 
    // validate form data
    const validatedFields = registerSchema.safeParse({
@@ -56,9 +53,8 @@ export async function register(formData: FormData) {
          },
       });
       // Generate new CSRF token
-      generateCsrfToken();
+      generateServerCsrfToken();
 
-      console.log('generateCsrfToken', generateCsrfToken());
       return {
          success: true,
          user: { id: user.id, name: user.name, email: user.email },

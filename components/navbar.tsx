@@ -6,8 +6,8 @@ import { usePathname } from "next/navigation"
 import { Menu, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
-import { LoginDialog } from "@/components/login-dialog"
 import { AddToolDialog } from "@/components/add-tool-dialog"
+import { AuthDialog } from "./auth/auth-dialog"
 
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -128,7 +128,7 @@ export default function Navbar() {
         </nav>
 
         <div className="hidden md:flex items-center gap-4">
-          <LoginDialog />
+          <AuthDialog />
           <AddToolDialog />
         </div>
 
@@ -226,16 +226,7 @@ export default function Navbar() {
             Contact
           </Link>
           <div className="flex flex-col gap-4 mt-6">
-            <LoginDialog
-              trigger={
-                <Button
-                  variant="outline"
-                  className="w-full border-white/10 text-white hover:bg-white/10 hover:text-white"
-                >
-                  Login
-                </Button>
-              }
-            />
+            <AuthDialog />
             <AddToolDialog
               trigger={
                 <Button className="w-full bg-gradient-to-r from-purple-600 to-blue-500 text-white hover:opacity-90">
