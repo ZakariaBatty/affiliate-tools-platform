@@ -1,11 +1,29 @@
-import NextAuth, { type NextAuthOptions, type User } from 'next-auth';
-
+import NextAuth, { type NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import GoogleProvider from 'next-auth/providers/google';
 import GitHubProvider from 'next-auth/providers/github';
 
 import prisma from '@/lib/prisma';
 import { compare } from 'bcrypt';
+
+declare module 'next-auth' {
+   interface Session {
+      user: {
+         id: string;
+         email: string;
+         name: string;
+         role: string;
+      };
+   }
+
+   interface User {
+      id?: string;
+      name?: string | null;
+      email?: string | null;
+      image?: string | null;
+      role?: string;
+   }
+}
 
 export const authOptions: NextAuthOptions = {
    providers: [
@@ -22,47 +40,47 @@ export const authOptions: NextAuthOptions = {
          credentials: {
             email: { label: 'Email', type: 'email' },
             password: { label: 'Password', type: 'password' },
-            async authorize(credentials: any) {
-               // check data
-               if (!credentials?.email || !credentials.password) {
-                  return null;
-               }
+         },
+         async authorize(credentials) {
+            // check data
+            if (!credentials?.email || !credentials.password) {
+               return null;
+            }
 
-               // find user
-               const user = await prisma.user.findUnique({
-                  where: { email: credentials.email },
-               });
+            // find user
+            const user = await prisma.user.findUnique({
+               where: { email: credentials.email },
+            });
 
-               // check user if null or password null
-               if (!user || !user.password) {
-                  return null;
-               }
+            // check user if null or password null
+            if (!user || !user.password) {
+               return null;
+            }
 
-               //  compare password if correct
-               const isPasswordValid = await compare(
-                  credentials.password,
-                  user.password
-               );
+            //  compare password if correct
+            const isPasswordValid = await compare(
+               credentials.password,
+               user.password
+            );
 
-               // check if password valid
-               if (!isPasswordValid) {
-                  return null;
-               }
+            // check if password valid
+            if (!isPasswordValid) {
+               return null;
+            }
 
-               // return data user
-               return {
-                  id: user.id,
-                  name: user.name,
-                  email: user.email,
-                  image: user.image,
-                  role: user.role,
-               };
-            },
+            // return data user
+            return {
+               id: user.id,
+               name: user.name,
+               email: user.email,
+               image: user.image,
+               role: user.role,
+            };
          },
       }),
    ],
    callbacks: {
-      async jwt({ token, user, account }) {
+      async jwt({ token, user }) {
          if (user) {
             token.id = user.id;
             token.role = user.role;
@@ -71,7 +89,7 @@ export const authOptions: NextAuthOptions = {
       },
       async session({ session, token }) {
          if (session.user) {
-            session.user.id = token.id as string;
+            session.user.id = token.sub as string;
             session.user.role = token.role as string;
          }
          return session;
