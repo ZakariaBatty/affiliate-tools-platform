@@ -1,3 +1,4 @@
+"use client"
 
 import type React from "react"
 
@@ -8,8 +9,8 @@ import { Label } from "@/components/ui/label"
 import { Mail, Lock, User, ArrowRight, AlertCircle } from "lucide-react"
 import { SocialLoginButtons } from "./social-login-buttons"
 import { register } from "@/app/actions/auth"
-import { signIn } from "next-auth/react"
 import { useRouter } from "next/navigation"
+import { signIn } from "next-auth/react"
 
 interface SignupFormProps {
   switchToLogin: () => void
@@ -27,43 +28,56 @@ export function SignupForm({ switchToLogin, csrfToken }: SignupFormProps) {
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault()
     setError("")
+    setIsLoading(true)
 
     if (!name || !email || !password) {
       setError("Please fill in all fields")
+      setIsLoading(false)
       return
     }
 
     const formData = new FormData()
     formData.append("name", name)
-    formData.append("name", name)
     formData.append("email", email)
     formData.append("password", password)
     formData.append("csrfToken", csrfToken || "")
 
-
-    // Simulate API call
     try {
       const result = await register(formData)
+      console.log("Registration result:", result)
 
       if (result.success) {
         // Sign in the user after successful registration
-        await signIn("credentials", { redirect: false, email, password })
-        router.refresh()
+        const signInResult = await signIn("credentials", {
+          email,
+          password,
+          redirect: false,
+        })
 
+        console.log("Sign in result:", signInResult)
+
+        if (signInResult?.error) {
+          setError(signInResult.error || "Failed to sign in after registration")
+        } else {
+          // Successfully signed in
+          router.push("/dashboard") // Redirect to dashboard or home page
+        }
+      } else {
+        setError(typeof result.error === "string" ? result.error : "Registration failed")
       }
-
     } catch (error) {
+      console.error("Registration error:", error)
       setError("Something went wrong. Please try again.")
     } finally {
       setIsLoading(false)
-
     }
   }
 
   return (
     <>
       <form onSubmit={handleSignup} className="space-y-4">
-        {/* <Input id="csrftoken" type="text" name="csrftoken" value={csrfToken || ""} /> */}
+        <input type="hidden" name="csrfToken" value={csrfToken || ""} />
+
         <div className="space-y-2">
           <Label htmlFor="name" className="text-white">
             Full Name
@@ -72,6 +86,7 @@ export function SignupForm({ switchToLogin, csrfToken }: SignupFormProps) {
             <User className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/50" />
             <Input
               id="name"
+              name="name"
               type="text"
               placeholder="John Doe"
               value={name}
@@ -91,6 +106,7 @@ export function SignupForm({ switchToLogin, csrfToken }: SignupFormProps) {
             <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/50" />
             <Input
               id="signup-email"
+              name="email"
               type="email"
               placeholder="name@example.com"
               value={email}
@@ -110,6 +126,7 @@ export function SignupForm({ switchToLogin, csrfToken }: SignupFormProps) {
             <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/50" />
             <Input
               id="signup-password"
+              name="password"
               type="password"
               placeholder="••••••••"
               required

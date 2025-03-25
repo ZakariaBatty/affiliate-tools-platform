@@ -47,35 +47,40 @@ export const authOptions: NextAuthOptions = {
                return null;
             }
 
-            // find user
-            const user = await prisma.user.findUnique({
-               where: { email: credentials.email },
-            });
+            try {
+               // find user
+               const user = await prisma.user.findUnique({
+                  where: { email: credentials.email },
+               });
 
-            // check user if null or password null
-            if (!user || !user.password) {
+               // check user if null or password null
+               if (!user || !user.password) {
+                  return null;
+               }
+
+               //  compare password if correct
+               const isPasswordValid = await compare(
+                  credentials.password,
+                  user.password
+               );
+
+               // check if password valid
+               if (!isPasswordValid) {
+                  return null;
+               }
+
+               // return data user
+               return {
+                  id: user.id,
+                  name: user.name,
+                  email: user.email,
+                  image: user.image,
+                  role: user.role,
+               };
+            } catch (error) {
+               console.error('Auth error:', error);
                return null;
             }
-
-            //  compare password if correct
-            const isPasswordValid = await compare(
-               credentials.password,
-               user.password
-            );
-
-            // check if password valid
-            if (!isPasswordValid) {
-               return null;
-            }
-
-            // return data user
-            return {
-               id: user.id,
-               name: user.name,
-               email: user.email,
-               image: user.image,
-               role: user.role,
-            };
          },
       }),
    ],
@@ -89,7 +94,7 @@ export const authOptions: NextAuthOptions = {
       },
       async session({ session, token }) {
          if (session.user) {
-            session.user.id = token.sub as string;
+            session.user.id = token.id as string;
             session.user.role = token.role as string;
          }
          return session;
@@ -97,12 +102,13 @@ export const authOptions: NextAuthOptions = {
    },
    pages: {
       signIn: '/',
-      error: '/',
+      error: '/auth/error',
    },
    session: {
       strategy: 'jwt',
       maxAge: 30 * 24 * 60 * 60, // 30 days
    },
+   debug: process.env.NODE_ENV === 'development',
    cookies: {
       sessionToken: {
          name: `__Secure-next-auth.session-token`,
