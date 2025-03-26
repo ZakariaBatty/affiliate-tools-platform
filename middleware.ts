@@ -5,13 +5,13 @@ import { csrfMiddleware } from './middleware/csrf';
 
 export async function middleware(request: NextRequest) {
    // Apply CSRF protection for non-GET requests
-   //  if (!['GET', 'HEAD', 'OPTIONS'].includes(request.method)) {
-   //     const csrfResponse = await csrfMiddleware(request);
-   //     console.log('csrfResponse', csrfResponse);
-   //     if (csrfResponse.status === 403) {
-   //        return csrfResponse;
-   //     }
-   //  }
+   if (!['GET', 'HEAD', 'OPTIONS'].includes(request.method)) {
+      const csrfResponse = await csrfMiddleware(request);
+      console.log('csrfResponse', csrfResponse);
+      if (csrfResponse.status === 403) {
+         return csrfResponse;
+      }
+   }
 
    const token = await getToken({
       req: request,
