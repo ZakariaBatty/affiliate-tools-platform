@@ -1,4 +1,4 @@
-import { MetadataRoute } from 'next';
+import type { MetadataRoute } from 'next';
 import { allTools } from '@/data/tools';
 import { blogPosts } from '@/data/blog-data';
 import { siteConfig } from '@/lib/seo-config';
