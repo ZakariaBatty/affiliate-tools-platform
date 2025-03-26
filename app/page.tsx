@@ -1,6 +1,5 @@
 import type { Metadata } from "next"
 import { constructMetadata } from "@/lib/seo-config"
-import Navbar from "@/components/navbar"
 import Hero from "@/components/home/hero"
 import FeaturedTools from "@/components/home/featured-tools"
 import QuickAccessTools from "@/components/home/quick-access-tools"
@@ -11,8 +10,9 @@ import HowItWorks from "@/components/home/how-it-works"
 import BlogPreview from "@/components/blog/blog-preview"
 import Testimonials from "@/components/home/testimonials"
 import CallToAction from "@/components/home/call-to-action"
-import Footer from "@/components/footer"
 import StickyQuickAccessTools from "@/components/home/sticky-quick-access-rools"
+import Footer from "@/components/footer"
+import Navbar from "@/components/navbar"
 
 export const metadata: Metadata = constructMetadata({
   title: "Home",

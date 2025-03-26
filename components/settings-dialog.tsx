@@ -118,7 +118,7 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
   ]
 
   return (
-    <Sheet open={open} onOpenChange={onOpenChange} side="right">
+    <Sheet open={open} onOpenChange={onOpenChange} >
       <SheetContent className="w-full max-w-md border-white/10 bg-black p-0 sm:max-w-xl md:max-w-[80%]">
         <div className="flex h-full flex-col overflow-hidden">
           <SheetHeader className="border-b border-white/10 bg-white/5 p-6">
@@ -343,11 +343,10 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
                     {plans.map((plan) => (
                       <Card
                         key={plan.id}
-                        className={`border-white/10 ${
-                          plan.current
+                        className={`border-white/10 ${plan.current
                             ? "bg-gradient-to-br from-purple-900/30 to-blue-900/30 border-purple-500/50"
                             : "bg-white/5"
-                        }`}
+                          }`}
                       >
                         <CardHeader>
                           <CardTitle className="text-white">{plan.name}</CardTitle>
