@@ -1,0 +1,68 @@
+version: '3.8'
+
+services:
+   app:
+      build:
+         context: .
+         dockerfile: Dockerfile
+         args:
+            - NEXTAUTH_URL=${NEXTAUTH_URL}
+            - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
+            - DATABASE_URL=${DATABASE_URL}
+            - GOOGLE_CLIENT_ID=${GOOGLECLIENTID}
+            - GOOGLE_CLIENT_SECRET=${GOOGLECLIENTSECRET}
+            - GITHUB_CLIENT_ID=${GITHUBCLIENTID}
+            - GITHUB_CLIENT_SECRET=${GITHUBCLIENTSECRET}
+            - UPSTASH_REDIS_REST_URL=${UPSTASH_REDIS_REST_URL}
+            - UPSTASH_REDIS_REST_TOKEN=${UPSTASH_REDIS_REST_TOKEN}
+      ports:
+         - '3000:3000'
+      restart: always
+      depends_on:
+         - postgres
+      environment:
+         - NEXTAUTH_URL=${NEXTAUTH_URL}
+         - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
+         - DATABASE_URL=${DATABASE_URL}
+         - GOOGLE_CLIENT_ID=${GOOGLECLIENTID}
+         - GOOGLE_CLIENT_SECRET=${GOOGLECLIENTSECRET}
+         - GITHUB_CLIENT_ID=${GITHUBCLIENTID}
+         - GITHUB_CLIENT_SECRET=${GITHUBCLIENTSECRET}
+         - UPSTASH_REDIS_REST_URL=${UPSTASH_REDIS_REST_URL}
+         - UPSTASH_REDIS_REST_TOKEN=${UPSTASH_REDIS_REST_TOKEN}
+         - SEED_DATABASE=${SEED_DATABASE:-false}
+      networks:
+         - app-network
+
+   postgres:
+      image: postgres:14-alpine
+      ports:
+         - '5432:5432'
+      environment:
+         - POSTGRES_USER=${POSTGRES_USER:-postgres}
+         - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
+         - POSTGRES_DB=${POSTGRES_DB:-affiliate_tools}
+      volumes:
+         - postgres-data:/var/lib/postgresql/data
+      networks:
+         - app-network
+
+   migration:
+      build:
+         context: .
+         dockerfile: Dockerfile
+      command: ./scripts/migrate-docker.sh
+      depends_on:
+         - postgres
+      environment:
+         - DATABASE_URL=${DATABASE_URL}
+         - SEED_DATABASE=${SEED_DATABASE:-false}
+      networks:
+         - app-network
+
+networks:
+   app-network:
+      driver: bridge
+
+volumes:
+   postgres-data:
