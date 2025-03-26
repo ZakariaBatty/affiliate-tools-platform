@@ -44,7 +44,6 @@ export function LoginForm({ isLoading, setIsLoading, redirectUrl, onSuccess, onO
         // Handle specific error types from NextAuth
         switch (result.error) {
           case "CredentialsSignin":
-            console.log("Invalid email or password")
             toast.error("Invalid email or password")
             break
           case "EmailSignInError":
