@@ -28,7 +28,7 @@ export function AuthDialog({
   open,
   onOpenChange,
   defaultTab = "login",
-  redirectUrl = "/",
+  redirectUrl = "/dashboard",
   onSuccess,
 }: AuthDialogProps) {
   const router = useRouter()

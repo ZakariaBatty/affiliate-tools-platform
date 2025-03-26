@@ -84,7 +84,7 @@ export function LoginForm({ isLoading, setIsLoading, redirectUrl, onSuccess, onO
       if (onSuccess) {
         onSuccess()
       } else {
-        router.push('/')
+        router.push(redirectUrl)
         router.refresh()
       }
 

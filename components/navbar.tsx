@@ -27,8 +27,6 @@ export default function Navbar() {
   const { data: session, status } = useSession()
   const isLoading = status === "loading"
   const isAuthenticated = status === "authenticated"
-  console.log(session, status);
-
   // Close mobile menu when route changes
   useEffect(() => {
     setMobileMenuOpen(false)
