@@ -8,7 +8,7 @@ import { AuthDialog } from "./auth-dialog"
 import { useAuthDialog } from "@/hooks/use-auth-dialog"
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const { isOpen, defaultTab, redirectUrl, onSuccess, open, close } = useAuthDialog()
+  const { isOpen, defaultTab, redirectUrl, onSuccess, close } = useAuthDialog()
   const pathname = usePathname()
 
   // Close dialog when navigating

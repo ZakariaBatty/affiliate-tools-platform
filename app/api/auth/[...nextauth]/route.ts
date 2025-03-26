@@ -45,7 +45,7 @@ export const authOptions: NextAuthOptions = {
          async authorize(credentials) {
             // check data
             if (!credentials?.email || !credentials.password) {
-               return null;
+               throw new Error('Email and password are required');
             }
 
             try {
@@ -55,8 +55,12 @@ export const authOptions: NextAuthOptions = {
                });
 
                // check user if null or password null
-               if (!user || !user.password) {
-                  return null;
+               if (!user) {
+                  throw new Error('User not found');
+               }
+
+               if (!user.password) {
+                  throw new Error('Password not set for this account');
                }
 
                //  compare password if correct
@@ -67,7 +71,7 @@ export const authOptions: NextAuthOptions = {
 
                // check if password valid
                if (!isPasswordValid) {
-                  return null;
+                  throw new Error('Incorrect password');
                }
 
                // return data user
@@ -78,9 +82,9 @@ export const authOptions: NextAuthOptions = {
                   image: user.image,
                   role: user.role,
                };
-            } catch (error) {
+            } catch (error: any) {
                console.error('Auth error:', error);
-               return null;
+               throw new Error(error.message || 'Authentication failed');
             }
          },
       }),

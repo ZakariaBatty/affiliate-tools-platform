@@ -66,19 +66,19 @@ export async function requestPasswordReset(email: string) {
       });
 
       if (!user) {
-         // Return success even if user doesn't exist for security reasons
+         // For security reasons, don't reveal that the user doesn't exist
          return {
             success: true,
             message:
-               'If an account with this email exists, a reset link has been sent',
+               'If an account with that email exists, a reset link has been sent',
          };
       }
 
       // Generate reset token
       const token = uuidv4();
-      const expires = new Date(Date.now() + 3600000); // 1 hour from now
+      const expires = new Date(Date.now() + 3600000); // 1 hour
 
-      // Save reset token
+      // Save token to database
       await prisma.passwordReset.upsert({
          where: { userId: user.id },
          update: {
@@ -93,22 +93,23 @@ export async function requestPasswordReset(email: string) {
       });
 
       // In a real application, you would send an email with the reset link
-      // For this example, we'll just return the token
+      // For this example, we'll just return success
+      console.log(`Reset token for ${email}: ${token}`);
+
       return {
          success: true,
          message: 'Password reset email sent',
-         token, // In production, don't return this
       };
    } catch (error) {
-      console.error('Password reset request error:', error);
+      console.error('Reset request error:', error);
       return {
          success: false,
-         message: 'Failed to process password reset request',
+         message: 'Failed to process reset request',
       };
    }
 }
 
-// Reset password
+// Reset password with token
 export async function resetPassword({
    token,
    password,
@@ -117,13 +118,16 @@ export async function resetPassword({
    password: string;
 }) {
    try {
-      // Find reset token
+      // Find valid token
       const resetRecord = await prisma.passwordReset.findFirst({
          where: {
             token,
             expires: {
                gt: new Date(),
             },
+         },
+         include: {
+            user: true,
          },
       });
 
@@ -145,7 +149,7 @@ export async function resetPassword({
          },
       });
 
-      // Delete reset token
+      // Delete used token
       await prisma.passwordReset.delete({
          where: { id: resetRecord.id },
       });
