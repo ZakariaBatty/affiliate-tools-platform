@@ -47,11 +47,13 @@ export function AuthDialog({
         </DialogHeader>
 
         <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as any)}>
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="login">Login</TabsTrigger>
-            <TabsTrigger value="register">Register</TabsTrigger>
-            <TabsTrigger value="reset">Reset</TabsTrigger>
-          </TabsList>
+          {activeTab !== 'reset' && (
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="login">Login</TabsTrigger>
+              <TabsTrigger value="register">Register</TabsTrigger>
+              {/* <TabsTrigger value="reset">Reset</TabsTrigger> */}
+            </TabsList>
+          )}
 
           {/* Login Tab */}
           <TabsContent value="login">

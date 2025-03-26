@@ -29,12 +29,12 @@ declare module 'next-auth' {
 export const authOptions: NextAuthOptions = {
    providers: [
       GoogleProvider({
-         clientId: process.env.GOOGLE_CLIENT_ID!,
-         clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+         clientId: process.env.GOOGLECLIENTID!,
+         clientSecret: process.env.GOOGLECLIENTSECRET!,
       }),
       GitHubProvider({
-         clientId: process.env.GITHUB_CLIENT_ID!,
-         clientSecret: process.env.GITHUB_CLIENT_SECRET!,
+         clientId: process.env.GITHUBCLIENTID!,
+         clientSecret: process.env.GITHUBCLIENTSECRET!,
       }),
       CredentialsProvider({
          name: 'Credentials',
@@ -43,18 +43,15 @@ export const authOptions: NextAuthOptions = {
             password: { label: 'Password', type: 'password' },
          },
          async authorize(credentials) {
-            // check data
             if (!credentials?.email || !credentials.password) {
                throw new Error('Email and password are required');
             }
 
             try {
-               // find user
                const user = await prisma.user.findUnique({
                   where: { email: credentials.email },
                });
 
-               // check user if null or password null
                if (!user) {
                   throw new Error('User not found');
                }
@@ -63,18 +60,15 @@ export const authOptions: NextAuthOptions = {
                   throw new Error('Password not set for this account');
                }
 
-               //  compare password if correct
                const isPasswordValid = await compare(
                   credentials.password,
                   user.password
                );
 
-               // check if password valid
                if (!isPasswordValid) {
                   throw new Error('Incorrect password');
                }
 
-               // return data user
                return {
                   id: user.id,
                   name: user.name,
@@ -90,6 +84,30 @@ export const authOptions: NextAuthOptions = {
       }),
    ],
    callbacks: {
+      async signIn({ user, account }) {
+         if (account?.provider === 'github' || account?.provider === 'google') {
+            try {
+               const existingUser = await prisma.user.findUnique({
+                  where: { email: user.email! },
+               });
+
+               if (!existingUser) {
+                  await prisma.user.create({
+                     data: {
+                        name: user.name || 'New User',
+                        email: user.email!,
+                        image: user.image,
+                        emailVerified: new Date(),
+                     },
+                  });
+               }
+            } catch (error) {
+               console.error('Error saving user:', error);
+               return false;
+            }
+         }
+         return true;
+      },
       async jwt({ token, user }) {
          if (user) {
             return {
@@ -119,8 +137,8 @@ export const authOptions: NextAuthOptions = {
    },
    session: {
       strategy: 'jwt',
-      maxAge: 30 * 24 * 60 * 60, // 30 days
-      updateAge: 24 * 60 * 60, // every 24h
+      maxAge: 30 * 24 * 60 * 60,
+      updateAge: 24 * 60 * 60,
    },
    cookies: {
       sessionToken: {
