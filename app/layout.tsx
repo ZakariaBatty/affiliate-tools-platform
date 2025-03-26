@@ -1,42 +1,39 @@
-import type React from "react";
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import { constructMetadata } from "@/lib/seo-config";
-import { OrganizationSchema, WebsiteSchema } from "@/components/seo/json-ld";
-import { ThemeProvider } from "@/provider/theme-provider";
-import "./globals.css";
-import { getServerSession } from "next-auth";
-import { authOptions } from "./api/auth/[...nextauth]/route";
-import { Toaster } from "@/components/ui/toaster";
-import ClientSessionProvider from "@/components/components/ClientSessionProvider";
+import { Inter } from "next/font/google"
+import "./globals.css"
+import { ThemeProvider } from "@/components/theme-provider"
+import { Toaster } from "@/components/ui/toaster"
+import { SessionProvider } from "@/components/auth/session-provider"
+import { getServerSession } from "next-auth/next"
+import { authOptions } from "@/app/api/auth/[...nextauth]/route"
+import { AuthProvider } from "@/components/auth/auth-provider"
 
-const inter = Inter({
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-inter",
-});
+const inter = Inter({ subsets: ["latin"] })
 
-export const metadata: Metadata = constructMetadata();
+export const metadata = {
+  title: "AI Tools Affiliate Platform",
+  description: "Discover, compare, and find the best AI tools for your needs",
+}
 
-export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const session = await getServerSession(authOptions);
+import { ReactNode } from "react"
 
-  console.log("Server Session:", session);
+export default async function RootLayout({ children }: { children: ReactNode }) {
+  const session = await getServerSession(authOptions)
 
   return (
     <html lang="en" suppressHydrationWarning>
-      <head>
-        <OrganizationSchema />
-        <WebsiteSchema />
-      </head>
-      <body className={`min-h-screen bg-black font-sans antialiased ${inter.variable}`}>
-        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
-          <ClientSessionProvider session={session}>
-            <main className="flex-1">{children}</main>
-            <Toaster />
-          </ClientSessionProvider>
+      <body className={inter.className}>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <AuthProvider>
+            <SessionProvider session={session}>
+              <div className="flex flex-col min-h-screen">
+                <main className="flex-1">{children}</main>
+              </div>
+              <Toaster />
+            </SessionProvider>
+          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>
-  );
+  )
 }
+

@@ -105,7 +105,7 @@ export const authOptions: NextAuthOptions = {
             session.user.role = token.role as string;
             session.user.email = token.email as string;
             session.user.name = token.name as string;
-            session.user.image = token.picture as string;
+            session.user.image = token.image as string;
          }
          return session;
       },
@@ -115,20 +115,21 @@ export const authOptions: NextAuthOptions = {
    },
    session: {
       strategy: 'jwt',
-      maxAge: 30 * 24 * 60 * 60,
+      maxAge: 30 * 24 * 60 * 60, // 30 days
+      updateAge: 24 * 60 * 60, // every 24h
    },
-   debug: process.env.NODE_ENV === 'development',
    cookies: {
       sessionToken: {
-         name: `__Secure-next-auth.session-token`,
+         name: 'next-auth.session-token',
          options: {
             httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
             sameSite: 'lax',
             path: '/',
-            secure: process.env.NODE_ENV === 'production',
          },
       },
    },
+   debug: process.env.NODE_ENV === 'development',
    secret: process.env.NEXTAUTH_SECRET,
 };
 

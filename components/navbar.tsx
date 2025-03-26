@@ -7,8 +7,7 @@ import { Menu, X, LogOut, LayoutDashboard, Settings } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { AddToolDialog } from "@/components/add-tool-dialog"
-import { AuthDialog } from "./auth/auth-dialog"
-import { useSession, signOut, signIn } from "next-auth/react"
+import { useAuthDialog } from "@/hooks/use-auth-dialog"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -19,19 +18,21 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { signOut, useSession } from "next-auth/react"
 
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const pathname = usePathname()
+  const { open: openAuthDialog } = useAuthDialog()
   const { data: session, status } = useSession()
   const isLoading = status === "loading"
   const isAuthenticated = status === "authenticated"
-  console.log(session, status)
+  console.log(session, status);
+
   // Close mobile menu when route changes
   useEffect(() => {
     setMobileMenuOpen(false)
   }, [pathname])
-
 
   // Function to scroll to section if on homepage
   const scrollToSection = (id: string) => {
@@ -120,15 +121,6 @@ export default function Navbar() {
             How It Works
           </Link>
           <Link
-            href="/dashboard"
-            className={cn(
-              "text-sm transition-colors",
-              isActive("/dashboard") ? "text-white" : "text-white/70 hover:text-white",
-            )}
-          >
-            Dashboard
-          </Link>
-          <Link
             href="/about"
             className={cn(
               "text-sm transition-colors",
@@ -166,8 +158,11 @@ export default function Navbar() {
             <UserProfileDropdown user={session.user} onLogout={handleLogout} initials={getUserInitials()} />
           ) : (
             // Show login dialog when not authenticated
-            <AuthDialog />
+            <Button variant="outline" onClick={() => openAuthDialog({ defaultTab: "login" })}>
+              Log in
+            </Button>
           )}
+
           <AddToolDialog />
         </div>
 
@@ -189,7 +184,7 @@ export default function Navbar() {
           mobileMenuOpen ? "translate-x-0" : "translate-x-full",
         )}
       >
-        <nav className="flex flex-col gap-6 bg-black p-6">
+        <nav className="flex flex-col gap-6">
           <Link
             href="/"
             className={cn("text-lg transition-colors", isActive("/") ? "text-white" : "text-white/70 hover:text-white")}
@@ -265,53 +260,13 @@ export default function Navbar() {
             Contact
           </Link>
           <div className="flex flex-col gap-4 mt-6">
-            {isAuthenticated ? (
-              // Show mobile user profile when authenticated
-              <div className="space-y-4">
-                <div className="flex items-center gap-3 p-2 rounded-md bg-white/5">
-                  <Avatar className="h-10 w-10 border border-white/10">
-                    <AvatarImage src={'/placeholder-user.jpg'} alt={session.user.name || "User"} />
-                    <AvatarFallback className="bg-gradient-to-br from-purple-600 to-blue-500 text-white">
-                      {getUserInitials()}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex flex-col">
-                    <span className="text-sm font-medium text-white">{session.user.name}</span>
-                    <span className="text-xs text-white/70">{session.user.email}</span>
-                  </div>
-                </div>
-                <Button
-                  variant="outline"
-                  className="w-full justify-start border-white/10 text-white hover:bg-white/10"
-                  asChild
-                >
-                  <Link href="/dashboard">
-                    <LayoutDashboard className="mr-2 h-4 w-4" />
-                    Dashboard
-                  </Link>
-                </Button>
-                <Button
-                  variant="outline"
-                  className="w-full justify-start border-white/10 text-white hover:bg-white/10"
-                  asChild
-                >
-                  <Link href="/settings">
-                    <Settings className="mr-2 h-4 w-4" />
-                    Settings
-                  </Link>
-                </Button>
-                <Button
-                  variant="outline"
-                  className="w-full justify-start border-white/10 text-white hover:bg-white/10"
-                  onClick={handleLogout}
-                >
-                  <LogOut className="mr-2 h-4 w-4" />
-                  Logout
-                </Button>
-              </div>
-            ) : (
-              <AuthDialog />
-            )}
+            <Button
+              variant="outline"
+              className="w-full border-white/10 text-white hover:bg-white/10 hover:text-white"
+              onClick={() => openAuthDialog({ defaultTab: "login" })}
+            >
+              Login
+            </Button>
             <AddToolDialog
               trigger={
                 <Button className="w-full bg-gradient-to-r from-purple-600 to-blue-500 text-white hover:opacity-90">
@@ -325,6 +280,7 @@ export default function Navbar() {
     </div>
   )
 }
+
 
 // User Profile Dropdown Component
 interface UserProfileDropdownProps {
@@ -344,7 +300,7 @@ function UserProfileDropdown({ user, onLogout, initials }: UserProfileDropdownPr
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-9 w-9 rounded-full">
           <Avatar className="h-9 w-9 border border-white/10">
-            <AvatarImage src={user.image || '/placeholder-user.jpg'} alt={user.name || "User"} />
+            <AvatarImage src={user.image || undefined} alt={user.name || "User"} />
             <AvatarFallback className="bg-gradient-to-br from-purple-600 to-blue-500 text-white">
               {initials}
             </AvatarFallback>
@@ -372,7 +328,7 @@ function UserProfileDropdown({ user, onLogout, initials }: UserProfileDropdownPr
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
-            <Link href="/settings" className="cursor-pointer">
+            <Link href="/dashboard" className="cursor-pointer">
               <Settings className="mr-2 h-4 w-4" />
               <span>Settings</span>
             </Link>
