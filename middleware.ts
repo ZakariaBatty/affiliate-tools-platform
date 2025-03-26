@@ -1,18 +1,8 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { getToken } from 'next-auth/jwt';
-import { csrfMiddleware } from './middleware/csrf';
 
 export async function middleware(request: NextRequest) {
-   // Apply CSRF protection for non-GET requests
-   // if (!['GET', 'HEAD', 'OPTIONS'].includes(request.method)) {
-   //    const csrfResponse = await csrfMiddleware(request);
-   //    console.log('csrfResponse', csrfResponse);
-   //    if (csrfResponse.status === 403) {
-   //       return csrfResponse;
-   //    }
-   // }
-
    const token = await getToken({
       req: request,
       secret: process.env.NEXTAUTH_SECRET,
