@@ -29,12 +29,12 @@ declare module 'next-auth' {
 export const authOptions: NextAuthOptions = {
    providers: [
       GoogleProvider({
-         clientId: process.env.GOOGLECLIENTID!,
-         clientSecret: process.env.GOOGLECLIENTSECRET!,
+         clientId: process.env.GOOGLE_CLIENT_ID!,
+         clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
       }),
       GitHubProvider({
-         clientId: process.env.GITHUBCLIENTID!,
-         clientSecret: process.env.GITHUBCLIENTSECRET!,
+         clientId: process.env.GITHUB_CLIENT_ID!,
+         clientSecret: process.env.GITHUB_CLIENT_SECRET!,
       }),
       CredentialsProvider({
          name: 'Credentials',
