@@ -27,7 +27,7 @@ export default function FeaturedTools() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {tools.map((tool, index) => (
             <Link href={`/tools/${tool.id}`} key={tool.id} className="block">
               <motion.div

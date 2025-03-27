@@ -64,6 +64,8 @@ export function AuthDialog({
               onSuccess={onSuccess}
               onOpenChange={onOpenChange}
               router={router}
+              error={error}
+              setError={setError}
             />
           </TabsContent>
 

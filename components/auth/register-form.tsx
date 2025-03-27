@@ -12,6 +12,7 @@ import { AlertCircle, Lock, Mail, User } from "lucide-react"
 import { registerSchema } from "@/lib/validation"
 import { registerUser } from "@/app/actions/auth"
 import { OAuthButtons } from "./oauth-buttons"
+import { AlertAuth } from "../alert/alert-destructive"
 
 type RegisterFormProps = {
   isLoading: boolean
@@ -108,6 +109,9 @@ export function RegisterForm({
 
   return (
     <div className="space-y-4 py-2 pb-4">
+      {error && (
+        <AlertAuth message={error} success={false} />
+      )}
       <Form {...registerForm}>
         <form onSubmit={registerForm.handleSubmit(onRegisterSubmit)} className="space-y-4">
           <FormField
@@ -192,12 +196,12 @@ export function RegisterForm({
               </FormItem>
             )}
           />
-          {error && (
+          {/* {error && (
             <div className="flex items-center gap-2 text-red-500 text-sm">
               <AlertCircle className="h-4 w-4" />
               <span>{error}</span>
             </div>
-          )}
+          )} */}
           <Button type="submit" className="w-full" disabled={isLoading}>
             {/* {isLoading ? "Signing in..." : "Sign In"} */}
             {isLoading ? "Creating account..." : "Create Account"}
