@@ -43,7 +43,7 @@ export default async function HomePage() {
       <div id="how-it-works">
         <HowItWorks />
       </div>
-      <BlogPreview />
+      <BlogPreview posts={blogPosts} />
       <Testimonials />
       <CallToAction />
       <Footer />
