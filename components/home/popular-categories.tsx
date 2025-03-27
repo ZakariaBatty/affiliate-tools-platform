@@ -133,12 +133,12 @@ export default function PopularCategories({ categories }: PopularCategoriesProps
                   </h3>
 
                   <p className="mb-4 text-sm text-white/70">{category.description}</p>
-                  {/* <Link href={`/categories/${category.slug}`} key={category.id}> */}
-                  <Button variant="ghost" className="p-0 text-white hover:bg-transparent hover:text-purple-400">
-                    <span>Explore</span>
-                    <ArrowRight className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
-                  </Button>
-                  {/* </Link> */}
+                  <Link href={`/tools/${category.slug}`} key={category.id}>
+                    <Button variant="ghost" className="p-0 text-white hover:bg-transparent hover:text-purple-400">
+                      <span>Explore</span>
+                      <ArrowRight className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
+                    </Button>
+                  </Link>
                 </div>
               </motion.div>
             )
