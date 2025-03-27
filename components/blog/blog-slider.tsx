@@ -4,7 +4,7 @@ import { useRef, useState, useEffect } from "react"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import BlogCard from "@/components/blog/blog-card"
-import type { BlogPost } from "@/data/blog-data"
+import { BlogPost } from "@/types/types"
 
 interface BlogSliderProps {
   title: string
@@ -60,9 +60,8 @@ export default function BlogSlider({ title, posts }: BlogSliderProps) {
           <Button
             variant="outline"
             size="icon"
-            className={`rounded-full border-white/10 hover:text-white ${
-              !canScrollLeft ? "opacity-50 cursor-not-allowed" : "hover:bg-white/10"
-            }`}
+            className={`rounded-full border-white/10 hover:text-white ${!canScrollLeft ? "opacity-50 cursor-not-allowed" : "hover:bg-white/10"
+              }`}
             onClick={scrollLeft}
             disabled={!canScrollLeft}
           >
@@ -72,9 +71,8 @@ export default function BlogSlider({ title, posts }: BlogSliderProps) {
           <Button
             variant="outline"
             size="icon"
-            className={`rounded-full border-white/10 hover:text-white ${
-              !canScrollRight ? "opacity-50 cursor-not-allowed" : "hover:bg-white/10"
-            }`}
+            className={`rounded-full border-white/10 hover:text-white ${!canScrollRight ? "opacity-50 cursor-not-allowed" : "hover:bg-white/10"
+              }`}
             onClick={scrollRight}
             disabled={!canScrollRight}
           >

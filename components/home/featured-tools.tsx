@@ -6,13 +6,25 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { motion } from "framer-motion"
 import { ArrowRight, Star } from "lucide-react"
-import { allTools } from "@/data/tools"
+import { SaveToolButton } from "../save-tool-button"
 
-export default function FeaturedTools() {
+interface Tool {
+  id: string
+  name: string
+  image: string
+  category: string
+  rating: number
+  savedByCurrentUser?: boolean
+}
+
+interface FeaturedToolsProps {
+  tools: Tool[]
+}
+
+export default function FeaturedTools({ tools }: FeaturedToolsProps) {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
 
   // Use the first 6 tools from our data
-  const tools = allTools.slice(0, 6)
 
   return (
     <section className="relative bg-black py-20 overflow-hidden">
@@ -29,59 +41,70 @@ export default function FeaturedTools() {
 
         <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {tools.map((tool, index) => (
-            <Link href={`/tools/${tool.id}`} key={tool.id} className="block">
-              <motion.div
-                className="group relative overflow-hidden rounded-xl bg-gray-900 transition-all duration-300 h-full"
-                onMouseEnter={() => setHoveredIndex(index)}
-                onMouseLeave={() => setHoveredIndex(null)}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                whileHover={{ y: -5 }}
-              >
-                {/* Main image */}
-                <div className="h-48 w-full overflow-hidden bg-gradient-to-r from-blue-600 to-purple-600">
-                  <Image
-                    src={tool.image || "/placeholder.svg?height=400&width=600"}
-                    alt={tool.name}
-                    width={600}
-                    height={400}
-                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
-                </div>
-
-                {/* Content area */}
-                <div className="flex p-4">
-                  {/* Tool icon */}
-                  <div className="mr-4 flex-shrink-0">
-                    <div
-                      className={`relative h-12 w-12 overflow-hidden rounded-full 
-                      ${index % 3 === 0 ? "bg-orange-500" : index % 3 === 1 ? "bg-blue-500" : "bg-green-500"}`}
-                    >
-                      <Image
-                        src={tool.image || "/placeholder.svg?height=100&width=100"}
-                        alt={tool.name}
-                        width={48}
-                        height={48}
-                        className="h-full w-full object-cover"
-                      />
-                    </div>
+            <div key={tool.id} className="relative">
+              <Link href={`/tools/${tool.id}`} className="block">
+                <motion.div
+                  className="group relative overflow-hidden rounded-xl bg-gray-900 transition-all duration-300 h-full"
+                  onMouseEnter={() => setHoveredIndex(index)}
+                  onMouseLeave={() => setHoveredIndex(null)}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  whileHover={{ y: -5 }}
+                >
+                  {/* Main image */}
+                  <div className="h-48 w-full overflow-hidden bg-gradient-to-r from-blue-600 to-purple-600">
+                    <Image
+                      src={tool.image || "/placeholder.svg?height=400&width=600"}
+                      alt={tool.name}
+                      width={600}
+                      height={400}
+                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
                   </div>
 
-                  {/* Tool info */}
-                  <div className="flex flex-col">
-                    <h3 className="text-lg font-bold text-white">{tool.name}</h3>
-                    <div className="flex items-center mt-1">
-                      <span className="text-sm text-gray-400">{tool.category}</span>
-                      <div className="flex items-center ml-auto">
-                        <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
-                        <span className="ml-1 text-sm font-medium text-yellow-500">{tool.rating}</span>
+                  {/* Content area */}
+                  <div className="flex p-4">
+                    {/* Tool icon */}
+                    <div className="mr-4 flex-shrink-0">
+                      <div
+                        className={`relative h-12 w-12 overflow-hidden rounded-full 
+                      ${index % 3 === 0 ? "bg-orange-500" : index % 3 === 1 ? "bg-blue-500" : "bg-green-500"}`}
+                      >
+                        <Image
+                          src={tool.image || "/placeholder.svg?height=100&width=100"}
+                          alt={tool.name}
+                          width={48}
+                          height={48}
+                          className="h-full w-full object-cover"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Tool info */}
+                    <div className="flex flex-col">
+                      <h3 className="text-lg font-bold text-white">{tool.name}</h3>
+                      <div className="flex items-center mt-1">
+                        <span className="text-sm text-gray-400">{tool.category}</span>
+                        <div className="flex items-center ml-auto">
+                          <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
+                          <span className="ml-1 text-sm font-medium text-yellow-500">{tool.rating}</span>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              </motion.div>
-            </Link>
+                </motion.div>
+              </Link>
+              <div className="absolute top-4 right-4 z-10">
+                <SaveToolButton
+                  toolId={tool.id}
+                  isSaved={tool.savedByCurrentUser}
+                  variant="ghost"
+                  size="sm"
+                  className="bg-black/50 hover:bg-black/70 text-white"
+                />
+              </div>
+            </div>
           ))}
         </div>
 
