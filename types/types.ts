@@ -20,6 +20,7 @@ export interface Tool {
    companyId?: string;
    featured: boolean;
    popular: boolean;
+   rating?: number;
    createdAt: string;
    updatedAt: string;
    categories: CategoryTool[];
@@ -171,4 +172,21 @@ export interface Activity {
    tool?: Tool;
    blog?: Blog;
    comparison?: Comparison;
+}
+
+export interface BlogPost {
+   id: string;
+   title: string;
+   slug: string;
+   excerpt: string;
+   image: string;
+   date: string;
+   readTime: string;
+   category: string;
+   author: {
+      name: string | null | undefined;
+      avatar: string;
+      role: string;
+   };
+   tags: string[];
 }

@@ -156,7 +156,7 @@ export default function Navbar() {
             <UserProfileDropdown user={session.user} onLogout={handleLogout} initials={getUserInitials()} />
           ) : (
             // Show login dialog when not authenticated
-            <Button variant="outline" onClick={() => openAuthDialog({ defaultTab: "login" })}>
+            <Button variant="outline" onClick={() => openAuthDialog({ defaultTab: "login", redirectUrl: "/" })}>
               Log in
             </Button>
           )}

@@ -5,7 +5,7 @@ import Link from "next/link"
 import { motion } from "framer-motion"
 import { Calendar, Clock, ArrowRight } from "lucide-react"
 import { cn } from "@/lib/utils"
-import type { BlogPost } from "@/data/blog-data"
+import { BlogPost } from "@/types/types"
 
 interface BlogCardProps {
   post: BlogPost
@@ -63,7 +63,7 @@ export default function BlogCard({ post, index = 0, variant = "default", classNa
                 <div className="h-8 w-8 overflow-hidden rounded-full">
                   <Image
                     src={post.author.avatar || "/placeholder.svg"}
-                    alt={post.author.name}
+                    alt={post.author.name || "author name"}
                     width={32}
                     height={32}
                     className="h-full w-full object-cover"
@@ -196,7 +196,7 @@ export default function BlogCard({ post, index = 0, variant = "default", classNa
             <div className="h-6 w-6 overflow-hidden rounded-full">
               <Image
                 src={post.author.avatar || "/placeholder.svg"}
-                alt={post.author.name}
+                alt={post.author.name || "author name"}
                 width={24}
                 height={24}
                 className="h-full w-full object-cover"

@@ -13,6 +13,7 @@ import CallToAction from "@/components/home/call-to-action"
 import StickyQuickAccessTools from "@/components/home/sticky-quick-access-rools"
 import Footer from "@/components/footer"
 import Navbar from "@/components/navbar"
+import { getFeaturedBlogPosts, getFeaturedTools, getPopularCategories } from "./actions/data-fetching"
 
 export const metadata: Metadata = constructMetadata({
   title: "Home",
@@ -20,23 +21,29 @@ export const metadata: Metadata = constructMetadata({
   keywords: ["affiliate marketing", "marketing tools", "tool comparison", "best tools"],
 })
 
-export default function HomePage() {
+export default async function HomePage() {
+  const [featuredTools, categories, blogPosts] = await Promise.all([
+    getFeaturedTools(),
+    getPopularCategories(),
+    getFeaturedBlogPosts(),
+  ])
+
   return (
     <div className="min-h-screen bg-black">
       <Navbar />
       <Hero />
-      <FeaturedTools />
+      <FeaturedTools tools={featuredTools} />
       <StickyQuickAccessTools />
       <QuickAccessTools />
       <div id="categories">
-        <PopularCategories />
+        <PopularCategories categories={categories} />
       </div>
       <CompareTools />
       <TrackPerformance />
       <div id="how-it-works">
         <HowItWorks />
       </div>
-      <BlogPreview />
+      <BlogPreview posts={blogPosts} />
       <Testimonials />
       <CallToAction />
       <Footer />

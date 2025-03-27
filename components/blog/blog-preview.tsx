@@ -4,9 +4,16 @@ import { ArrowRight } from "lucide-react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import BlogSlider from "@/components/blog/blog-slider"
-import { featuredPosts } from "@/data/blog-data"
+import { BlogPost } from "@/types/types"
 
-export default function BlogPreview() {
+
+interface BlogPreviewProps {
+  posts: BlogPost[]
+}
+
+export default function BlogPreview({ posts }: BlogPreviewProps) {
+
+  // Transform data for BlogCard component
   return (
     <section className="py-16">
       <div className="container mx-auto px-4">
@@ -23,7 +30,7 @@ export default function BlogPreview() {
           </Link>
         </div>
 
-        <BlogSlider title="" posts={featuredPosts} />
+        <BlogSlider title="" posts={posts} />
 
         <div className="mt-10 flex justify-center">
           <Link href="/blog">
