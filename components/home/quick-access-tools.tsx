@@ -45,7 +45,7 @@ export default function QuickAccessTools() {
           </p>
         </div>
 
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-6 grid-cols-2 sm:grid-cols-2 lg:grid-cols-4">
           {quickAccessTools.map((tool) => (
             <Link key={tool.id} href={tool.href} className="block">
               <Card className="group relative overflow-hidden rounded-xl border border-white/10 bg-white/5 transition-all duration-300 hover:border-purple-500/50 hover:bg-white/10">
