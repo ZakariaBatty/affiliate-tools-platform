@@ -81,6 +81,7 @@ model Tool {
   companyId   String?
   featured    Boolean  @default(false)
   popular     Boolean  @default(false)
+  rating      Float?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -160,7 +161,9 @@ model Blog {
   content     String   @db.Text
   imageUrl    String?
   published   Boolean  @default(false)
+  featured    Boolean @default(false)
   authorId    String?
+  readingTime Int    @default(7)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 

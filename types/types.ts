@@ -20,6 +20,7 @@ export interface Tool {
    companyId?: string;
    featured: boolean;
    popular: boolean;
+   rating?: number;
    createdAt: string;
    updatedAt: string;
    categories: CategoryTool[];
