@@ -166,7 +166,7 @@ export default function Navbar() {
 
         {/* Mobile Menu Button */}
         <button
-          className="md:hidden text-white"
+          className="md:hidden text-white relative z-50"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
           aria-expanded={mobileMenuOpen}
@@ -178,11 +178,11 @@ export default function Navbar() {
       {/* Mobile Menu */}
       <div
         className={cn(
-          "md:hidden fixed inset-0 z-50 bg-black p-6 pt-24 transition-transform duration-300 ease-in-out",
+          "md:hidden fixed inset-0 z-40 bg-black p-6 pt-24 transition-transform duration-300 ease-in-out",
           mobileMenuOpen ? "translate-x-0" : "translate-x-full",
         )}
       >
-        <nav className="flex flex-col gap-6">
+        <nav className="flex flex-col gap-6 bg-black  p-8">
           <Link
             href="/"
             className={cn("text-lg transition-colors", isActive("/") ? "text-white" : "text-white/70 hover:text-white")}

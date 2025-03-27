@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input"
 import { Lock, Mail } from "lucide-react"
 import { loginSchema } from "@/lib/validation"
 import { OAuthButtons } from "./oauth-buttons"
+import { AlertAuth } from "../alert/alert-destructive"
 
 type LoginFormProps = {
   isLoading: boolean
@@ -17,10 +18,12 @@ type LoginFormProps = {
   redirectUrl: string
   onSuccess?: () => void
   onOpenChange: (open: boolean) => void
-  router: any
+  router: any,
+  error: string,
+  setError: React.Dispatch<React.SetStateAction<string>>
 }
 
-export function LoginForm({ isLoading, setIsLoading, redirectUrl, onSuccess, onOpenChange, router }: LoginFormProps) {
+export function LoginForm({ isLoading, setIsLoading, redirectUrl, onSuccess, onOpenChange, router, error, setError }: LoginFormProps) {
   const loginForm = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -40,42 +43,44 @@ export function LoginForm({ isLoading, setIsLoading, redirectUrl, onSuccess, onO
         redirect: false,
       })
 
+      console.log(result)
+
       if (result?.error) {
         // Handle specific error types from NextAuth
         switch (result.error) {
           case "CredentialsSignin":
-            toast.error("Invalid email or password")
+            setError("Invalid email or password")
             break
           case "EmailSignInError":
-            toast.error("Email sign-in failed. Please check your email address.")
+            setError("Email sign-in failed. Please check your email address.")
             break
           case "AccessDenied":
-            toast.error("Access denied. You don't have permission to sign in.")
+            setError("Access denied. You don't have permission to sign in.")
             break
           case "OAuthSignin":
           case "OAuthCallback":
           case "OAuthCreateAccount":
           case "OAuthAccountNotLinked":
-            toast.error("There was a problem with the OAuth sign-in. Please try again.")
+            setError("There was a problem with the OAuth sign-in. Please try again.")
             break
           case "SessionRequired":
-            toast.error("You must be signed in to access this page.")
+            setError("You must be signed in to access this page.")
             break
           default:
             // Check if the error message contains specific information
             if (result.error.includes("user") && result.error.includes("not found")) {
-              toast.error("User not found. Please check your email or register a new account.")
+              setError("User not found. Please check your email or register a new account.")
             } else if (result.error.includes("password") && result.error.includes("incorrect")) {
-              toast.error("Incorrect password. Please try again.")
+              setError("Incorrect password or email. Please try again.")
             } else {
-              toast.error(`Authentication failed: ${result.error}`)
+              setError(`Authentication failed: ${result.error}`)
             }
         }
         return
       }
 
       if (!result?.ok) {
-        toast.error("Sign-in failed. Please try again.")
+        setError("Sign-in failed. Please try again.")
         return
       }
 
@@ -94,11 +99,11 @@ export function LoginForm({ isLoading, setIsLoading, redirectUrl, onSuccess, onO
 
       // Handle network errors or unexpected exceptions
       if (error.message?.includes("fetch")) {
-        toast.error("Network error. Please check your internet connection.")
+        setError("Network error. Please check your internet connection.")
       } else if (error.message?.includes("timeout")) {
-        toast.error("Request timed out. Please try again.")
+        setError("Request timed out. Please try again.")
       } else {
-        toast.error("Something went wrong. Please try again later.")
+        setError("Something went wrong. Please try again later.")
       }
     } finally {
       setIsLoading(false)
@@ -113,13 +118,16 @@ export function LoginForm({ isLoading, setIsLoading, redirectUrl, onSuccess, onO
       await signIn(provider, { callbackUrl: redirectUrl })
     } catch (error) {
       console.error(`${provider} sign in error:`, error)
-      toast.error("Something went wrong. Please try again.")
+      setError("Something went wrong. Please try again.")
       setIsLoading(false)
     }
   }
 
   return (
     <div className="space-y-4 py-2 pb-4">
+      {error && (
+        <AlertAuth message={error} success={false} />
+      )}
       <div className="space-y-2">
         <Form {...loginForm}>
           <form onSubmit={loginForm.handleSubmit(onLoginSubmit)} className="space-y-4">

@@ -1,17 +1,21 @@
-#!/bin/bash
+#!/bin/sh
 
-# Wait for database to be ready
+set -e
+
 echo "Waiting for database to be ready..."
-npx wait-on tcp:postgres:5432 -t 60000
+# Wait for the database to be ready
+npx wait-on -t 60000 tcp:postgres:5432
 
-# Run migrations
 echo "Running database migrations..."
+# Run migrations
 npx prisma migrate deploy
 
-# Run seed if specified
+# Seed the database if SEED_DATABASE is true
 if [ "$SEED_DATABASE" = "true" ]; then
   echo "Seeding database..."
   npx prisma db seed
+else
+  echo "Skipping database seed"
 fi
 
 echo "Database setup complete!"
