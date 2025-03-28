@@ -4,6 +4,7 @@ import Hero from "@/components/home/hero"
 import FeaturedTools from "@/components/home/featured-tools"
 import QuickAccessTools from "@/components/home/quick-access-tools"
 import CompareTools from "@/components/home/compare-tools"
+import PopularCategories from "@/components/home/popular-categories"
 import TrackPerformance from "@/components/home/track-performance"
 import HowItWorks from "@/components/home/how-it-works"
 import BlogPreview from "@/components/blog/blog-preview"
@@ -13,7 +14,6 @@ import StickyQuickAccessTools from "@/components/home/sticky-quick-access-rools"
 import Footer from "@/components/footer"
 import Navbar from "@/components/navbar"
 import { getFeaturedBlogPosts, getFeaturedTools, getPopularCategories } from "./actions/data-fetching"
-import PopularCategories from "@/components/home/popular-categories"
 
 export const metadata: Metadata = constructMetadata({
   title: "Home",
