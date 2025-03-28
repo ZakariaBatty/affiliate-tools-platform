@@ -50,6 +50,11 @@ export async function getPopularCategories() {
       },
       take: 8,
    });
+
+   if (!categories || categories.length === 0) {
+      console.warn('No categories found!');
+      return [];
+   }
    return categories;
 }
 
@@ -63,36 +68,54 @@ export async function getFeaturedBlogPosts() {
          author: true,
          categories: {
             include: {
-               category: true,
+               category: true, // Ensure this relation exists
             },
          },
          tags: {
             include: {
-               tag: true,
+               tag: true, // Ensure this relation exists
             },
          },
       },
       take: 6,
    });
 
+   if (!posts || posts.length === 0) {
+      console.warn('No blog posts found!');
+      return [];
+   }
+
+   // Prevent errors if categories or tags are missing
    return posts.map((post) => ({
       id: post.id,
       title: post.title,
       slug: post.slug,
       excerpt: post.excerpt || 'Read more about this topic on our blog.',
       image: post.imageUrl || '/placeholder.svg?height=400&width=600',
-      date: new Date(post.createdAt).toLocaleDateString('en-US', {
-         year: 'numeric',
-         month: 'long',
-         day: 'numeric',
-      }),
+      date: post.createdAt
+         ? new Date(post.createdAt).toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+           })
+         : 'Unknown date',
       readTime: `${post.readingTime || 7} min read`,
-      category: post.categories[0]?.category.name || 'General',
-      author: {
-         name: post.author?.name,
-         avatar: post.author?.image || '/placeholder.svg?height=100&width=100',
-         role: 'Author',
-      },
-      tags: post.tags.map((tag) => tag.tag.name),
+      category:
+         post.categories.length > 0
+            ? post.categories[0]?.category.name
+            : 'General',
+      author: post.author
+         ? {
+              name: post.author?.name || 'Unknown',
+              avatar:
+                 post.author?.image || '/placeholder.svg?height=100&width=100',
+              role: 'Author',
+           }
+         : {
+              name: 'Unknown',
+              avatar: '/placeholder.svg?height=100&width=100',
+              role: 'Author',
+           },
+      tags: post.tags.length > 0 ? post.tags.map((tag) => tag.tag.name) : [],
    }));
 }
