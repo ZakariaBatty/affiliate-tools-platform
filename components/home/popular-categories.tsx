@@ -7,71 +7,17 @@ import { Brain, BarChart3, Megaphone, Clock, Palette, Code, ShieldCheck, Users, 
 import Link from "next/link"
 
 const categoryConfig = [
-  {
-    slug: "ai-tools",
-    icon: Brain,
-    color: "from-purple-500 to-indigo-600",
-  },
-  {
-    slug: "analytics",
-    description: "Track and analyze your business performance",
-    icon: BarChart3,
-    color: "from-blue-500 to-cyan-600",
-  },
-  {
-    slug: "marketing",
-    description: "Grow your audience and increase conversions",
-    icon: Megaphone,
-    color: "from-green-500 to-emerald-600",
-  },
-  {
-    slug: "productivity",
-    description: "Streamline workflows and save time",
-    icon: Clock,
-    color: "from-orange-500 to-amber-600",
-  },
-  {
-    slug: "design",
-    description: "Create stunning visuals and user experiences",
-    icon: Palette,
-    color: "from-pink-500 to-rose-600",
-  },
-  {
-    slug: "development",
-    description: "Build and deploy software faster",
-    icon: Code,
-    color: "from-violet-500 to-purple-600",
-  },
-  {
-    slug: "security",
-    description: "Protect your business and customer data",
-    icon: ShieldCheck,
-    color: "from-red-500 to-rose-600",
-  },
-  {
-    slug: "hr-team",
-    description: "Manage your team and improve collaboration",
-    icon: Users,
-    color: "from-teal-500 to-green-600",
-  },
-  {
-    slug: "social-media",
-    description: "Manage and grow your online presence",
-    icon: Megaphone,
-    color: "from-blue-500 to-purple-600",
-  },
-  {
-    slug: "seo",
-    description: "Optimize your content for search engines",
-    icon: BarChart3,
-    color: "from-green-500 to-blue-600",
-  },
-  {
-    slug: "email-marketing",
-    description: "Engage customers with targeted email campaigns",
-    icon: Megaphone,
-    color: "from-yellow-500 to-orange-600",
-  },
+  { slug: "ai-tools", icon: Brain, color: "from-purple-500 to-indigo-600" },
+  { slug: "analytics", icon: BarChart3, color: "from-blue-500 to-cyan-600" },
+  { slug: "marketing", icon: Megaphone, color: "from-green-500 to-emerald-600" },
+  { slug: "productivity", icon: Clock, color: "from-orange-500 to-amber-600" },
+  { slug: "design", icon: Palette, color: "from-pink-500 to-rose-600" },
+  { slug: "development", icon: Code, color: "from-violet-500 to-purple-600" },
+  { slug: "security", icon: ShieldCheck, color: "from-red-500 to-rose-600" },
+  { slug: "hr-team", icon: Users, color: "from-teal-500 to-green-600" },
+  { slug: "social-media", icon: Megaphone, color: "from-blue-400 to-indigo-500" },
+  { slug: "seo", icon: BarChart3, color: "from-yellow-500 to-orange-600" },
+  { slug: "email-marketing", icon: Megaphone, color: "from-red-500 to-purple-500" },
 ];
 
 
