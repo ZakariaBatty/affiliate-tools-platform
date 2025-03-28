@@ -3,8 +3,8 @@ import CredentialsProvider from 'next-auth/providers/credentials';
 import GoogleProvider from 'next-auth/providers/google';
 import GitHubProvider from 'next-auth/providers/github';
 
-import prisma from '@/lib/prisma';
 import { compare } from 'bcrypt';
+import { prisma } from '@/lib/prisma';
 
 declare module 'next-auth' {
    interface Session {
