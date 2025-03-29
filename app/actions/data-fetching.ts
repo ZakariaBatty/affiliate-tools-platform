@@ -119,3 +119,161 @@ export async function getFeaturedBlogPosts() {
       tags: post.tags.length > 0 ? post.tags.map((tag) => tag.tag.name) : [],
    }));
 }
+
+// Tools page data
+export async function getAllTools() {
+   const session = await getServerSession(authOptions);
+
+   const tools = await prisma.tool.findMany({
+      include: {
+         categories: {
+            include: {
+               category: true,
+            },
+         },
+         company: true,
+         _count: {
+            select: {
+               views: true,
+               savedBy: true,
+            },
+         },
+         savedBy: session?.user?.id
+            ? {
+                 where: {
+                    userId: session.user.id,
+                 },
+              }
+            : false,
+      },
+   });
+
+   if (!tools || tools.length === 0) {
+      console.warn('No tools found!');
+      return [];
+   }
+
+   return tools.map((tool) => ({
+      ...tool,
+      savedByCurrentUser: tool.savedBy && tool.savedBy.length > 0,
+   }));
+}
+
+export async function getAllCategories() {
+   const categories = await prisma.category.findMany({
+      include: {
+         _count: {
+            select: {
+               tools: true,
+            },
+         },
+      },
+   });
+
+   if (!categories || categories.length === 0) {
+      console.warn('No categories found!');
+      return [];
+   }
+
+   return categories;
+}
+
+// Tool detail page data
+export async function getToolDetail(slug: string) {
+   const session = await getServerSession(authOptions);
+
+   const tool = await prisma.tool.findUnique({
+      where: { slug },
+      include: {
+         categories: {
+            include: {
+               category: true,
+            },
+         },
+         company: true,
+         // plans: true,
+         _count: {
+            select: {
+               views: true,
+               savedBy: true,
+               // reviews: true,
+            },
+         },
+         savedBy: session?.user?.id
+            ? {
+                 where: {
+                    userId: session.user.id,
+                 },
+              }
+            : false,
+         // reviews: {
+         //    include: {
+         //       user: true,
+         //    },
+         //    take: 5,
+         //    orderBy: {
+         //       createdAt: 'desc',
+         //    },
+         // },
+      },
+   });
+
+   if (!tool) {
+      return null;
+   }
+
+   // Record view if user is logged in
+   if (session?.user?.id) {
+      await prisma.toolView.create({
+         data: {
+            userId: session.user.id,
+            toolId: tool.id,
+         },
+      });
+   }
+
+   // Get related tools
+   const categoryIds = tool.categories.map((c) => c.categoryId);
+   const relatedTools = await prisma.tool.findMany({
+      where: {
+         id: { not: tool.id },
+         categories: {
+            some: {
+               categoryId: { in: categoryIds },
+            },
+         },
+      },
+      include: {
+         categories: {
+            include: {
+               category: true,
+            },
+         },
+         _count: {
+            select: {
+               savedBy: true,
+            },
+         },
+         savedBy: session?.user?.id
+            ? {
+                 where: {
+                    userId: session.user.id,
+                 },
+              }
+            : false,
+      },
+      take: 3,
+   });
+
+   return {
+      tool: {
+         ...tool,
+         savedByCurrentUser: tool.savedBy && tool.savedBy.length > 0,
+      },
+      relatedTools: relatedTools.map((relatedTool) => ({
+         ...relatedTool,
+         savedByCurrentUser:
+            relatedTool.savedBy && relatedTool.savedBy.length > 0,
+      })),
+   };
+}
