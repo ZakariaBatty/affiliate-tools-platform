@@ -18,7 +18,8 @@ model User {
   emailVerified DateTime?
   password      String?
   image         String?
-  role          Role      @default(USER)
+  role          Role    @default(USER) // USER, ADMIN, COMPAny
+  status        Status    @default(ACTIVE) // PENDING, DECLINED, ACTIVE
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
@@ -26,15 +27,19 @@ model User {
   accounts      Account[]
   sessions      Session[]
   savedTools    SavedTool[]
-  toolViews     ToolView[]
-  blogViews     BlogView[]
-  authoredBlogs Blog[] @relation("UserAuthoredBlogs")
-  companies     Company[]
-  comparisons   Comparison[]
-  payments      Payment[]
+  toolRatings   ToolRating[]
+  toolComments  ToolComment[]
+  blogComments  BlogComment[]
+  company       Company?
+  activities    Activity[]
+  ToolView ToolView[]
+  blogView BlogView[]
   passwordReset PasswordReset?
+  comparisons   Comparison[]
+  subscriptions      Subscriptions[]
 }
 
+// OAuth Account model
 model Account {
   id                String  @id @default(cuid())
   userId            String
@@ -54,6 +59,7 @@ model Account {
   @@unique([provider, providerAccountId])
 }
 
+// Session model
 model Session {
   id           String   @id @default(cuid())
   sessionToken String   @unique
@@ -62,6 +68,7 @@ model Session {
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
+// VerificationToken model
 model VerificationToken {
   identifier String
   token      String   @unique
@@ -70,44 +77,114 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
-// Tool related models
+// Password Reset model
+model PasswordReset {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  token     String   @unique
+  expires   DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// Company model
+model Company {
+  id          String   @id @default(cuid())
+  name        String
+  description String?  @db.Text
+  website     String?
+  logo        String?
+  userId      String   @unique
+  verified    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tools       Tool[]
+  subscriptions    Subscriptions[]
+  team        TeamMember[]
+}
+
+// Team Member model
+model TeamMember {
+  id        String   @id @default(cuid())
+  email     String
+  role      String
+  companyId String
+  status    String    @default("PENDING") // PENDING, DECLINED, ACTIVE
+  inviteToken String? @unique
+  accepted  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relations
+  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@unique([email, companyId])
+}
+
+// Category model
+model Category {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  slug        String   @unique
+  description String?  @db.Text
+  icon        String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  tools       ToolCategory[]
+  blogs       BlogCategory[]
+}
+
+// Tag model
+model Tag {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  slug      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  tools     ToolTag[]
+  blogs     BlogTag[]
+}
+
+// Tool model
 model Tool {
   id          String   @id @default(cuid())
   name        String
   slug        String   @unique
   description String   @db.Text
+  longDescription String @db.Text
+  website     String
+  logo        String?
   imageUrl    String?
-  websiteUrl  String?
   companyId   String?
+  verified    Boolean  @default(false)
   featured    Boolean  @default(false)
-  popular     Boolean  @default(false)
-  rating      Float?
+  pricing Json?
+  features    Json?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   // Relations
-  company     Company?       @relation(fields: [companyId], references: [id])
-  categories  CategoryTool[]
+  company     Company?     @relation(fields: [companyId], references: [id], onDelete: SetNull)
+  categories  ToolCategory[]
+  tags        ToolTag[]
   savedBy     SavedTool[]
+  ratings     ToolRating[]
+  comments    ToolComment[]
   views       ToolView[]
-  comparisons Comparison[]   @relation("ComparisonTools")
+  activities  Activity[]
+  comparisons ComparisonTool[]
 }
 
-model Category {
-  id          String   @id @default(cuid())
-  name        String
-  slug        String   @unique
-  description String?  @db.Text
-  imageUrl    String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  // Relations
-  tools       CategoryTool[]
-  blogs       BlogCategory[]
-}
-
-model CategoryTool {
+// Tool Category relation
+model ToolCategory {
   toolId     String
   categoryId String
   createdAt  DateTime @default(now())
@@ -119,6 +196,20 @@ model CategoryTool {
   @@id([toolId, categoryId])
 }
 
+// Tool Tag relation
+model ToolTag {
+  toolId    String
+  tagId     String
+  createdAt DateTime @default(now())
+
+  // Relations
+  tool      Tool     @relation(fields: [toolId], references: [id], onDelete: Cascade)
+  tag       Tag      @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([toolId, tagId])
+}
+
+// Saved Tool model
 model SavedTool {
   userId    String
   toolId    String
@@ -129,6 +220,192 @@ model SavedTool {
   tool      Tool     @relation(fields: [toolId], references: [id], onDelete: Cascade)
 
   @@id([userId, toolId])
+}
+
+// Tool Rating model
+model ToolRating {
+  id        String   @id @default(cuid())
+  rating    Int
+  userId    String
+  toolId    String
+  review    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tool      Tool     @relation(fields: [toolId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, toolId])
+}
+
+// Tool Comment model
+model ToolComment {
+  id        String   @id @default(cuid())
+  content   String   @db.Text
+  userId    String
+  toolId    String
+  parentId  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tool      Tool     @relation(fields: [toolId], references: [id], onDelete: Cascade)
+  parent    ToolComment? @relation("CommentReplies", fields: [parentId], references: [id], onDelete: SetNull)
+  replies   ToolComment[] @relation("CommentReplies")
+}
+
+// Blog model
+model Blog {
+  id        String   @id @default(cuid())
+  title     String
+  slug      String   @unique
+  content   String   @db.Text
+  excerpt   String?  @db.Text
+  coverImage     String?
+  author  Json?
+  published Boolean  @default(false)
+  featured Boolean   @default(false)
+  readingTime Int   @default(12)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  categories BlogCategory[]
+  tags       BlogTag[]
+  comments   BlogComment[]
+  activities Activity[]
+  views      BlogView[]
+
+}
+
+// Blog Category relation
+model BlogCategory {
+  blogId     String
+  categoryId String
+  createdAt  DateTime @default(now())
+
+  // Relations
+  blog       Blog     @relation(fields: [blogId], references: [id], onDelete: Cascade)
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@id([blogId, categoryId])
+}
+
+// Blog Tag relation
+model BlogTag {
+  blogId    String
+  tagId     String
+  createdAt DateTime @default(now())
+
+  // Relations
+  blog      Blog     @relation(fields: [blogId], references: [id], onDelete: Cascade)
+  tag       Tag      @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([blogId, tagId])
+}
+
+// Blog Comment model
+model BlogComment {
+  id        String   @id @default(cuid())
+  content   String   @db.Text
+  userId    String
+  blogId    String
+  parentId  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  blog      Blog     @relation(fields: [blogId], references: [id], onDelete: Cascade)
+  parent    BlogComment? @relation("BlogCommentReplies", fields: [parentId], references: [id], onDelete: SetNull)
+  replies   BlogComment[] @relation("BlogCommentReplies")
+}
+
+// Comparison model
+model Comparison {
+  id          String   @id @default(cuid())
+  title       String?
+  userId      String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tools       ComparisonTool[]
+  activities  Activity[]
+}
+
+// Comparison Tool relation
+model ComparisonTool {
+  comparisonId String
+  toolId       String
+  notes        String?
+  createdAt    DateTime @default(now())
+
+  // Relations
+  comparison   Comparison @relation(fields: [comparisonId], references: [id], onDelete: Cascade)
+  tool         Tool       @relation(fields: [toolId], references: [id], onDelete: Cascade)
+
+  @@id([comparisonId, toolId])
+}
+
+// Activity model
+model Activity {
+  id           String    @id @default(cuid())
+  userId       String
+  action       String
+  toolId       String?
+  blogId       String?
+  comparisonId String?
+  metadata     Json?
+  createdAt    DateTime  @default(now())
+
+  // Relations
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tool         Tool?     @relation(fields: [toolId], references: [id], onDelete: SetNull)
+  blog         Blog?     @relation(fields: [blogId], references: [id], onDelete: SetNull)
+  comparison   Comparison? @relation(fields: [comparisonId], references: [id], onDelete: SetNull)
+}
+
+// Plan model
+model Plan {
+  id          String   @id @default(cuid())
+  name        String
+  description String   @db.Text
+  price       Float
+  interval    String   // monthly, yearly
+  features    Json
+  active      Boolean @default(true)
+  isPopular   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  subscriptions    Subscriptions[]
+}
+
+// Subscriptions model
+model Subscriptions {
+  id            String   @id @default(cuid())
+  amount        Float
+  currency      String   @default("USD")
+  status        String   // pending, completed, failed, refunded
+  paymentMethod String?
+  paymentId     String?  @unique
+  userId        String
+  planId        String
+  companyId     String?
+  startDate     DateTime
+  endDate       DateTime
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan          Plan     @relation(fields: [planId], references: [id], onDelete: Restrict)
+  company       Company? @relation(fields: [companyId], references: [id], onDelete: SetNull)
 }
 
 model ToolView {
@@ -142,72 +419,6 @@ model ToolView {
   tool      Tool     @relation(fields: [toolId], references: [id], onDelete: Cascade)
 }
 
-model Comparison {
-  id        String   @id @default(cuid())
-  userId    String?
-  createdAt DateTime @default(now())
-
-  // Relations
-  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
-  tools     Tool[]   @relation("ComparisonTools")
-}
-
-// Blog related models
-model Blog {
-  id          String   @id @default(cuid())
-  title       String
-  slug        String   @unique
-  excerpt     String?  @db.Text
-  content     String   @db.Text
-  imageUrl    String?
-  published   Boolean  @default(false)
-  featured    Boolean @default(false)
-  authorId    String?
-  readingTime Int    @default(7)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  author      User?          @relation("UserAuthoredBlogs", fields: [authorId], references: [id], onDelete: SetNull)
-  categories  BlogCategory[]
-  tags        BlogTag[]
-  views       BlogView[]
-}
-
-model BlogCategory {
-  blogId     String
-  categoryId String
-  createdAt  DateTime @default(now())
-
-  // Relations
-  blog       Blog     @relation(fields: [blogId], references: [id], onDelete: Cascade)
-  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-
-  @@id([blogId, categoryId])
-}
-
-model Tag {
-  id        String    @id @default(cuid())
-  name      String
-  slug      String    @unique
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-
-  // Relations
-  blogs     BlogTag[]
-}
-
-model BlogTag {
-  blogId    String
-  tagId     String
-  createdAt DateTime @default(now())
-
-  // Relations
-  blog      Blog     @relation(fields: [blogId], references: [id], onDelete: Cascade)
-  tag       Tag      @relation(fields: [tagId], references: [id], onDelete: Cascade)
-
-  @@id([blogId, tagId])
-}
-
 model BlogView {
   id        String   @id @default(cuid())
   userId    String?
@@ -219,69 +430,15 @@ model BlogView {
   blog      Blog     @relation(fields: [blogId], references: [id], onDelete: Cascade)
 }
 
-// Company related models
-model Company {
-  id          String   @id @default(cuid())
-  name        String
-  slug        String   @unique
-  description String?  @db.Text
-  logoUrl     String?
-  websiteUrl  String?
-  ownerId     String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  // Relations
-  owner       User     @relation(fields: [ownerId], references: [id])
-  tools       Tool[]
-  plans       Plan[]
-  payments    Payment[]
-}
-
-model Plan {
-  id          String   @id @default(cuid())
-  name        String
-  description String?  @db.Text
-  price       Float
-  interval    String   // monthly, yearly
-  features    String[] // Array of features
-  companyId   String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  // Relations
-  company     Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  payments    Payment[]
-}
-
-model Payment {
-  id          String   @id @default(cuid())
-  amount      Float
-  status      String   // pending, completed, failed
-  userId      String
-  companyId   String
-  planId      String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  // Relations
-  user        User     @relation(fields: [userId], references: [id])
-  company     Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  plan        Plan     @relation(fields: [planId], references: [id], onDelete: Cascade)
-}
-
 enum Role {
   USER
   COMPANY
   ADMIN
 }
 
-model PasswordReset {
-  id        String   @id @default(cuid())
-  userId    String   @unique
-  token     String   @unique
-  expires   DateTime
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+// PENDING, DECLINED, ACTIVE
+enum Status {
+  PENDING
+  DECLINED
+  ACTIVE
 }
