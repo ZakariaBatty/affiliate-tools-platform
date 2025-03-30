@@ -18,8 +18,8 @@ model User {
   emailVerified DateTime?
   password      String?
   image         String?
-  role          String    @default("user") // user, admin, company
-  status        String    @default("PENDING") // PENDING, DECLINED, ACTIVE
+  role          Role    @default(USER) // USER, ADMIN, COMPAny
+  status        Status    @default(ACTIVE) // PENDING, DECLINED, ACTIVE
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
@@ -32,7 +32,8 @@ model User {
   blogComments  BlogComment[]
   company       Company?
   activities    Activity[]
-  views Views[]
+  views ToolView[]
+  views BlogView[]
   passwordReset PasswordReset?
   comparisons   Comparison[]
   payments      Payment[]
@@ -368,19 +369,6 @@ model Activity {
   comparison   Comparison? @relation(fields: [comparisonId], references: [id], onDelete: SetNull)
 }
 
-model Views {
-  id           String    @id @default(cuid())
-  userId       String
-  toolId       String?
-  blogId       String?
-  createdAt    DateTime  @default(now())
-
-  // Relations
-  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  tool         Tool?     @relation(fields: [toolId], references: [id], onDelete: SetNull)
-  blog         Blog?     @relation(fields: [blogId], references: [id], onDelete: SetNull)
-}
-
 // Plan model
 model Plan {
   id          String   @id @default(cuid())
@@ -420,3 +408,37 @@ model Payment {
   company       Company? @relation(fields: [companyId], references: [id], onDelete: SetNull)
 }
 
+model ToolView {
+  id        String   @id @default(cuid())
+  userId    String?
+  toolId    String
+  createdAt DateTime @default(now())
+
+  // Relations
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  tool      Tool     @relation(fields: [toolId], references: [id], onDelete: Cascade)
+}
+
+model BlogView {
+  id        String   @id @default(cuid())
+  userId    String?
+  blogId    String
+  createdAt DateTime @default(now())
+
+  // Relations
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  blog      Blog     @relation(fields: [blogId], references: [id], onDelete: Cascade)
+}
+
+enum Role {
+  USER
+  COMPANY
+  ADMIN
+}
+
+// PENDING, DECLINED, ACTIVE
+enum Status {
+  PENDING
+  DECLINED
+  ACTIVE
+}
