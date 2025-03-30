@@ -3,36 +3,28 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { motion } from "framer-motion"
-import { Brain, BarChart3, Megaphone, Clock, Palette, Code, ShieldCheck, Users, ArrowRight } from "lucide-react"
 import Link from "next/link"
+import { Brain, BarChart3, Megaphone, Clock, Palette, Code, ShieldCheck, Users, Video, Text, ArrowRight } from "lucide-react";
+
+import { GetPopularCategoriesResponse } from "@/types"
+
 
 const categoryConfig = [
-  { slug: "ai-tools", icon: Brain, color: "from-purple-500 to-indigo-600" },
-  { slug: "analytics", icon: BarChart3, color: "from-blue-500 to-cyan-600" },
-  { slug: "marketing", icon: Megaphone, color: "from-green-500 to-emerald-600" },
-  { slug: "productivity", icon: Clock, color: "from-orange-500 to-amber-600" },
-  { slug: "design", icon: Palette, color: "from-pink-500 to-rose-600" },
-  { slug: "development", icon: Code, color: "from-violet-500 to-purple-600" },
-  { slug: "security", icon: ShieldCheck, color: "from-red-500 to-rose-600" },
-  { slug: "hr-team", icon: Users, color: "from-teal-500 to-green-600" },
-  { slug: "social-media", icon: Megaphone, color: "from-blue-400 to-indigo-500" },
-  { slug: "seo", icon: BarChart3, color: "from-yellow-500 to-orange-600" },
-  { slug: "email-marketing", icon: Megaphone, color: "from-red-500 to-purple-500" },
+  { slug: "image-generation", icon: Palette, color: "from-pink-500 to-rose-600" },
+  { slug: "ai-chatbots", icon: Brain, color: "from-purple-500 to-indigo-600" },
+  { slug: "summarization", icon: Text, color: "from-blue-500 to-cyan-600" },
+  { slug: "data-analysis", icon: BarChart3, color: "from-blue-500 to-cyan-600" },
+  { slug: "speech-to-text", icon: Text, color: "from-teal-500 to-green-600" },
+  { slug: "content-writing", icon: Megaphone, color: "from-green-500 to-emerald-600" },
+  { slug: "text-to-speech", icon: Text, color: "from-orange-500 to-amber-600" },
+  { slug: "video-generation", icon: Video, color: "from-red-500 to-purple-500" },
 ];
 
 
-interface Category {
-  id: string
-  name: string
-  slug: string
-  description?: string | null
-  _count: {
-    tools: number
-  }
-}
+
 
 interface PopularCategoriesProps {
-  categories: Category[]
+  categories: GetPopularCategoriesResponse
 }
 
 export default function PopularCategories({ categories }: PopularCategoriesProps) {
@@ -74,11 +66,16 @@ export default function PopularCategories({ categories }: PopularCategoriesProps
                   <h3 className="mb-2 flex items-center text-xl font-bold text-white">
                     {category.name}
                     <span className="ml-2 rounded-full bg-white/10 px-2 py-0.5 text-xs text-white/70">
-                      {category._count.tools}
+                      {category._count?.tools}
                     </span>
                   </h3>
 
-                  <p className="mb-4 text-sm text-white/70">{category.description}</p>
+                  {category.description && (
+                    <p className="mb-4 text-sm text-white/70">
+                      {category.description.split(" ").slice(0, 6).join(" ")}
+                      {category.description.split(" ").length > 6 && " ..."}
+                    </p>
+                  )}
                   <Link href={`/tools/${category.slug}`} key={category.id}>
                     <Button variant="ghost" className="p-0 text-white hover:bg-transparent hover:text-purple-400">
                       <span>Explore</span>

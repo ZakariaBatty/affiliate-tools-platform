@@ -103,7 +103,7 @@ export async function getFeaturedBlogPosts(): Promise<GetFeaturedBlogPostsRespon
             },
          },
       },
-      take: 3,
+      take: 8,
    });
 
    return posts.map((post) => ({
