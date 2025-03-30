@@ -1,4 +1,4 @@
-import { Prisma, PrismaClient } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 import { faker } from '@faker-js/faker';
 import { hash } from 'bcrypt';
 
@@ -26,7 +26,7 @@ async function main() {
    const tools = await createTools(categories, tags, companies);
 
    // Create blog posts
-   const blogs = await createBlogs(users, categories, tags);
+   const blogs = await createBlogs(categories, tags);
 
    // Create ratings and comments
    await createRatingsAndComments(users, tools, blogs);
@@ -40,11 +40,14 @@ async function main() {
    // Create plans
    const plans = await createPlans();
 
-   // Create payments
-   await createPayments(users, companies, plans);
+   // Create subscriptions
+   await createSubscriptions(users, companies, plans);
 
    // Create activities
-   await createActivities(users, tools);
+   await createActivities(users, tools, blogs);
+
+   // Create views
+   await createViews(users, tools, blogs);
 
    console.log('✅ Seeding completed successfully!');
 }
@@ -54,7 +57,7 @@ async function cleanDatabase() {
 
    // Delete in reverse order of dependencies
    await prisma.activity.deleteMany();
-   await prisma.payment.deleteMany();
+   await prisma.subscriptions.deleteMany();
    await prisma.plan.deleteMany();
    await prisma.comparisonTool.deleteMany();
    await prisma.comparison.deleteMany();
@@ -62,6 +65,8 @@ async function cleanDatabase() {
    await prisma.toolComment.deleteMany();
    await prisma.toolRating.deleteMany();
    await prisma.blogComment.deleteMany();
+   await prisma.blogView.deleteMany();
+   await prisma.toolView.deleteMany();
    await prisma.blogTag.deleteMany();
    await prisma.blogCategory.deleteMany();
    await prisma.blog.deleteMany();
@@ -94,6 +99,7 @@ async function createUsers() {
          email: 'admin@example.com',
          password: adminPassword,
          role: 'ADMIN',
+         status: 'ACTIVE',
          emailVerified: new Date(),
          image: faker.image.avatar(),
       },
@@ -108,6 +114,7 @@ async function createUsers() {
             email: faker.internet.email().toLowerCase(),
             password: userPassword,
             role: 'USER',
+            status: 'ACTIVE',
             emailVerified: faker.helpers.arrayElement([new Date(), null]),
             image: faker.image.avatar(),
          },
@@ -123,6 +130,7 @@ async function createUsers() {
             email: faker.internet.email().toLowerCase(),
             password: userPassword,
             role: 'COMPANY',
+            status: 'ACTIVE',
             emailVerified: new Date(),
             image: faker.image.avatar(),
          },
@@ -292,6 +300,7 @@ async function createTools(
             longDescription: faker.lorem.paragraphs(3),
             website: faker.internet.url(),
             logo: faker.image.urlLoremFlickr({ category: 'technology' }),
+            imageUrl: faker.image.urlLoremFlickr({ category: 'technology' }),
             companyId: company?.id,
             verified: faker.datatype.boolean(),
             featured: faker.datatype.boolean(),
@@ -312,7 +321,6 @@ async function createTools(
             features: Array(faker.number.int({ min: 3, max: 8 }))
                .fill(null)
                .map(() => faker.lorem.sentence()),
-            views: faker.number.int({ min: 10, max: 10000 }),
             createdAt: faker.date.past(),
             updatedAt: faker.date.recent(),
          },
@@ -356,11 +364,7 @@ async function createTools(
    return tools;
 }
 
-async function createBlogs(
-   users: { id: string }[],
-   categories: { id: string }[],
-   tags: any
-) {
+async function createBlogs(categories: { id: string }[], tags: any) {
    console.log('📝 Creating blog posts...');
 
    const blogTitles = [
@@ -379,10 +383,7 @@ async function createBlogs(
       const title = blogTitles[i];
       const slug = title.toLowerCase().replace(/\s+/g, '-');
 
-      // Select random author
-      const author = faker.helpers.arrayElement(users) as { id: string };
-
-      // Create blog
+      // Create blog with author as JSON
       const blog = await prisma.blog.create({
          data: {
             title,
@@ -390,10 +391,14 @@ async function createBlogs(
             excerpt: faker.lorem.paragraph(),
             content: faker.lorem.paragraphs(10),
             coverImage: faker.image.urlLoremFlickr({ category: 'technology' }),
-            authorId: author.id,
+            author: {
+               name: faker.person.fullName(),
+               image: faker.image.avatar(),
+               bio: faker.person.bio(),
+            },
             published: true,
             featured: faker.datatype.boolean(),
-            views: faker.number.int({ min: 10, max: 5000 }),
+            readingTime: faker.number.int({ min: 3, max: 15 }),
             createdAt: faker.date.past(),
             updatedAt: faker.date.recent(),
          },
@@ -612,7 +617,6 @@ async function createPlans() {
    const planData = [
       {
          name: 'Free',
-         slug: 'free',
          description: 'Basic access to the platform',
          features: [
             'Limited tool listings',
@@ -620,11 +624,11 @@ async function createPlans() {
             'Community support',
          ],
          price: 0,
-         interval: 'MONTH',
+         interval: 'monthly',
+         isPopular: false,
       },
       {
          name: 'Pro',
-         slug: 'pro',
          description: 'Enhanced features for professionals',
          features: [
             'Unlimited tool listings',
@@ -633,11 +637,11 @@ async function createPlans() {
             'Featured placement',
          ],
          price: 29.99,
-         interval: 'MONTH',
+         interval: 'monthly',
+         isPopular: true,
       },
       {
          name: 'Business',
-         slug: 'business',
          description: 'Complete solution for businesses',
          features: [
             'Everything in Pro',
@@ -646,11 +650,11 @@ async function createPlans() {
             'Dedicated account manager',
          ],
          price: 99.99,
-         interval: 'MONTH',
+         interval: 'monthly',
+         isPopular: false,
       },
       {
          name: 'Pro Annual',
-         slug: 'pro-annual',
          description: 'Enhanced features for professionals (annual billing)',
          features: [
             'Unlimited tool listings',
@@ -659,11 +663,11 @@ async function createPlans() {
             'Featured placement',
          ],
          price: 299.99,
-         interval: 'YEAR',
+         interval: 'yearly',
+         isPopular: false,
       },
       {
          name: 'Business Annual',
-         slug: 'business-annual',
          description: 'Complete solution for businesses (annual billing)',
          features: [
             'Everything in Pro',
@@ -672,7 +676,8 @@ async function createPlans() {
             'Dedicated account manager',
          ],
          price: 999.99,
-         interval: 'YEAR',
+         interval: 'yearly',
+         isPopular: false,
       },
    ];
 
@@ -686,6 +691,7 @@ async function createPlans() {
             price: plan.price,
             interval: plan.interval,
             active: true,
+            isPopular: plan.isPopular,
          },
       });
       plans.push(createdPlan);
@@ -695,10 +701,10 @@ async function createPlans() {
    return plans;
 }
 
-async function createPayments(users: any, companies: any, plans: any) {
-   console.log('💳 Creating payment records...');
+async function createSubscriptions(users: any, companies: any, plans: any) {
+   console.log('💳 Creating subscription records...');
 
-   // Create payments for companies
+   // Create subscriptions for companies
    for (const company of companies) {
       // Select a random plan (excluding free)
       const paidPlans = plans.filter((plan: any) => plan.price > 0);
@@ -707,43 +713,89 @@ async function createPayments(users: any, companies: any, plans: any) {
          price: any;
       };
 
-      // Create 1-3 payments
-      const numPayments = faker.number.int({ min: 1, max: 3 });
+      // Create 1-3 subscriptions
+      const numSubscriptions = faker.number.int({ min: 1, max: 3 });
 
-      for (let i = 0; i < numPayments; i++) {
-         const paymentDate = faker.date.recent({ days: 90 }); // Within last 90 days
+      for (let i = 0; i < numSubscriptions; i++) {
+         const startDate = faker.date.past({ years: 1 });
+         const endDate = faker.date.future({ years: 1, refDate: startDate });
 
-         await prisma.payment.create({
+         await prisma.subscriptions.create({
             data: {
                userId: company.userId,
                planId: plan.id,
+               companyId: company.id,
                amount: plan.price,
                currency: 'USD',
                status: faker.helpers.arrayElement([
-                  'COMPLETED',
-                  'COMPLETED',
-                  'COMPLETED',
-                  'PENDING',
-                  'FAILED',
+                  'completed',
+                  'completed',
+                  'completed',
+                  'pending',
+                  'failed',
                ]),
                paymentMethod: faker.helpers.arrayElement([
-                  'CREDIT_CARD',
-                  'PAYPAL',
-                  'BANK_TRANSFER',
+                  'credit_card',
+                  'paypal',
+                  'bank_transfer',
                ]),
                paymentId: faker.string.alphanumeric(16),
-               createdAt: paymentDate,
-               startDate: faker.date.past(), // Add startDate
-               endDate: faker.date.future(), // Add endDate
+               startDate: startDate,
+               endDate: endDate,
+               createdAt: startDate,
+               updatedAt: faker.date.between({
+                  from: startDate,
+                  to: new Date(),
+               }),
             },
          });
       }
    }
 
-   console.log('✅ Created payment records');
+   // Create some subscriptions for regular users too
+   const regularUsers = users.filter((user: any) => user.role === 'USER');
+   const selectedUsers = faker.helpers.arrayElements(regularUsers, 5);
+
+   for (const user of selectedUsers) {
+      const userType = user as { id: string };
+      const plan = faker.helpers.arrayElement(plans) as {
+         id: string;
+         price: any;
+      };
+
+      const startDate = faker.date.past({ years: 1 });
+      const endDate = faker.date.future({ years: 1, refDate: startDate });
+
+      await prisma.subscriptions.create({
+         data: {
+            userId: userType.id,
+            planId: plan.id,
+            amount: plan.price,
+            currency: 'USD',
+            status: faker.helpers.arrayElement([
+               'completed',
+               'completed',
+               'pending',
+               'failed',
+            ]),
+            paymentMethod: faker.helpers.arrayElement([
+               'credit_card',
+               'paypal',
+               'bank_transfer',
+            ]),
+            paymentId: faker.string.alphanumeric(16),
+            startDate: startDate,
+            endDate: endDate,
+            createdAt: startDate,
+            updatedAt: faker.date.between({ from: startDate, to: new Date() }),
+         },
+      });
+   }
+
+   console.log('✅ Created subscription records');
 }
 
-async function createActivities(users: any, tools: any) {
+async function createActivities(users: any, tools: any, blogs: any) {
    console.log('📊 Creating activity records...');
 
    const activityTypes = [
@@ -764,28 +816,80 @@ async function createActivities(users: any, tools: any) {
    for (let i = 0; i < numActivities; i++) {
       const user = faker.helpers.arrayElement(users);
       const activityType = faker.helpers.arrayElement(activityTypes);
-      let entityId = null;
+      let toolId = null;
+      let blogId = null;
+      const comparisonId = null;
+      let metadata = null;
 
-      // Set entityId based on activity type
+      // Set entity IDs based on activity type
       if (activityType.startsWith('TOOL_')) {
-         entityId = (faker.helpers.arrayElement(tools) as { id: string }).id;
+         toolId = (faker.helpers.arrayElement(tools) as { id: string }).id;
+         if (activityType === 'TOOL_RATE') {
+            metadata = { rating: faker.number.int({ min: 1, max: 5 }) };
+         }
+      } else if (activityType.startsWith('BLOG_')) {
+         blogId = (faker.helpers.arrayElement(blogs) as { id: string }).id;
       }
+
       const typedUser = user as { id: string };
 
       await prisma.activity.create({
          data: {
             userId: typedUser.id,
             action: activityType,
-            metadata:
-               activityType === 'TOOL_RATE'
-                  ? { rating: faker.number.int({ min: 1, max: 5 }) }
-                  : Prisma.JsonNull,
+            toolId: toolId,
+            blogId: blogId,
+            comparisonId: comparisonId,
             createdAt: faker.date.recent({ days: 30 }), // Within last 30 days
          },
       });
    }
 
    console.log(`✅ Created ${numActivities} activity records`);
+}
+
+async function createViews(users: any, tools: any, blogs: any) {
+   console.log('👁️ Creating view records...');
+
+   // Create tool views
+   for (const tool of tools) {
+      const numViews = faker.number.int({ min: 10, max: 100 });
+
+      // Some views with users, some anonymous
+      for (let i = 0; i < numViews; i++) {
+         const hasUser = faker.datatype.boolean();
+         const user = hasUser ? faker.helpers.arrayElement(users) : null;
+
+         await prisma.toolView.create({
+            data: {
+               toolId: tool.id,
+               userId: hasUser ? (user as { id: string }).id : null,
+               createdAt: faker.date.recent({ days: 90 }),
+            },
+         });
+      }
+   }
+
+   // Create blog views
+   for (const blog of blogs) {
+      const numViews = faker.number.int({ min: 5, max: 200 });
+
+      // Some views with users, some anonymous
+      for (let i = 0; i < numViews; i++) {
+         const hasUser = faker.datatype.boolean();
+         const user = hasUser ? faker.helpers.arrayElement(users) : null;
+
+         await prisma.blogView.create({
+            data: {
+               blogId: blog.id,
+               userId: hasUser ? (user as { id: string }).id : null,
+               createdAt: faker.date.recent({ days: 90 }),
+            },
+         });
+      }
+   }
+
+   console.log('✅ Created view records');
 }
 
 main()

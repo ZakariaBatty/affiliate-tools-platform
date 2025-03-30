@@ -32,11 +32,11 @@ model User {
   blogComments  BlogComment[]
   company       Company?
   activities    Activity[]
-  views ToolView[]
-  views BlogView[]
+  ToolView ToolView[]
+  blogView BlogView[]
   passwordReset PasswordReset?
   comparisons   Comparison[]
-  payments      Payment[]
+  subscriptions      Subscriptions[]
 }
 
 // OAuth Account model
@@ -103,7 +103,7 @@ model Company {
   // Relations
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   tools       Tool[]
-  payments    Payment[]
+  subscriptions    Subscriptions[]
   team        TeamMember[]
 }
 
@@ -178,7 +178,7 @@ model Tool {
   savedBy     SavedTool[]
   ratings     ToolRating[]
   comments    ToolComment[]
-  views       Views[]
+  views       ToolView[]
   activities  Activity[]
   comparisons ComparisonTool[]
 }
@@ -276,7 +276,7 @@ model Blog {
   tags       BlogTag[]
   comments   BlogComment[]
   activities Activity[]
-  views      Views[]
+  views      BlogView[]
 
 }
 
@@ -383,11 +383,11 @@ model Plan {
   updatedAt   DateTime @updatedAt
 
   // Relations
-  payments    Payment[]
+  subscriptions    Subscriptions[]
 }
 
-// Payment model
-model Payment {
+// Subscriptions model
+model Subscriptions {
   id            String   @id @default(cuid())
   amount        Float
   currency      String   @default("USD")

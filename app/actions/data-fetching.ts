@@ -3,9 +3,23 @@
 import prisma from '@/lib/prisma';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import type {
+   GetFeaturedToolsResponse,
+   GetPopularCategoriesResponse,
+   GetFeaturedBlogPostsResponse,
+   GetAllToolsResponse,
+   GetAllCategoriesResponse,
+   GetToolDetailResponse,
+   GetAllBlogPostsResponse,
+   GetFeaturedBlogPostsForSliderResponse,
+   GetBlogCategoriesResponse,
+   GetBlogTagsResponse,
+   GetBlogPostDetailResponse,
+   GetPricingPlansResponse,
+} from '@/types';
 
 // Home page data
-export async function getFeaturedTools() {
+export async function getFeaturedTools(): Promise<GetFeaturedToolsResponse> {
    const session = await getServerSession(authOptions);
 
    const featuredTools = await prisma.tool.findMany({
@@ -18,6 +32,7 @@ export async function getFeaturedTools() {
                category: true,
             },
          },
+         ratings: true, // Include ratings
          savedBy: session?.user?.id
             ? {
                  where: {
@@ -29,18 +44,28 @@ export async function getFeaturedTools() {
       take: 6,
    });
 
-   return featuredTools.map((tool) => ({
-      id: tool.id,
-      name: tool.name,
-      slug: tool.slug,
-      image: tool.imageUrl || '/placeholder.svg',
-      category: tool.categories[0]?.category.name || 'General',
-      rating: 4.5,
-      savedByCurrentUser: tool.savedBy && tool.savedBy.length > 0,
-   }));
+   return featuredTools.map((tool) => {
+      // Calculate average rating
+      const avgRating =
+         tool.ratings.length > 0
+            ? tool.ratings.reduce((sum, rating) => sum + rating.rating, 0) /
+              tool.ratings.length
+            : 0;
+
+      return {
+         id: tool.id,
+         name: tool.name,
+         slug: tool.slug,
+         image: tool.imageUrl || '/placeholder.svg',
+         category: tool.categories[0]?.category.name || 'General',
+         rating: Number(avgRating.toFixed(1)), // Round to 1 decimal place
+         ratingCount: tool.ratings.length,
+         savedByCurrentUser: tool.savedBy && tool.savedBy.length > 0,
+      };
+   });
 }
 
-export async function getPopularCategories() {
+export async function getPopularCategories(): Promise<GetPopularCategoriesResponse> {
    const categories = await prisma.category.findMany({
       include: {
          _count: {
@@ -60,7 +85,7 @@ export async function getPopularCategories() {
    return categories;
 }
 
-export async function getFeaturedBlogPosts() {
+export async function getFeaturedBlogPosts(): Promise<GetFeaturedBlogPostsResponse> {
    const posts = await prisma.blog.findMany({
       where: {
          published: true,
@@ -100,7 +125,7 @@ export async function getFeaturedBlogPosts() {
 }
 
 // Tools page data
-export async function getAllTools() {
+export async function getAllTools(): Promise<GetAllToolsResponse> {
    const session = await getServerSession(authOptions);
 
    const tools = await prisma.tool.findMany({
@@ -111,10 +136,12 @@ export async function getAllTools() {
             },
          },
          company: true,
+         ratings: true, // Include ratings
          _count: {
             select: {
                views: true,
                savedBy: true,
+               ratings: true,
             },
          },
          savedBy: session?.user?.id
@@ -127,13 +154,24 @@ export async function getAllTools() {
       },
    });
 
-   return tools.map((tool) => ({
-      ...tool,
-      savedByCurrentUser: tool.savedBy && tool.savedBy.length > 0,
-   }));
+   return tools.map((tool) => {
+      // Calculate average rating
+      const avgRating =
+         tool.ratings.length > 0
+            ? tool.ratings.reduce((sum, rating) => sum + rating.rating, 0) /
+              tool.ratings.length
+            : 0;
+
+      return {
+         ...tool,
+         avgRating: Number(avgRating.toFixed(1)), // Round to 1 decimal place
+         ratingCount: tool.ratings.length,
+         savedByCurrentUser: tool.savedBy && tool.savedBy.length > 0,
+      };
+   });
 }
 
-export async function getAllCategories() {
+export async function getAllCategories(): Promise<GetAllCategoriesResponse> {
    const categories = await prisma.category.findMany({
       include: {
          _count: {
@@ -148,7 +186,9 @@ export async function getAllCategories() {
 }
 
 // Tool detail page data
-export async function getToolDetail(slug: string) {
+export async function getToolDetail(
+   slug: string
+): Promise<GetToolDetailResponse> {
    const session = await getServerSession(authOptions);
 
    const tool = await prisma.tool.findUnique({
@@ -160,12 +200,16 @@ export async function getToolDetail(slug: string) {
             },
          },
          company: true,
-         plans: true,
+         ratings: {
+            include: {
+               user: true,
+            },
+         },
          _count: {
             select: {
                views: true,
                savedBy: true,
-               reviews: true,
+               ratings: true,
             },
          },
          savedBy: session?.user?.id
@@ -175,15 +219,6 @@ export async function getToolDetail(slug: string) {
                  },
               }
             : false,
-         reviews: {
-            include: {
-               user: true,
-            },
-            take: 5,
-            orderBy: {
-               createdAt: 'desc',
-            },
-         },
       },
    });
 
@@ -193,11 +228,43 @@ export async function getToolDetail(slug: string) {
 
    // Record view if user is logged in
    if (session?.user?.id) {
-      await prisma.views.create({
+      await prisma.toolView.create({
          data: {
             userId: session.user.id,
             toolId: tool.id,
          },
+      });
+   }
+
+   // Calculate average rating
+   const avgRating =
+      tool.ratings.length > 0
+         ? tool.ratings.reduce((sum, rating) => sum + rating.rating, 0) /
+           tool.ratings.length
+         : 0;
+
+   // Calculate rating distribution (1-5 stars)
+   const ratingDistribution: Record<string, number> = {
+      '1': 0,
+      '2': 0,
+      '3': 0,
+      '4': 0,
+      '5': 0,
+   };
+
+   tool.ratings.forEach((rating) => {
+      if (rating.rating >= 1 && rating.rating <= 5) {
+         ratingDistribution[rating.rating.toString()]++;
+      }
+   });
+
+   // Calculate percentage for each rating
+   const ratingPercentages: Record<string, number> = {};
+   if (tool.ratings.length > 0) {
+      Object.keys(ratingDistribution).forEach((key) => {
+         ratingPercentages[key] = Math.round(
+            (ratingDistribution[key] / tool.ratings.length) * 100
+         );
       });
    }
 
@@ -218,9 +285,12 @@ export async function getToolDetail(slug: string) {
                category: true,
             },
          },
+         ratings: true,
          _count: {
             select: {
+               views: true,
                savedBy: true,
+               ratings: true,
             },
          },
          savedBy: session?.user?.id
@@ -234,22 +304,52 @@ export async function getToolDetail(slug: string) {
       take: 3,
    });
 
+   // Calculate ratings for related tools
+   const relatedToolsWithRatings = relatedTools.map((relatedTool) => {
+      const relatedAvgRating =
+         relatedTool.ratings.length > 0
+            ? relatedTool.ratings.reduce(
+                 (sum, rating) => sum + rating.rating,
+                 0
+              ) / relatedTool.ratings.length
+            : 0;
+
+      return {
+         ...relatedTool,
+         avgRating: Number(relatedAvgRating.toFixed(1)),
+         ratingCount: relatedTool.ratings.length,
+         savedByCurrentUser:
+            relatedTool.savedBy && relatedTool.savedBy.length > 0,
+      };
+   });
+
    return {
       tool: {
          ...tool,
+         avgRating: Number(avgRating.toFixed(1)),
+         ratingDistribution,
+         ratingPercentages,
          savedByCurrentUser: tool.savedBy && tool.savedBy.length > 0,
+         // Format ratings for display
+         formattedRatings: tool.ratings.map((rating) => ({
+            id: rating.id,
+            rating: rating.rating,
+            review: rating.review,
+            createdAt: rating.createdAt,
+            user: {
+               id: rating.user.id,
+               name: rating.user.name,
+               image: rating.user.image,
+            },
+         })),
       },
-      relatedTools: relatedTools.map((relatedTool) => ({
-         ...relatedTool,
-         savedByCurrentUser:
-            relatedTool.savedBy && relatedTool.savedBy.length > 0,
-      })),
+      relatedTools: relatedToolsWithRatings,
    };
 }
 
 // Blog page data
-export async function getAllBlogPosts() {
-   const posts = await prisma.Blog.findMany({
+export async function getAllBlogPosts(): Promise<GetAllBlogPostsResponse> {
+   const posts = await prisma.blog.findMany({
       where: {
          published: true,
       },
@@ -288,16 +388,24 @@ export async function getAllBlogPosts() {
       }),
       readTime: `${post.readingTime || 5} min read`,
       category: post.categories[0]?.category.name || 'General',
-      author: {
-         name: post.author.name,
-         avatar: post.author.image || '/placeholder.svg?height=100&width=100',
-         role: 'Author',
-      },
+      author:
+         typeof post.author === 'object' && post.author !== null
+            ? post.author
+            : {
+                 name: 'Anonymous',
+                 author: {
+                    name: 'Anonymous',
+                    image: '/placeholder.svg?height=100&width=100',
+                    bio: 'Author bio',
+                    role: 'Author',
+                 },
+                 role: 'Author',
+              },
       tags: post.tags.map((tag) => tag.tag.name),
    }));
 }
 
-export async function getFeaturedBlogPostsForSlider() {
+export async function getFeaturedBlogPostsForSlider(): Promise<GetFeaturedBlogPostsForSliderResponse> {
    const posts = await prisma.blog.findMany({
       where: {
          published: true,
@@ -331,62 +439,67 @@ export async function getFeaturedBlogPostsForSlider() {
       }),
       readTime: `${post.readingTime || 5} min read`,
       category: post.categories[0]?.category.name || 'General',
-      author: {
-         name: post.author.name,
-         avatar: post.author.image || '/placeholder.svg?height=100&width=100',
+      author: post.author || {
+         name: 'Anonymous',
+         image: '/placeholder.svg?height=100&width=100',
          role: 'Author',
       },
       tags: post.tags.map((tag) => tag.tag.name),
    }));
 }
 
-export async function getBlogCategories() {
-   const categories = await prisma.blogCategory.findMany({
+export async function getBlogCategories(): Promise<GetBlogCategoriesResponse> {
+   // Changed from blogCategory to category with blog relation filter
+   const categories = await prisma.category.findMany({
       include: {
          _count: {
             select: {
-               posts: true,
+               blogs: true, // Changed from posts to blogs
             },
          },
+         blogs: true, // Include blogs to filter categories with blog posts
       },
       orderBy: {
-         posts: {
+         blogs: {
             _count: 'desc',
          },
       },
    });
 
-   return categories;
+   return categories.filter((category) => category.blogs.length > 0);
 }
 
-export async function getBlogTags() {
-   const tags = await prisma.blogTag.findMany({
+export async function getBlogTags(): Promise<GetBlogTagsResponse> {
+   // Changed from blogTag to tag with blog relation filter
+   const tags = await prisma.tag.findMany({
       include: {
          _count: {
             select: {
-               posts: true,
+               blogs: true, // Changed from posts to blogs
             },
          },
+         blogs: true, // Include blogs to filter tags with blog posts
       },
       orderBy: {
-         posts: {
+         blogs: {
             _count: 'desc',
          },
       },
       take: 15,
    });
 
-   return tags;
+   return tags.filter((tag) => tag.blogs.length > 0);
 }
 
 // Blog detail page data
-export async function getBlogPostDetail(slug: string) {
+export async function getBlogPostDetail(
+   slug: string
+): Promise<GetBlogPostDetailResponse> {
    const session = await getServerSession(authOptions);
 
    const post = await prisma.blog.findUnique({
       where: { slug },
       include: {
-         author: true,
          categories: {
             include: {
                category: true,
@@ -400,7 +513,6 @@ export async function getBlogPostDetail(slug: string) {
          _count: {
             select: {
                views: true,
-               likes: true,
                comments: true,
             },
          },
@@ -422,7 +534,7 @@ export async function getBlogPostDetail(slug: string) {
 
    // Record view if user is logged in
    if (session?.user?.id) {
-      await prisma.view.create({
+      await prisma.blogView.create({
          data: {
             userId: session.user.id,
             blogId: post.id,
@@ -456,7 +568,6 @@ export async function getBlogPostDetail(slug: string) {
          ],
       },
       include: {
-         author: true,
          categories: {
             include: {
                category: true,
@@ -483,14 +594,23 @@ export async function getBlogPostDetail(slug: string) {
          updatedAt: post.updatedAt,
          readingTime: post.readingTime,
          viewCount: post._count.views,
-         likeCount: post._count.likes,
          commentCount: post._count.comments,
-         author: {
-            id: post.author.id,
-            name: post.author.name,
-            image: post.author.image,
-            bio: post.author.bio,
-         },
+         author:
+            post.author &&
+            typeof post.author === 'object' &&
+            'name' in post.author &&
+            'image' in post.author
+               ? (post.author as {
+                    name: string;
+                    image: string;
+                    bio?: string;
+                    role?: string;
+                 })
+               : {
+                    name: 'Anonymous',
+                    image: '/placeholder.svg?height=100&width=100',
+                    bio: 'Author bio',
+                 },
          categories: post.categories.map((c) => ({
             id: c.category.id,
             name: c.category.name,
@@ -527,11 +647,9 @@ export async function getBlogPostDetail(slug: string) {
          }),
          readTime: `${relatedPost.readingTime || 5} min read`,
          category: relatedPost.categories[0]?.category.name || 'General',
-         author: {
-            name: relatedPost.author.name,
-            avatar:
-               relatedPost.author.image ||
-               '/placeholder.svg?height=100&width=100',
+         author: relatedPost.author || {
+            name: 'Anonymous',
+            image: '/placeholder.svg?height=100&width=100',
             role: 'Author',
          },
          tags: relatedPost.tags.map((tag) => tag.tag.name),
@@ -540,7 +658,7 @@ export async function getBlogPostDetail(slug: string) {
 }
 
 // Pricing page data
-export async function getPricingPlans() {
+export async function getPricingPlans(): Promise<GetPricingPlansResponse> {
    const session = await getServerSession(authOptions);
 
    const plans = await prisma.plan.findMany({
@@ -552,10 +670,10 @@ export async function getPricingPlans() {
    // Get user's current plan if logged in
    let userPlan = null;
    if (session?.user?.id) {
-      const subscription = await prisma.subscription.findFirst({
+      const subscription = await prisma.subscriptions.findFirst({
          where: {
             userId: session.user.id,
-            status: 'ACTIVE',
+            status: 'completed', // Changed from ACTIVE to completed based on schema
          },
          include: {
             plan: true,
@@ -573,7 +691,11 @@ export async function getPricingPlans() {
       description: plan.description,
       price: plan.price,
       interval: plan.interval,
-      features: plan.features ? JSON.parse(plan.features) : [],
+      features: plan.features
+         ? typeof plan.features === 'string'
+            ? JSON.parse(plan.features)
+            : plan.features
+         : [],
       isPopular: plan.isPopular,
       isCurrent: userPlan?.id === plan.id,
    }));
