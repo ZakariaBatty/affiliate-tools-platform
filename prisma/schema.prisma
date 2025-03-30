@@ -19,6 +19,7 @@ model User {
   password      String?
   image         String?
   role          String    @default("user") // user, admin, company
+  status        String    @default("PENDING") // PENDING, DECLINED, ACTIVE
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
@@ -31,6 +32,7 @@ model User {
   blogComments  BlogComment[]
   company       Company?
   activities    Activity[]
+  views Views[]
   passwordReset PasswordReset?
   comparisons   Comparison[]
   payments      Payment[]
@@ -110,11 +112,12 @@ model TeamMember {
   email     String
   role      String
   companyId String
+  status    String    @default("PENDING") // PENDING, DECLINED, ACTIVE
   inviteToken String? @unique
   accepted  Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
+  
   // Relations
   company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
@@ -155,15 +158,15 @@ model Tool {
   name        String
   slug        String   @unique
   description String   @db.Text
+  longDescription String @db.Text
   website     String
   logo        String?
-  pricing     String?
-  pricingDetails Json?
-  features    Json?
+  imageUrl    String?
   companyId   String?
   verified    Boolean  @default(false)
   featured    Boolean  @default(false)
-  views       Int      @default(0)
+  pricing Json?
+  features    Json?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -174,6 +177,7 @@ model Tool {
   savedBy     SavedTool[]
   ratings     ToolRating[]
   comments    ToolComment[]
+  views       Views[]
   activities  Activity[]
   comparisons ComparisonTool[]
 }
@@ -223,6 +227,7 @@ model ToolRating {
   rating    Int
   userId    String
   toolId    String
+  review    String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -257,10 +262,11 @@ model Blog {
   slug      String   @unique
   content   String   @db.Text
   excerpt   String?  @db.Text
-  image     String?
+  coverImage     String?
+  author  Json?
   published Boolean  @default(false)
-  authorId  String
-  views     Int      @default(0)
+  featured Boolean   @default(false)
+  readingTime Int   @default(12)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -269,6 +275,8 @@ model Blog {
   tags       BlogTag[]
   comments   BlogComment[]
   activities Activity[]
+  views      Views[]
+
 }
 
 // Blog Category relation
@@ -332,6 +340,7 @@ model Comparison {
 model ComparisonTool {
   comparisonId String
   toolId       String
+  notes        String?
   createdAt    DateTime @default(now())
 
   // Relations
@@ -359,6 +368,19 @@ model Activity {
   comparison   Comparison? @relation(fields: [comparisonId], references: [id], onDelete: SetNull)
 }
 
+model Views {
+  id           String    @id @default(cuid())
+  userId       String
+  toolId       String?
+  blogId       String?
+  createdAt    DateTime  @default(now())
+
+  // Relations
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tool         Tool?     @relation(fields: [toolId], references: [id], onDelete: SetNull)
+  blog         Blog?     @relation(fields: [blogId], references: [id], onDelete: SetNull)
+}
+
 // Plan model
 model Plan {
   id          String   @id @default(cuid())
@@ -367,6 +389,7 @@ model Plan {
   price       Float
   interval    String   // monthly, yearly
   features    Json
+  active      Boolean @default(true)
   isPopular   Boolean  @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
