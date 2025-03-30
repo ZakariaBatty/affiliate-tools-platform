@@ -14,6 +14,8 @@ import StickyQuickAccessTools from "@/components/home/sticky-quick-access-rools"
 import Footer from "@/components/footer"
 import Navbar from "@/components/navbar"
 import { getFeaturedBlogPosts, getFeaturedTools, getPopularCategories } from "./actions/data-fetching"
+import { Suspense } from "react"
+import Loading from "./loading"
 
 export const metadata: Metadata = constructMetadata({
   title: "Home",
@@ -27,23 +29,31 @@ export default async function HomePage() {
     getPopularCategories(),
     getFeaturedBlogPosts(),
   ])
-
   return (
     <div className="min-h-screen bg-black">
       <Navbar />
       <Hero />
-      <FeaturedTools tools={featuredTools} />
+      <Suspense fallback={<Loading />}>
+        <FeaturedTools tools={featuredTools} />
+      </Suspense>
+
       <StickyQuickAccessTools />
       <QuickAccessTools />
       <div id="categories">
-        <PopularCategories categories={categories} />
+        <Suspense fallback={<Loading />}>
+          <PopularCategories categories={categories} />
+        </Suspense>
+
       </div>
       <CompareTools />
       <TrackPerformance />
       <div id="how-it-works">
         <HowItWorks />
       </div>
-      <BlogPreview posts={blogPosts} />
+      <Suspense fallback={<Loading />}>
+        <BlogPreview posts={blogPosts} />
+      </Suspense>
+
       <Testimonials />
       <CallToAction />
       <Footer />
