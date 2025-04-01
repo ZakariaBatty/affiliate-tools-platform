@@ -29,7 +29,9 @@ export function BlogPostSidebar({ post, relatedPosts }: BlogPostSidebarProps) {
           </div>
         </div>
         <div className="mt-4 text-sm text-white/70">
-          Expert in {post.category} with years of experience helping businesses leverage technology for growth.
+          {post.categories.map((category: { id: string, name: string, slug: string }) => (
+            `  Expert in ${category.name} with years of experience helping businesses leverage technology for growth.`
+          ))}
         </div>
       </div>
 

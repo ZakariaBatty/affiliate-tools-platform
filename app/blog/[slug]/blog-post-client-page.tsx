@@ -10,16 +10,16 @@ import { BlogPostHeader } from "@/components/blog/blog-post-header"
 import { BlogPostSidebar } from "@/components/blog/blog-post-sidebar"
 import { BlogPostContent } from "@/components/blog/blog-post-content"
 import { BlogPostFooter } from "@/components/blog/blog-post-footer"
+import { BlogBasic, BlogFull } from "@/types"
 
 interface BlogPostClientPageProps {
-  post: any
+  post: BlogFull
+  relatedPosts: BlogBasic[]
 }
 
-export default function BlogPostClientPage({ post }: BlogPostClientPageProps) {
+export default function BlogPostClientPage({ post, relatedPosts }: BlogPostClientPageProps) {
   // Get related posts (same category or shared tags)
-  const relatedPosts = blogPosts
-    .filter((p) => p.id !== post.id && (p.category === post.category || p.tags.some((tag) => post.tags.includes(tag))))
-    .slice(0, 5)
+  console.log("post", post)
 
   const breadcrumbItems = [
     { name: "Home", url: "/" },
@@ -34,10 +34,10 @@ export default function BlogPostClientPage({ post }: BlogPostClientPageProps) {
       <BreadcrumbSchema items={breadcrumbItems} />
       <ArticleSchema
         title={post.title}
-        description={post.excerpt}
-        image={post.image || "/placeholder.svg"}
+        description={post.excerpt || ''}
+        image={post.coverImage || "/placeholder.svg"}
         url={`/blog/${post.slug}`}
-        datePublished={post.date}
+        datePublished={new Date(post.createdAt).toString()}
         authorName={post.author.name}
       />
 

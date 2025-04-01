@@ -12,14 +12,16 @@ export function BlogPostHeader({ post }: BlogPostHeaderProps) {
       {/* Article Header */}
       <div className="mb-8">
         <div className="mb-4 flex flex-wrap items-center gap-3">
-          <Badge className="bg-purple-500/20 text-purple-300">{post.category}</Badge>
+          {post.categories.map((category: { id: string, name: string, slug: string }) => (
+            <Badge key={category.id} className="bg-purple-500/20 text-purple-300">{category.name}</Badge>
+          ))}
           <div className="flex items-center text-sm text-white/60">
             <Calendar className="mr-1 h-4 w-4" />
             {post.date}
           </div>
           <div className="flex items-center text-sm text-white/60">
             <Clock className="mr-1 h-4 w-4" />
-            {post.readTime}
+            {post.readingTime}
           </div>
         </div>
 
@@ -37,7 +39,7 @@ export function BlogPostHeader({ post }: BlogPostHeaderProps) {
           </div>
           <div>
             <p className="font-medium text-white">{post.author.name}</p>
-            <p className="text-sm text-white/60">{post.author.role}</p>
+            {/* <p className="text-sm text-white/60">{post.author.role}</p> */}
           </div>
         </div>
       </div>
