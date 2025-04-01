@@ -1,6 +1,7 @@
 'use server';
 
-import { prisma } from '@/lib/prisma';
+import { withDb } from '@/lib/db';
+import prisma from '@/lib/prisma';
 import { hash, compare } from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -16,9 +17,11 @@ export async function registerUser({
 }) {
    try {
       // Check if user already exists
-      const existingUser = await prisma.user.findUnique({
-         where: { email },
-      });
+      const existingUser = await withDb(() =>
+         prisma.user.findUnique({
+            where: { email },
+         })
+      );
 
       if (existingUser) {
          return {

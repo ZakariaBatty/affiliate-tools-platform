@@ -5,10 +5,10 @@ import Link from "next/link"
 import { motion } from "framer-motion"
 import { Calendar, Clock, ArrowRight } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { BlogPost } from "@/types/types"
+import { BlogBasic } from "@/types"
 
 interface BlogCardProps {
-  post: BlogPost
+  post: BlogBasic
   index?: number
   variant?: "default" | "featured" | "sidebar" | "slider"
   className?: string
