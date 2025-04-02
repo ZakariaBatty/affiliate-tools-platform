@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -15,15 +15,28 @@ import { ChevronLeft, Filter, X, Check, Plus, BarChart3, ArrowRight, Star, Searc
 import { allTools } from "@/data/tools"
 import Link from "next/link"
 import Navbar from "@/components/navbar"
+import { Category, ToolFull } from "@/types"
 
 // Get all categories from tools
 const allCategories = Array.from(new Set(allTools.map((tool) => tool.category)))
 
-export default function ToolsClientPage() {
+interface AllToolsProps {
+  initialTools: ToolFull[],
+  categories: Category[],
+}
+
+export default function ToolsClientPage({ initialTools, categories }: AllToolsProps) {
   const [showSidebar, setShowSidebar] = useState(true)
   const [selectedTools, setSelectedTools] = useState<number[]>([])
   const [isCompareOpen, setIsCompareOpen] = useState(false)
   const [activeTab, setActiveTab] = useState("features")
+
+  const [tools, setTools] = useState(initialTools)
+  const [view, setView] = useState("grid")
+  const [priceRange, setPriceRange] = useState([0, 1000])
+  const [showFreeOnly, setShowFreeOnly] = useState(false)
+  const [sortBy, setSortBy] = useState("popular")
+  const [showFilters, setShowFilters] = useState(false)
 
   // Filter states
   const [searchQuery, setSearchQuery] = useState("")
@@ -31,6 +44,56 @@ export default function ToolsClientPage() {
   const [priceFilter, setPriceFilter] = useState<string[]>([])
   const [ratingFilter, setRatingFilter] = useState<number>(0)
   const [priceRangeFilter, setPriceRangeFilter] = useState<[number, number]>([0, 100])
+
+
+  // Filter and sort tools
+  useEffect(() => {
+    let filteredTools = [...initialTools]
+
+    // Search filter
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase()
+      filteredTools = filteredTools.filter(
+        (tool) => tool.name.toLowerCase().includes(query) || tool.description.toLowerCase().includes(query),
+      )
+    }
+
+    // Category filter
+    if (selectedCategories.length > 0) {
+      filteredTools = filteredTools.filter((tool) =>
+        tool.categories.some((cat) => selectedCategories.includes(cat.category.id)),
+      )
+    }
+
+    // Price filter
+    if (showFreeOnly) {
+      filteredTools = filteredTools.filter((tool) => tool.pricingType === "FREE")
+    } else {
+      filteredTools = filteredTools.filter(
+        (tool) =>
+          (tool.priceMonthly >= priceRange[0] && tool.priceMonthly <= priceRange[1]) || tool.pricingType === "FREE",
+      )
+    }
+
+    // Sort
+    switch (sortBy) {
+      case "popular":
+        filteredTools.sort((a, b) => (b._count.savedBy || 0) - (a._count.savedBy || 0))
+        break
+      case "newest":
+        filteredTools.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+        break
+      case "name":
+        filteredTools.sort((a, b) => a.name.localeCompare(b.name))
+        break
+      case "rating":
+        filteredTools.sort((a, b) => (b.rating || 0) - (a.rating || 0))
+        break
+    }
+
+    setTools(filteredTools)
+  }, [initialTools, searchQuery, selectedCategories, priceRange, showFreeOnly, sortBy])
+
 
   // Function to toggle tool selection for comparison
   const toggleToolSelection = (toolId: number) => {
@@ -50,43 +113,7 @@ export default function ToolsClientPage() {
   const selectedToolsData = allTools.filter((tool) => selectedTools.includes(tool.id))
 
   // Filter tools based on selected filters
-  const filteredTools = allTools.filter((tool) => {
-    // Search query filter
-    if (
-      searchQuery &&
-      !tool.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
-      !tool.description.toLowerCase().includes(searchQuery.toLowerCase())
-    ) {
-      return false
-    }
-
-    // Category filter
-    if (selectedCategories.length > 0 && !selectedCategories.includes(tool.category)) {
-      return false
-    }
-
-    // Price filter
-    if (priceFilter.length > 0) {
-      if (priceFilter.includes("free") && !tool.price.hasFree) {
-        return false
-      }
-      if (priceFilter.includes("premium") && tool.price.hasFree) {
-        return false
-      }
-    }
-
-    // Rating filter
-    if (ratingFilter > 0 && tool.rating < ratingFilter) {
-      return false
-    }
-
-    // Price range filter
-    if (tool.price.monthly < priceRangeFilter[0] || tool.price.monthly > priceRangeFilter[1]) {
-      return false
-    }
-
-    return true
-  })
+  const filteredTools = [] as any
 
   // Reset all filters
   const resetFilters = () => {
