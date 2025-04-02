@@ -37,7 +37,11 @@ export const getFeaturedTools = cache(
                      category: true,
                   },
                },
-               ratings: true, // Include ratings
+               ratings: {
+                  select: {
+                     rating: true,
+                  },
+               },
                savedBy: session?.user?.id
                   ? {
                        where: {

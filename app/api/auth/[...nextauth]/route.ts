@@ -4,7 +4,8 @@ import GoogleProvider from 'next-auth/providers/google';
 import GitHubProvider from 'next-auth/providers/github';
 
 import { compare } from 'bcrypt';
-import { prisma } from '@/lib/prisma';
+import { withDb } from '@/lib/db';
+import prisma from '@/lib/prisma';
 
 declare module 'next-auth' {
    interface Session {
@@ -48,9 +49,11 @@ export const authOptions: NextAuthOptions = {
             }
 
             try {
-               const user = await prisma.user.findUnique({
-                  where: { email: credentials.email },
-               });
+               const user = await withDb(() =>
+                  prisma.user.findUnique({
+                     where: { email: credentials.email },
+                  })
+               );
 
                if (!user) {
                   throw new Error('User not found');
@@ -87,19 +90,23 @@ export const authOptions: NextAuthOptions = {
       async signIn({ user, account }) {
          if (account?.provider === 'github' || account?.provider === 'google') {
             try {
-               const existingUser = await prisma.user.findUnique({
-                  where: { email: user.email! },
-               });
+               const existingUser = await withDb(() =>
+                  prisma.user.findUnique({
+                     where: { email: user.email! },
+                  })
+               );
 
                if (!existingUser) {
-                  await prisma.user.create({
-                     data: {
-                        name: user.name || 'New User',
-                        email: user.email!,
-                        image: user.image,
-                        emailVerified: new Date(),
-                     },
-                  });
+                  await withDb(() =>
+                     prisma.user.create({
+                        data: {
+                           name: user.name || 'New User',
+                           email: user.email!,
+                           image: user.image,
+                           emailVerified: new Date(),
+                        },
+                     })
+                  );
                }
             } catch (error) {
                console.error('Error saving user:', error);

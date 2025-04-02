@@ -24,16 +24,9 @@ export default async function BlogPage() {
     getBlogTags(),
   ])
 
-  console.log("posts", posts)
-  console.log("featuredPosts", featuredPosts)
-  console.log("categories", categories)
-  console.log("tags", tags)
-
-
-  // posts={posts} featuredPosts={featuredPosts} categories={categories} tags={tags}
   return (
     <Suspense fallback={<BlogLoading />}>
-      <BlogClientPage />
+      <BlogClientPage posts={posts} featuredPosts={featuredPosts} categories={categories} tags={tags} />
     </Suspense>
   )
 }

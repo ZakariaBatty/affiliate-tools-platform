@@ -4,11 +4,11 @@ import { useRef, useState, useEffect } from "react"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import BlogCard from "@/components/blog/blog-card"
-import { BlogPost } from "@/types/types"
+import { BlogBasic } from "@/types"
 
 interface BlogSliderProps {
   title: string
-  posts: BlogPost[]
+  posts: BlogBasic[]
 }
 
 export default function BlogSlider({ title, posts }: BlogSliderProps) {

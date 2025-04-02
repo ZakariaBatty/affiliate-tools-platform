@@ -36,14 +36,12 @@ export default async function HomePage() {
       <Suspense fallback={<Loading />}>
         <FeaturedTools tools={featuredTools} />
       </Suspense>
-
       <StickyQuickAccessTools />
       <QuickAccessTools />
       <div id="categories">
         <Suspense fallback={<Loading />}>
           <PopularCategories categories={categories} />
         </Suspense>
-
       </div>
       <CompareTools />
       <TrackPerformance />
@@ -53,7 +51,6 @@ export default async function HomePage() {
       <Suspense fallback={<Loading />}>
         <BlogPreview posts={blogPosts} />
       </Suspense>
-
       <Testimonials />
       <CallToAction />
       <Footer />
