@@ -40,8 +40,8 @@ export default function ToolDetailsClientPage({ tool, relatedTools }: Props) {
         image={tool.imageUrl || "/placeholder.svg"}
         url={`/tools/${tool.slug}`}
         price={tool.pricing.startingPrice}
-        rating={tool.rating}
-        category={tool.categories[0].name}
+        rating={tool.avgRating}
+        category={tool.categories[0].category.name}
       />
 
       <main className="container mx-auto px-4 py-8">
@@ -77,8 +77,8 @@ export default function ToolDetailsClientPage({ tool, relatedTools }: Props) {
           {/* Main content */}
           <div className="lg:col-span-2 xl:col-span-3">
             <ToolHeader tool={tool} overallScore={overallScore} />
-            {/* <ToolTabs tool={tool} />
-            <ToolComparison currentTool={tool} /> */}
+            <ToolTabs tool={tool} />
+            {/* <ToolComparison currentTool={tool} /> */}
           </div>
 
           {/* Sidebar */}
