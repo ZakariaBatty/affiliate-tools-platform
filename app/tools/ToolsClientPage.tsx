@@ -33,7 +33,6 @@ interface AllToolsProps {
 
 export default function ToolsClientPage({ initialTools, categories }: AllToolsProps) {
 
-  console.log("initialTools", initialTools)
   const [showSidebar, setShowSidebar] = useState(true)
   const [selectedTools, setSelectedTools] = useState<number[]>([])
   const [isCompareOpen, setIsCompareOpen] = useState(false)

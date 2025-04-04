@@ -46,7 +46,7 @@ function OverviewTab({ tool }: { tool: any }) {
       <div className="rounded-xl border border-white/10 bg-white/5 p-6">
         <h2 className="mb-4 text-xl font-bold text-white">About {tool.name}</h2>
         <p className="mb-4 text-white/70">
-          {tool.name} is a powerful {tool.category.toLowerCase()} solution designed to help businesses streamline their
+          {tool.name} is a powerful {tool.categories[0]?.category.name.toLowerCase()} solution designed to help businesses streamline their
           workflows and achieve better results. With its intuitive interface and robust feature set, it's an excellent
           choice for businesses of all sizes.
         </p>
@@ -59,7 +59,7 @@ function OverviewTab({ tool }: { tool: any }) {
       <div className="rounded-xl border border-white/10 bg-white/5 p-6">
         <h2 className="mb-4 text-xl font-bold text-white">Key Performance Metrics</h2>
         <div className="space-y-4">
-          {Object.entries(tool.performance).map(([key, value]) => (
+          {/* {Object.entries(tool.performance).map(([key, value]) => (
             <div key={key} className="flex items-center justify-between">
               <span className="text-sm text-white/70">
                 {key.replace(/([A-Z])/g, " $1").replace(/^./, (str) => str.toUpperCase())}
@@ -74,7 +74,7 @@ function OverviewTab({ tool }: { tool: any }) {
                 <span className="text-sm font-medium text-white">{String(value)}%</span>
               </div>
             </div>
-          ))}
+          ))} */}
         </div>
       </div>
 

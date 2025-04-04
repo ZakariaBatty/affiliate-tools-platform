@@ -52,9 +52,9 @@ export function ToolComparison({ currentTool }: ToolComparisonProps) {
                   <Star className="h-4 w-4 fill-yellow-500 text-yellow-500" />
                 </div>
               </td>
-              <td className="p-3 text-white">${currentTool.price.monthly}/mo</td>
+              <td className="p-3 text-white">${currentTool.pricing.startingPrice}/mo</td>
               <td className="p-3">
-                {currentTool.price.hasFree ? (
+                {currentTool.pricing.free ? (
                   <Check className="h-5 w-5 text-green-500" />
                 ) : (
                   <X className="h-5 w-5 text-red-500" />
