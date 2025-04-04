@@ -9,9 +9,10 @@ import { BarChart3, Check, Star, X } from "lucide-react"
 
 type ToolComparisonProps = {
   currentTool: any
+  relatedTools: any[]
 }
 
-export function ToolComparison({ currentTool }: ToolComparisonProps) {
+export function ToolComparison({ currentTool, relatedTools }: ToolComparisonProps) {
   const router = useRouter()
 
   return (
@@ -48,7 +49,7 @@ export function ToolComparison({ currentTool }: ToolComparisonProps) {
               </td>
               <td className="p-3">
                 <div className="flex items-center">
-                  <span className="mr-1 text-white">{currentTool.rating}</span>
+                  <span className="mr-1 text-white">{currentTool.avgRating}</span>
                   <Star className="h-4 w-4 fill-yellow-500 text-yellow-500" />
                 </div>
               </td>
@@ -66,8 +67,17 @@ export function ToolComparison({ currentTool }: ToolComparisonProps) {
             </tr>
 
             {/* Similar tools */}
-            {allTools
-              .filter((t) => t.category === currentTool.category && t.id !== currentTool.id)
+            {relatedTools
+              .filter((t) => {
+                const toolCategoryIds = t.categories?.map((c: any) => c.category?.id) || [];
+                const currentCategoryIds = currentTool.categories?.map((c: any) => c.category?.id) || [];
+
+                const hasMatchingCategory = toolCategoryIds.some((id: any) =>
+                  currentCategoryIds.includes(id)
+                );
+
+                return hasMatchingCategory && t.id !== currentTool.id;
+              })
               .slice(0, 3)
               .map((similarTool) => (
                 <tr key={similarTool.id} className="border-b border-white/10 hover:bg-white/5">
@@ -87,13 +97,15 @@ export function ToolComparison({ currentTool }: ToolComparisonProps) {
                   </td>
                   <td className="p-3">
                     <div className="flex items-center">
-                      <span className="mr-1 text-white">{similarTool.rating}</span>
+                      <span className="mr-1 text-white">{similarTool.avgRating}</span>
                       <Star className="h-4 w-4 fill-yellow-500 text-yellow-500" />
                     </div>
                   </td>
-                  <td className="p-3 text-white">${similarTool.price.monthly}/mo</td>
+                  <td className="p-3 text-white">
+                    ${similarTool.pricing?.startingPrice ?? "—"}/mo
+                  </td>
                   <td className="p-3">
-                    {similarTool.price.hasFree ? (
+                    {similarTool.pricing?.free ? (
                       <Check className="h-5 w-5 text-green-500" />
                     ) : (
                       <X className="h-5 w-5 text-red-500" />
@@ -104,13 +116,14 @@ export function ToolComparison({ currentTool }: ToolComparisonProps) {
                       size="sm"
                       variant="outline"
                       className="border-white/10 hover:text-white hover:bg-white/10"
-                      onClick={() => router.push(`/tools/${similarTool.id}`)}
+                      onClick={() => router.push(`/tools/${similarTool.slug}`)}
                     >
                       Compare
                     </Button>
                   </td>
                 </tr>
               ))}
+
           </tbody>
         </table>
       </div>
@@ -119,10 +132,10 @@ export function ToolComparison({ currentTool }: ToolComparisonProps) {
         <Button
           variant="outline"
           className="border-white/10 hover:text-white hover:bg-white/10"
-          onClick={() => router.push(`/tools?category=${currentTool.category}`)}
+          onClick={() => router.push(`/tools`)}
         >
           <BarChart3 className="mr-2 h-4 w-4" />
-          View All {currentTool.category} Tools
+          View All Tools
         </Button>
       </div>
     </div>

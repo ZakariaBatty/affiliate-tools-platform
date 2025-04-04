@@ -78,13 +78,13 @@ export default function ToolDetailsClientPage({ tool, relatedTools }: Props) {
           <div className="lg:col-span-2 xl:col-span-3">
             <ToolHeader tool={tool} overallScore={overallScore} />
             <ToolTabs tool={tool} />
-            {/* <ToolComparison currentTool={tool} /> */}
+            <ToolComparison currentTool={tool} relatedTools={relatedTools} />
           </div>
 
           {/* Sidebar */}
-          {/* <div className="lg:col-span-1">
-            <RelatedToolsSidebar currentToolId={tool.id} category={tool.categories[0].name} />
-          </div> */}
+          <div className="lg:col-span-1">
+            <RelatedToolsSidebar relatedTools={relatedTools} categories={tool.categories} />
+          </div>
         </div>
       </main>
 
