@@ -5,7 +5,6 @@ import Image from "next/image"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Bookmark, ExternalLink, Share2, Star } from "lucide-react"
-import Link from "next/link"
 
 type ToolHeaderProps = {
   tool: any
@@ -46,8 +45,8 @@ export function ToolHeader({ tool, overallScore }: ToolHeaderProps) {
         <div className="flex-1">
           <div className="mb-2 flex flex-wrap items-center gap-2">
             {
-              tool.categories.map((cat: any) => (
-                <Badge key={cat.id} className="bg-white/10 text-white/70 hover:bg-white/20">
+              tool.categories.map((cat: any, index: number) => (
+                <Badge key={index} className="bg-white/10 text-white/70 hover:bg-white/20">
                   {cat.category.name}
                 </Badge>
               ))

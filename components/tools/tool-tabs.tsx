@@ -146,117 +146,202 @@ function FeaturesTab({ tool }: { tool: any }) {
   )
 }
 
+// function PricingTab({ tool }: { tool: any }) {
+//   return (
+//     <div className="rounded-xl border border-white/10 bg-white/5 p-6">
+//       <h2 className="mb-6 text-xl font-bold text-white">Pricing Plans</h2>
+
+//       <div className="grid gap-6 md:grid-cols-3">
+//         {/* Free Plan */}
+//         {tool.price.hasFree && (
+//           <div className="rounded-xl border border-white/10 bg-white/5 p-6 transition-all hover:border-purple-500/50">
+//             <h3 className="mb-2 text-lg font-bold text-white">Free Plan</h3>
+//             <div className="mb-4">
+//               <span className="text-3xl font-bold text-white">$0</span>
+//               <span className="text-white/70">/month</span>
+//             </div>
+//             <p className="mb-4 text-sm text-white/70">
+//               Get started with basic features for individuals or small teams.
+//             </p>
+//             <ul className="mb-6 space-y-2">
+//               <li className="flex items-center text-sm text-white/70">
+//                 <Check className="mr-2 h-4 w-4 text-green-500" />
+//                 Limited usage
+//               </li>
+//               <li className="flex items-center text-sm text-white/70">
+//                 <Check className="mr-2 h-4 w-4 text-green-500" />
+//                 Core features
+//               </li>
+//               <li className="flex items-center text-sm text-white/70">
+//                 <Check className="mr-2 h-4 w-4 text-green-500" />
+//                 Email support
+//               </li>
+//             </ul>
+//             <Button className="w-full bg-white/10 text-white hover:bg-white/20">Get Started</Button>
+//           </div>
+//         )}
+
+//         {/* Pro Plan */}
+//         <div className="relative rounded-xl border border-purple-500/50 bg-white/5 p-6 transition-all hover:border-purple-500">
+//           <div className="absolute -top-3 right-4 rounded-full bg-gradient-to-r from-purple-600 to-blue-500 px-3 py-1 text-xs font-medium text-white">
+//             Popular
+//           </div>
+//           <h3 className="mb-2 text-lg font-bold text-white">Pro Plan</h3>
+//           <div className="mb-4">
+//             <span className="text-3xl font-bold text-white">${tool.price.monthly}</span>
+//             <span className="text-white/70">/month</span>
+//           </div>
+//           <p className="mb-4 text-sm text-white/70">Perfect for professionals and growing teams with advanced needs.</p>
+//           <ul className="mb-6 space-y-2">
+//             <li className="flex items-center text-sm text-white/70">
+//               <Check className="mr-2 h-4 w-4 text-green-500" />
+//               Unlimited usage
+//             </li>
+//             <li className="flex items-center text-sm text-white/70">
+//               <Check className="mr-2 h-4 w-4 text-green-500" />
+//               All features
+//             </li>
+//             <li className="flex items-center text-sm text-white/70">
+//               <Check className="mr-2 h-4 w-4 text-green-500" />
+//               Priority support
+//             </li>
+//             <li className="flex items-center text-sm text-white/70">
+//               <Check className="mr-2 h-4 w-4 text-green-500" />
+//               Advanced analytics
+//             </li>
+//           </ul>
+//           <Button className="w-full bg-gradient-to-r from-purple-600 to-blue-500 text-white hover:opacity-90">
+//             Get Started
+//           </Button>
+//         </div>
+
+//         {/* Enterprise Plan */}
+//         <div className="rounded-xl border border-white/10 bg-white/5 p-6 transition-all hover:border-purple-500/50">
+//           <h3 className="mb-2 text-lg font-bold text-white">Enterprise</h3>
+//           <div className="mb-4">
+//             <span className="text-3xl font-bold text-white">Custom</span>
+//           </div>
+//           <p className="mb-4 text-sm text-white/70">
+//             Tailored solutions for large organizations with custom requirements.
+//           </p>
+//           <ul className="mb-6 space-y-2">
+//             <li className="flex items-center text-sm text-white/70">
+//               <Check className="mr-2 h-4 w-4 text-green-500" />
+//               Custom deployment
+//             </li>
+//             <li className="flex items-center text-sm text-white/70">
+//               <Check className="mr-2 h-4 w-4 text-green-500" />
+//               Dedicated support
+//             </li>
+//             <li className="flex items-center text-sm text-white/70">
+//               <Check className="mr-2 h-4 w-4 text-green-500" />
+//               SLA guarantees
+//             </li>
+//             <li className="flex items-center text-sm text-white/70">
+//               <Check className="mr-2 h-4 w-4 text-green-500" />
+//               Custom integrations
+//             </li>
+//           </ul>
+//           <Button variant="outline" className="w-full border-white/10 hover:text-white hover:bg-white/10">
+//             Contact Sales
+//           </Button>
+//         </div>
+//       </div>
+
+//       <div className="mt-8 rounded-lg border border-white/10 bg-white/10 p-4">
+//         <h3 className="mb-2 text-lg font-medium text-white">Annual Pricing</h3>
+//         <p className="text-white/70">
+//           Save up to 20% with annual billing. Annual plans start at ${tool.price.yearly}/year.
+//         </p>
+//       </div>
+//     </div>
+//   )
+// }
+
 function PricingTab({ tool }: { tool: any }) {
+  const { pricing } = tool
+
   return (
     <div className="rounded-xl border border-white/10 bg-white/5 p-6">
-      <h2 className="mb-6 text-xl font-bold text-white">Pricing Plans</h2>
+      <h2 className="mb-6 text-xl font-bold text-white">Pricing</h2>
 
-      <div className="grid gap-6 md:grid-cols-3">
+      <div className="grid gap-6 md:grid-cols-2">
         {/* Free Plan */}
-        {tool.price.hasFree && (
+        {pricing.free && (
           <div className="rounded-xl border border-white/10 bg-white/5 p-6 transition-all hover:border-purple-500/50">
+            <div className="mb-2 text-xs font-medium uppercase text-green-400">Free</div>
             <h3 className="mb-2 text-lg font-bold text-white">Free Plan</h3>
-            <div className="mb-4">
-              <span className="text-3xl font-bold text-white">$0</span>
-              <span className="text-white/70">/month</span>
-            </div>
             <p className="mb-4 text-sm text-white/70">
-              Get started with basic features for individuals or small teams.
+              Start for free with access to basic features.
             </p>
             <ul className="mb-6 space-y-2">
               <li className="flex items-center text-sm text-white/70">
                 <Check className="mr-2 h-4 w-4 text-green-500" />
-                Limited usage
+                Core features included
               </li>
               <li className="flex items-center text-sm text-white/70">
                 <Check className="mr-2 h-4 w-4 text-green-500" />
-                Core features
-              </li>
-              <li className="flex items-center text-sm text-white/70">
-                <Check className="mr-2 h-4 w-4 text-green-500" />
-                Email support
+                No credit card required
               </li>
             </ul>
-            <Button className="w-full bg-white/10 text-white hover:bg-white/20">Get Started</Button>
+            <Button className="w-full bg-white/10 text-white hover:bg-white/20">
+              <a href={tool.website} target="_blank" rel="noopener noreferrer">
+                Get Started
+              </a>
+            </Button>
           </div>
         )}
 
-        {/* Pro Plan */}
+        {/* Subscription Plan */}
         <div className="relative rounded-xl border border-purple-500/50 bg-white/5 p-6 transition-all hover:border-purple-500">
           <div className="absolute -top-3 right-4 rounded-full bg-gradient-to-r from-purple-600 to-blue-500 px-3 py-1 text-xs font-medium text-white">
-            Popular
+            {pricing.freeTrial ? 'Free Trial Available' : 'Popular'}
           </div>
           <h3 className="mb-2 text-lg font-bold text-white">Pro Plan</h3>
           <div className="mb-4">
-            <span className="text-3xl font-bold text-white">${tool.price.monthly}</span>
+            <span className="text-3xl font-bold text-white">${pricing.startingPrice}</span>
             <span className="text-white/70">/month</span>
           </div>
-          <p className="mb-4 text-sm text-white/70">Perfect for professionals and growing teams with advanced needs.</p>
-          <ul className="mb-6 space-y-2">
-            <li className="flex items-center text-sm text-white/70">
-              <Check className="mr-2 h-4 w-4 text-green-500" />
-              Unlimited usage
-            </li>
-            <li className="flex items-center text-sm text-white/70">
-              <Check className="mr-2 h-4 w-4 text-green-500" />
-              All features
-            </li>
-            <li className="flex items-center text-sm text-white/70">
-              <Check className="mr-2 h-4 w-4 text-green-500" />
-              Priority support
-            </li>
-            <li className="flex items-center text-sm text-white/70">
-              <Check className="mr-2 h-4 w-4 text-green-500" />
-              Advanced analytics
-            </li>
-          </ul>
-          <Button className="w-full bg-gradient-to-r from-purple-600 to-blue-500 text-white hover:opacity-90">
-            Get Started
-          </Button>
-        </div>
-
-        {/* Enterprise Plan */}
-        <div className="rounded-xl border border-white/10 bg-white/5 p-6 transition-all hover:border-purple-500/50">
-          <h3 className="mb-2 text-lg font-bold text-white">Enterprise</h3>
-          <div className="mb-4">
-            <span className="text-3xl font-bold text-white">Custom</span>
-          </div>
           <p className="mb-4 text-sm text-white/70">
-            Tailored solutions for large organizations with custom requirements.
+            Full access to premium features and tools.
           </p>
           <ul className="mb-6 space-y-2">
             <li className="flex items-center text-sm text-white/70">
               <Check className="mr-2 h-4 w-4 text-green-500" />
-              Custom deployment
+              All features unlocked
             </li>
+            {pricing.freeTrial && (
+              <li className="flex items-center text-sm text-white/70">
+                <Check className="mr-2 h-4 w-4 text-green-500" />
+                Try free for 15 days
+              </li>
+            )}
             <li className="flex items-center text-sm text-white/70">
               <Check className="mr-2 h-4 w-4 text-green-500" />
-              Dedicated support
-            </li>
-            <li className="flex items-center text-sm text-white/70">
-              <Check className="mr-2 h-4 w-4 text-green-500" />
-              SLA guarantees
-            </li>
-            <li className="flex items-center text-sm text-white/70">
-              <Check className="mr-2 h-4 w-4 text-green-500" />
-              Custom integrations
+              Priority support
             </li>
           </ul>
-          <Button variant="outline" className="w-full border-white/10 hover:text-white hover:bg-white/10">
-            Contact Sales
+          <Button className="w-full bg-gradient-to-r from-purple-600 to-blue-500 text-white hover:opacity-90">
+            <a href={tool.website} target="_blank" rel="noopener noreferrer">
+              Subscribe Now
+            </a>
           </Button>
         </div>
       </div>
 
       <div className="mt-8 rounded-lg border border-white/10 bg-white/10 p-4">
-        <h3 className="mb-2 text-lg font-medium text-white">Annual Pricing</h3>
+        <h3 className="mb-2 text-lg font-medium text-white">Pricing Model</h3>
         <p className="text-white/70">
-          Save up to 20% with annual billing. Annual plans start at ${tool.price.yearly}/year.
+          {pricing.priceModel === "SUBSCRIPTION"
+            ? "This tool uses a subscription-based billing model."
+            : "This tool uses a one-time purchase model."}
         </p>
       </div>
     </div>
   )
 }
+
+
 
 function ReviewsTab({ tool }: { tool: any }) {
   return (
@@ -353,9 +438,9 @@ function ReviewsTab({ tool }: { tool: any }) {
         </div>
       </div>
 
-      <Button variant="outline" className="w-full border-white/10 hover:text-white hover:bg-white/10">
+      {/* <Button variant="outline" className="w-full border-white/10 hover:text-white hover:bg-white/10">
         Load More Reviews
-      </Button>
+      </Button> */}
     </div>
   )
 }
