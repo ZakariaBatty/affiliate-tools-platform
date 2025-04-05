@@ -44,7 +44,7 @@ export default async function HomePage() {
         </Suspense>
       </div>
       <CompareTools />
-      <TrackPerformance />
+      {/* <TrackPerformance /> */}
       <div id="how-it-works">
         <HowItWorks />
       </div>
