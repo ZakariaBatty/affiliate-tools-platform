@@ -148,7 +148,7 @@ export function ProductSchema({
           },
           offers: {
             "@type": "Offer",
-            price: price.monthly,
+            price: price,
             priceCurrency: "USD",
             availability: "https://schema.org/InStock",
           },

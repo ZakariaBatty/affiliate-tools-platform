@@ -10,28 +10,14 @@ import { Star, ArrowRight, Plus, Check } from "lucide-react"
 import { allTools } from "@/data/tools"
 
 interface RelatedToolsSidebarProps {
-  currentToolId: number
-  category: string
+  relatedTools: any[]
+  categories: any[]
 }
 
-export function RelatedToolsSidebar({ currentToolId, category }: RelatedToolsSidebarProps) {
-  const [relatedTools, setRelatedTools] = useState<any[]>([])
+export function RelatedToolsSidebar({ relatedTools, categories }: RelatedToolsSidebarProps) {
   const [selectedTools, setSelectedTools] = useState<number[]>([])
   const [popularCategories, setPopularCategories] = useState<string[]>([])
 
-  useEffect(() => {
-    // Get related tools from the same category
-    const related = allTools.filter((tool) => tool.category === category && tool.id !== currentToolId).slice(0, 5)
-
-    setRelatedTools(related)
-
-    // Get popular categories (excluding current category)
-    const categories = Array.from(new Set(allTools.map((tool) => tool.category)))
-      .filter((cat) => cat !== category)
-      .slice(0, 5)
-
-    setPopularCategories(categories)
-  }, [currentToolId, category])
 
   // Toggle tool selection for comparison
   const toggleToolSelection = (toolId: number) => {
@@ -49,7 +35,7 @@ export function RelatedToolsSidebar({ currentToolId, category }: RelatedToolsSid
       {/* Related Tools */}
       <Card className="border-white/10 bg-white/5">
         <CardContent className="p-4">
-          <h2 className="mb-4 text-lg font-bold text-white">Related {category} Tools</h2>
+          <h2 className="mb-4 text-lg font-bold text-white">Related {categories.map((cat: any) => cat.category.name)} Tools</h2>
 
           <div className="space-y-4">
             {relatedTools.map((tool) => (
@@ -68,7 +54,7 @@ export function RelatedToolsSidebar({ currentToolId, category }: RelatedToolsSid
                   <div className="flex items-center justify-between">
                     <h3 className="truncate text-sm font-medium text-white">{tool.name}</h3>
                     <div className="flex items-center">
-                      <span className="mr-1 text-xs text-white">{tool.rating}</span>
+                      <span className="mr-1 text-xs text-white">{tool.avgRating}</span>
                       <Star className="h-3 w-3 fill-yellow-500 text-yellow-500" />
                     </div>
                   </div>
@@ -76,7 +62,7 @@ export function RelatedToolsSidebar({ currentToolId, category }: RelatedToolsSid
                   <p className="truncate text-xs text-white/70">{tool.description}</p>
 
                   <div className="mt-1 flex items-center justify-between">
-                    <span className="text-xs text-white/50">${tool.price.monthly}/mo</span>
+                    <span className="text-xs text-white/50">${tool.pricing.startingPrice}/mo</span>
                     <button
                       onClick={() => toggleToolSelection(tool.id)}
                       className={`flex h-5 w-5 items-center justify-center rounded-full ${selectedTools.includes(tool.id)
@@ -94,9 +80,9 @@ export function RelatedToolsSidebar({ currentToolId, category }: RelatedToolsSid
           </div>
 
           <div className="mt-4">
-            <Link href={`/tools?category=${category}`}>
+            <Link href={`/tools`}>
               <Button variant="outline" size="sm" className="w-full border-white/10 hover:text-white hover:bg-white/10">
-                View All {category} Tools
+                View All Tools
                 <ArrowRight className="ml-2 h-3 w-3" />
               </Button>
             </Link>
@@ -123,8 +109,14 @@ export function RelatedToolsSidebar({ currentToolId, category }: RelatedToolsSid
           <h2 className="mb-4 text-lg font-bold text-white">Explore Categories</h2>
 
           <div className="flex flex-wrap gap-2">
-            <Link href={`/tools?category=${category}`}>
-              <Badge className="bg-purple-600 text-white hover:bg-purple-700">{category}</Badge>
+            <Link href={`/tools`}>
+              {
+                categories.map((cat: any) => (
+                  <Badge key={cat.category.id} className="bg-white/10 text-white/70 hover:bg-white/20">
+                    {cat.category.name}
+                  </Badge>
+                ))
+              }
             </Link>
 
             {popularCategories.map((cat) => (
