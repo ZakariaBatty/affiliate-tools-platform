@@ -127,7 +127,7 @@ export default function Navbar() {
           >
             About
           </Link>
-          <Link
+          {/* <Link
             href="/pricing"
             className={cn(
               "text-sm transition-colors",
@@ -135,7 +135,7 @@ export default function Navbar() {
             )}
           >
             Pricing
-          </Link>
+          </Link> */}
           <Link
             href="/contact"
             className={cn(
@@ -161,7 +161,7 @@ export default function Navbar() {
             </Button>
           )}
 
-          <AddToolDialog />
+          {/* <AddToolDialog /> */}
         </div>
 
         {/* Mobile Menu Button */}
@@ -239,7 +239,7 @@ export default function Navbar() {
           >
             About
           </Link>
-          <Link
+          {/* <Link
             href="/pricing"
             className={cn(
               "text-lg transition-colors",
@@ -247,7 +247,7 @@ export default function Navbar() {
             )}
           >
             Pricing
-          </Link>
+          </Link> */}
           <Link
             href="/contact"
             className={cn(
@@ -258,20 +258,30 @@ export default function Navbar() {
             Contact
           </Link>
           <div className="flex flex-col gap-4 mt-6">
-            <Button
-              variant="outline"
-              className="w-full border-white/10 text-white hover:bg-white/10 hover:text-white"
-              onClick={() => openAuthDialog({ defaultTab: "login" })}
-            >
-              Login
-            </Button>
-            <AddToolDialog
+            {isLoading ? (
+              // Show loading state
+              <div className="h-9 w-9 rounded-full bg-white/10 animate-pulse"></div>
+            ) : isAuthenticated ? (
+              // Show user profile dropdown when authenticated
+              <UserProfileDropdown user={session.user} onLogout={handleLogout} initials={getUserInitials()} />
+            ) : (
+              // Show login dialog when not authenticated
+              <Button
+                variant="outline"
+                className="w-full border-white/10 text-white hover:bg-white/10 hover:text-white"
+                onClick={() => openAuthDialog({ defaultTab: "login", redirectUrl: "/" })}
+              >
+                Login
+              </Button>
+            )}
+
+            {/* <AddToolDialog
               trigger={
                 <Button className="w-full bg-gradient-to-r from-purple-600 to-blue-500 text-white hover:opacity-90">
                   Add Your Tool
                 </Button>
               }
-            />
+            /> */}
           </div>
         </nav>
       </div>

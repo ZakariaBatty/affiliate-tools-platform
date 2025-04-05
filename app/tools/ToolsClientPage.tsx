@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -11,19 +11,39 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { ChevronLeft, Filter, X, Check, Plus, BarChart3, ArrowRight, Star, Search, ChevronDown } from "lucide-react"
+import { ChevronLeft, Filter, X, Check, Plus, BarChart3, ArrowRight, Star, Search, ChevronDown, Grid3X3, List, ArrowUpDown } from "lucide-react"
 import { allTools } from "@/data/tools"
 import Link from "next/link"
 import Navbar from "@/components/navbar"
+import { Category, ToolFull } from "@/types"
+import { Input } from "@/components/ui/input"
+import { Switch } from "@/components/ui/switch"
+import { Label } from "@/components/ui/label"
+import { Card, CardContent } from "@/components/ui/card"
+import { SaveToolButton } from "@/components/save-tool-button"
+import Footer from "@/components/footer"
 
 // Get all categories from tools
 const allCategories = Array.from(new Set(allTools.map((tool) => tool.category)))
 
-export default function ToolsClientPage() {
+interface AllToolsProps {
+  initialTools: ToolFull[],
+  categories: Category[],
+}
+
+export default function ToolsClientPage({ initialTools, categories }: AllToolsProps) {
+
   const [showSidebar, setShowSidebar] = useState(true)
   const [selectedTools, setSelectedTools] = useState<number[]>([])
   const [isCompareOpen, setIsCompareOpen] = useState(false)
   const [activeTab, setActiveTab] = useState("features")
+
+  const [tools, setTools] = useState(initialTools)
+  const [view, setView] = useState("grid")
+  const [priceRange, setPriceRange] = useState([0, 1000])
+  const [showFreeOnly, setShowFreeOnly] = useState(false)
+  const [sortBy, setSortBy] = useState("popular")
+  const [showFilters, setShowFilters] = useState(false)
 
   // Filter states
   const [searchQuery, setSearchQuery] = useState("")
@@ -32,505 +52,366 @@ export default function ToolsClientPage() {
   const [ratingFilter, setRatingFilter] = useState<number>(0)
   const [priceRangeFilter, setPriceRangeFilter] = useState<[number, number]>([0, 100])
 
-  // Function to toggle tool selection for comparison
-  const toggleToolSelection = (toolId: number) => {
-    if (selectedTools.includes(toolId)) {
-      setSelectedTools(selectedTools.filter((id) => id !== toolId))
-    } else {
-      if (selectedTools.length < 5) {
-        setSelectedTools([...selectedTools, toolId])
-      }
-    }
-  }
 
-  // Get all features from all tools for comparison
-  const allFeatures = Array.from(new Set(allTools.flatMap((tool) => Object.keys(tool.features))))
+  // Filter and sort tools
+  useEffect(() => {
+    let filteredTools = [...initialTools]
 
-  // Get the selected tools data
-  const selectedToolsData = allTools.filter((tool) => selectedTools.includes(tool.id))
-
-  // Filter tools based on selected filters
-  const filteredTools = allTools.filter((tool) => {
-    // Search query filter
-    if (
-      searchQuery &&
-      !tool.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
-      !tool.description.toLowerCase().includes(searchQuery.toLowerCase())
-    ) {
-      return false
+    // Search filter
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase()
+      filteredTools = filteredTools.filter(
+        (tool) => tool.name.toLowerCase().includes(query) || tool.description.toLowerCase().includes(query),
+      )
     }
 
     // Category filter
-    if (selectedCategories.length > 0 && !selectedCategories.includes(tool.category)) {
-      return false
+    if (selectedCategories.length > 0) {
+      filteredTools = filteredTools.filter((tool) =>
+        tool.categories.some((cat) => selectedCategories.includes(cat.category.id)),
+      )
     }
 
     // Price filter
-    if (priceFilter.length > 0) {
-      if (priceFilter.includes("free") && !tool.price.hasFree) {
-        return false
-      }
-      if (priceFilter.includes("premium") && tool.price.hasFree) {
-        return false
-      }
+    if (showFreeOnly) {
+      filteredTools = filteredTools.filter((tool) => tool.pricing?.free)
+    } else {
+      filteredTools = filteredTools.filter(
+        (tool) =>
+          (tool.pricing?.startingPrice >= priceRange[0] && tool.pricing?.startingPrice <= priceRange[1]) || tool.pricing?.freeTrial === true,
+      )
     }
 
-    // Rating filter
-    if (ratingFilter > 0 && tool.rating < ratingFilter) {
-      return false
+    // Sort
+    switch (sortBy) {
+      case "popular":
+        filteredTools.sort((a, b) => (b._count?.savedBy || 0) - (a._count?.savedBy || 0))
+        break
+      case "newest":
+        filteredTools.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+        break
+      case "name":
+        filteredTools.sort((a, b) => a.name.localeCompare(b.name))
+        break
+      case "rating":
+        filteredTools.sort((a, b) => (b.avgRating || 0) - (a.avgRating || 0))
+        break
     }
 
-    // Price range filter
-    if (tool.price.monthly < priceRangeFilter[0] || tool.price.monthly > priceRangeFilter[1]) {
-      return false
-    }
+    setTools(filteredTools)
+  }, [initialTools, searchQuery, selectedCategories, priceRange, showFreeOnly, sortBy])
 
-    return true
-  })
 
-  // Reset all filters
-  const resetFilters = () => {
-    setSearchQuery("")
-    setSelectedCategories([])
-    setPriceFilter([])
-    setRatingFilter(0)
-    setPriceRangeFilter([0, 100])
-  }
+
 
   return (
     <div className="min-h-screen bg-black">
       <Navbar />
-
-      <div className="container mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h1 className="mb-2 text-3xl font-bold text-white md:text-4xl">All Tools</h1>
-          <p className="text-white/70">Discover and compare the best tools for your business needs</p>
+      <main className="container mx-auto px-4 py-16">
+        {/* header */}
+        <div className="mb-12 text-center">
+          <h1 className="mb-4 bg-gradient-to-r from-white to-white/70 bg-clip-text text-4xl font-bold text-transparent md:text-5xl lg:text-6xl">
+            AI Tools Directory
+          </h1>
+          <p className="mx-auto max-w-2xl text-lg text-white/70">
+            Discover and compare the best AI tools for your business needs
+          </p>
         </div>
 
-        <div className="flex flex-col lg:flex-row">
-          {/* Sidebar Filters */}
-          <div className={`${showSidebar ? "block" : "hidden"} mb-6 w-full lg:mb-0 lg:w-1/4 lg:pr-6`}>
-            <div className="rounded-xl border border-white/10 bg-white/5 p-4">
-              <div className="mb-6">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/50" />
-                  <input
-                    type="text"
-                    placeholder="Search tools..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full rounded-md border border-white/10 bg-white/5 py-2 pl-10 pr-4 text-white placeholder:text-white/50 focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
-                  />
-                </div>
+        {/* Search and filters */}
+        <div className="mb-8">
+          <div className="flex flex-col gap-4 md:flex-row md:items-center">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/50" />
+              <Input
+                type="text"
+                placeholder="Search tools..."
+                className="pl-10"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="icon"
+                className={view === "grid" ? "bg-white/10" : ""}
+                onClick={() => setView("grid")}
+              >
+                <Grid3X3 className="h-4 w-4" />
+                <span className="sr-only">Grid view</span>
+              </Button>
+              <Button
+                variant="outline"
+                size="icon"
+                className={view === "list" ? "bg-white/10" : ""}
+                onClick={() => setView("list")}
+              >
+                <List className="h-4 w-4" />
+                <span className="sr-only">List view</span>
+              </Button>
+              <Button variant="outline" className="md:hidden" onClick={() => setShowFilters(!showFilters)}>
+                <Filter className="mr-2 h-4 w-4" />
+                Filters
+              </Button>
+              <div className="hidden items-center gap-2 md:flex">
+                <Button variant="outline" onClick={() => setShowFilters(!showFilters)}>
+                  <Filter className="mr-2 h-4 w-4" />
+                  Filters
+                </Button>
+                <select
+                  className="rounded-md border border-white/10 bg-white/5 px-3 py-2 text-sm text-white"
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
+                >
+                  <option value="popular" className="text-black/70">Most Popular</option>
+                  <option value="newest" className="text-black/70">Newest</option>
+                  <option value="name" className="text-black/70">Name (A-Z)</option>
+                  <option value="rating" className="text-black/70">Highest Rated</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          {/* Mobile sort */}
+          <div className="mt-4 md:hidden">
+            <select
+              className="w-full rounded-md border border-white/10 bg-white/5 px-3 py-2 text-white"
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+            >
+              <option value="popular" className="text-black/70">Most Popular</option>
+              <option value="newest" className="text-black/70">Newest</option>
+              <option value="name" className="text-black/70">Name (A-Z)</option>
+              <option value="rating" className="text-black/70">Highest Rated</option>
+            </select>
+          </div>
+
+          {/* Filters panel */}
+          {showFilters && (
+            <div className="mt-4 rounded-lg border border-white/10 bg-white/5 p-4">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-medium text-white">Filters</h3>
+                <Button variant="ghost" size="sm" onClick={() => setShowFilters(false)}>
+                  <X className="h-4 w-4" />
+                </Button>
               </div>
 
-              <div className="mb-6">
-                <h3 className="mb-3 text-lg font-medium text-white">Categories</h3>
-                <div className="space-y-2">
-                  {allCategories.map((category) => (
-                    <div key={category} className="flex items-center">
-                      <Checkbox
-                        id={`category-${category}`}
-                        checked={selectedCategories.includes(category)}
-                        onCheckedChange={(checked) => {
-                          if (checked) {
-                            setSelectedCategories([...selectedCategories, category])
+              <div className="mt-4 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+                {/* Categories */}
+                <div>
+                  <h4 className="mb-2 font-medium text-white">Categories</h4>
+                  <div className="flex flex-wrap gap-2">
+                    {categories.map((category) => (
+                      <Badge
+                        key={category.id}
+                        className={`cursor-pointer ${selectedCategories.includes(category.id)
+                          ? "bg-purple-600 hover:bg-purple-700 text-white/70"
+                          : "bg-white/70 hover:bg-white/20"
+                          }`}
+                        onClick={() => {
+                          if (selectedCategories.includes(category.id)) {
+                            setSelectedCategories(selectedCategories.filter((id) => id !== category.id))
                           } else {
-                            setSelectedCategories(selectedCategories.filter((c) => c !== category))
+                            setSelectedCategories([...selectedCategories, category.id])
                           }
                         }}
-                        className="border-white/30 data-[state=checked]:bg-purple-600 data-[state=checked]:text-white"
-                      />
-                      <label
-                        htmlFor={`category-${category}`}
-                        className="ml-2 cursor-pointer text-sm text-white/70 hover:text-white"
                       >
-                        {category}
-                      </label>
-                    </div>
-                  ))}
+                        {category.name}
+                      </Badge>
+                    ))}
+                  </div>
                 </div>
-              </div>
-
-              <div className="mb-6">
-                <h3 className="mb-3 text-lg font-medium text-white">Price</h3>
-                <div className="space-y-2">
-                  <div className="flex items-center">
-                    <Checkbox
-                      id="price-free"
-                      checked={priceFilter.includes("free")}
-                      onCheckedChange={(checked) => {
-                        if (checked) {
-                          setPriceFilter([...priceFilter, "free"])
-                        } else {
-                          setPriceFilter(priceFilter.filter((p) => p !== "free"))
-                        }
-                      }}
-                      className="border-white/30 data-[state=checked]:bg-purple-600 data-[state=checked]:text-white"
+                {/* Price range */}
+                <div>
+                  <h4 className="mb-2 font-medium text-white">Price Range</h4>
+                  <div className="px-2">
+                    <Slider
+                      defaultValue={[0, 1000]}
+                      max={1000}
+                      step={10}
+                      value={priceRange}
+                      onValueChange={setPriceRange}
+                      disabled={showFreeOnly}
                     />
-                    <label htmlFor="price-free" className="ml-2 cursor-pointer text-sm text-white/70 hover:text-white">
-                      Free Plan Available
-                    </label>
-                  </div>
-                  <div className="flex items-center">
-                    <Checkbox
-                      id="price-premium"
-                      checked={priceFilter.includes("premium")}
-                      onCheckedChange={(checked) => {
-                        if (checked) {
-                          setPriceFilter([...priceFilter, "premium"])
-                        } else {
-                          setPriceFilter(priceFilter.filter((p) => p !== "premium"))
-                        }
-                      }}
-                      className="border-white/30 data-[state=checked]:bg-purple-600 data-[state=checked]:text-white"
-                    />
-                    <label
-                      htmlFor="price-premium"
-                      className="ml-2 cursor-pointer text-sm text-white/70 hover:text-white"
-                    >
-                      Premium Only
-                    </label>
-                  </div>
-                </div>
-              </div>
-
-              <Collapsible className="mb-6">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-medium text-white">Advanced Filters</h3>
-                  <CollapsibleTrigger className="rounded-md p-1 text-white/70 hover:bg-white/10 hover:text-white">
-                    <ChevronDown className="h-5 w-5" />
-                  </CollapsibleTrigger>
-                </div>
-
-                <CollapsibleContent className="mt-3 space-y-4">
-                  <div>
-                    <h4 className="mb-2 text-sm font-medium text-white/70">Minimum Rating</h4>
-                    <div className="flex items-center gap-2">
-                      {[0, 3, 3.5, 4, 4.5].map((rating) => (
-                        <button
-                          key={rating}
-                          onClick={() => setRatingFilter(rating)}
-                          className={`flex h-8 items-center rounded-md px-2 text-xs ${ratingFilter === rating
-                            ? "bg-purple-600 text-white"
-                            : "bg-white/10 text-white/70 hover:bg-white/20"
-                            }`}
-                        >
-                          {rating > 0 ? (
-                            <>
-                              {rating}+ <Star className="ml-1 h-3 w-3 fill-current" />
-                            </>
-                          ) : (
-                            "Any"
-                          )}
-                        </button>
-                      ))}
+                    <div className="mt-2 flex items-center justify-between text-sm text-white/70">
+                      <span>${priceRange[0]}</span>
+                      <span>${priceRange[1]}</span>
                     </div>
                   </div>
-
-                  <div>
-                    <h4 className="mb-2 text-sm font-medium text-white/70">Price Range ($/month)</h4>
-                    <div className="px-2">
-                      <Slider
-                        defaultValue={[0, 100]}
-                        value={priceRangeFilter}
-                        onValueChange={(value) => setPriceRangeFilter(value as [number, number])}
-                        max={100}
-                        step={5}
-                        className="py-4"
-                      />
-                      <div className="flex items-center justify-between text-xs text-white/70">
-                        <span>${priceRangeFilter[0]}</span>
-                        <span>${priceRangeFilter[1]}</span>
-                      </div>
-                    </div>
+                  <div className="mt-4 flex items-center space-x-2">
+                    <Switch id="free-only" checked={showFreeOnly} onCheckedChange={setShowFreeOnly} />
+                    <Label htmlFor="free-only">Free tools only</Label>
                   </div>
-                </CollapsibleContent>
-              </Collapsible>
+                </div>
 
-              <Button
-                onClick={resetFilters}
-                variant="outline"
-                className="w-full border-white/10 text-white hover:bg-white/10"
-              >
-                Reset Filters
-              </Button>
-            </div>
-          </div>
-
-          {/* Main Content */}
-          <div className={`w-full ${showSidebar ? "lg:w-3/4" : "lg:w-full"}`}>
-            <div className="mb-6 flex flex-col items-center justify-between gap-4 sm:flex-row">
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={() => setShowSidebar(!showSidebar)}
-                  className="border-white/10 text-white hover:bg-white/10"
-                >
-                  {showSidebar ? <ChevronLeft className="h-4 w-4" /> : <Filter className="h-4 w-4" />}
-                </Button>
-                <span className="text-sm text-white/70">
-                  Showing {filteredTools.length} of {allTools.length} tools
-                </span>
-              </div>
-
-              <div className="flex items-center gap-2">
-                {selectedTools.length > 0 && (
+                <div className="mt-6 flex justify-end">
                   <Button
-                    onClick={() => setIsCompareOpen(true)}
-                    className="bg-gradient-to-r from-purple-600 to-blue-500 text-white hover:opacity-90"
+                    variant="outline"
+                    className="mr-2"
+                    onClick={() => {
+                      setSelectedCategories([])
+                      setPriceRange([0, 1000])
+                      setShowFreeOnly(false)
+                      setSearchQuery("")
+                    }}
                   >
-                    <BarChart3 className="mr-2 h-4 w-4" />
-                    Compare ({selectedTools.length})
+                    Reset Filters
                   </Button>
-                )}
-
-                <Select defaultValue="relevance">
-                  <SelectTrigger className="w-[180px] border-white/10 bg-white/5 text-white">
-                    <SelectValue placeholder="Sort by" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-black text-white">
-                    <SelectItem value="relevance">Relevance</SelectItem>
-                    <SelectItem value="rating-high">Rating (High to Low)</SelectItem>
-                    <SelectItem value="rating-low">Rating (Low to High)</SelectItem>
-                    <SelectItem value="price-high">Price (High to Low)</SelectItem>
-                    <SelectItem value="price-low">Price (Low to High)</SelectItem>
-                  </SelectContent>
-                </Select>
+                  <Button onClick={() => setShowFilters(false)}>Apply Filters</Button>
+                </div>
               </div>
             </div>
+          )}
+        </div>
 
-            {/* Tools Grid */}
-            <div
-              className={`grid gap-6 ${showSidebar ? "sm:grid-cols-2 lg:grid-cols-3" : "sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"}`}
+        {/* Results count */}
+        <div className="mb-6 flex items-center justify-between">
+          <p className="text-white/70">
+            Showing <span className="font-medium text-white">{tools.length}</span> tools
+          </p>
+          <div className="flex items-center text-white/70">
+            <ArrowUpDown className="mr-2 h-4 w-4" />
+            <span className="hidden sm:inline">Sort by:</span>
+            <select
+              className="ml-2 rounded bg-transparent text-white"
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
             >
-              {filteredTools.map((tool) => (
-                <div
-                  key={tool.id}
-                  className="group relative overflow-hidden rounded-xl border border-white/10 bg-white/5 transition-all duration-300 hover:border-purple-500/50 hover:bg-white/10"
-                >
-                  {/* Selection checkbox for comparison */}
-                  <div className="absolute right-3 top-3 z-10">
-                    <button
-                      onClick={() => toggleToolSelection(tool.id)}
-                      className={`flex h-8 w-8 items-center justify-center rounded-full ${selectedTools.includes(tool.id)
-                        ? "bg-purple-600 text-white"
-                        : "bg-white/10 text-white/70 hover:bg-white/20 hover:text-white"
-                        }`}
-                      aria-label={selectedTools.includes(tool.id) ? "Remove from comparison" : "Add to comparison"}
-                    >
-                      {selectedTools.includes(tool.id) ? <Check className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
-                    </button>
-                  </div>
-
-                  <div className="p-6">
-                    <div className="mb-4 flex items-center justify-between">
-                      <Badge className="bg-white/10 text-white/70 hover:bg-white/20">{tool.category}</Badge>
-                    </div>
-
-                    <div className="mb-4 h-40 w-full overflow-hidden rounded-lg">
-                      <Image
-                        src={tool.image || "/placeholder.svg"}
-                        alt={tool.name}
-                        width={300}
-                        height={300}
-                        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
-                      />
-                    </div>
-
-                    <h3 className="mb-2 text-xl font-bold text-white flex justify-between">
-                      {tool.name}
-                      <div className="flex items-center">
-                        <span className="text-sm font-medium text-yellow-500">{tool.rating}</span>
-                        <Star className="ml-1 h-4 w-4 fill-yellow-500 text-yellow-500" />
-                      </div>
-                    </h3>
-
-                    <p className="mb-4 text-sm text-white/70 line-clamp-2">{tool.description}</p>
-
-                    <div className="mb-4 flex items-center justify-between">
-                      <div>
-                        {tool.price.hasFree ? (
-                          <div className="flex items-center gap-2">
-                            <Badge className="bg-green-600 text-white hover:bg-green-700">Free Plan</Badge>
-                            <span className="text-sm text-white/70">/ ${tool.price.monthly}/mo</span>
-                          </div>
-                        ) : (
-                          <span className="text-sm text-white/70">From ${tool.price.monthly}/mo</span>
-                        )}
-                      </div>
-                    </div>
-
-                    <Button className="w-full bg-white/10 text-white hover:bg-white/20" variant="outline">
-                      <Link href={`/tools/${tool.id}`}>
-                        <span>See Details</span>
-                      </Link>
-                      <ArrowRight className="ml-2 h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {filteredTools.length === 0 && (
-              <div className="flex h-60 flex-col items-center justify-center rounded-xl border border-white/10 bg-white/5 p-6 text-center">
-                <div className="mb-4 rounded-full bg-white/10 p-3">
-                  <Search className="h-6 w-6 text-white/70" />
-                </div>
-                <h3 className="mb-2 text-xl font-bold text-white">No tools found</h3>
-                <p className="text-white/70">Try adjusting your filters or search query</p>
-                <Button
-                  onClick={resetFilters}
-                  variant="outline"
-                  className="mt-4 border-white/10 hover:text-white hover:bg-white/10"
-                >
-                  Reset Filters
-                </Button>
-              </div>
-            )}
+              <option value="popular" className="text-black">Most Popular</option>
+              <option value="newest" className="text-black">Newest</option>
+              <option value="name" className="text-black">Name (A-Z)</option>
+              <option value="rating" className="text-black">Highest Rated</option>
+            </select>
           </div>
         </div>
-      </div>
 
-      {/* Comparison Dialog */}
-      <Dialog open={isCompareOpen} onOpenChange={setIsCompareOpen}>
-        <DialogContent className="max-w-[90vw] bg-black text-white">
-          <DialogHeader>
-            <DialogTitle className="text-2xl">Tool Comparison</DialogTitle>
-            <DialogDescription className="text-white/70">
-              Compare features, pricing, and performance metrics side by side.
-            </DialogDescription>
-          </DialogHeader>
-
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-6">
-            <TabsList className="grid w-full grid-cols-2 bg-white/10">
-              <TabsTrigger value="features">Features</TabsTrigger>
-              <TabsTrigger value="performance">Performance</TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="features" className="mt-4">
-              <div className="rounded-lg border border-white/10">
-                <div className="max-h-[70vh] overflow-auto">
-                  <Table>
-                    <TableHeader>
-                      <TableRow className="border-white/10 hover:bg-white/5">
-                        <TableHead className="text-white">Feature</TableHead>
-                        {selectedToolsData.map((tool) => (
-                          <TableHead key={tool.id} className="text-center text-white">
-                            {tool.name}
-                          </TableHead>
-                        ))}
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      <TableRow className="border-white/10 hover:bg-white/5">
-                        <TableCell className="font-medium text-white">Pricing</TableCell>
-                        {selectedToolsData.map((tool) => (
-                          <TableCell key={`${tool.id}-price`} className="text-center text-white">
-                            <div className="flex flex-col items-center">
-                              <span>${tool.price.monthly}/mo</span>
-                              <span className="text-xs text-white/50">${tool.price.yearly}/yr</span>
-                              {tool.price.hasFree && (
-                                <Badge className="mt-1 bg-green-600 text-white hover:bg-green-700">Free Plan</Badge>
-                              )}
-                            </div>
-                          </TableCell>
-                        ))}
-                      </TableRow>
-
-                      {allFeatures.map((feature) => (
-                        <TableRow key={feature} className="border-white/10 hover:bg-white/5">
-                          <TableCell className="font-medium text-white">{feature}</TableCell>
-                          {selectedToolsData.map((tool) => (
-                            <TableCell key={`${tool.id}-${feature}`} className="text-center text-white">
-                              {tool.features[feature as keyof typeof tool.features] ? (
-                                <Check className="mx-auto h-5 w-5 text-green-500" />
-                              ) : (
-                                <X className="mx-auto h-5 w-5 text-red-500" />
-                              )}
-                            </TableCell>
-                          ))}
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
+        {/* Tools grid/list */}
+        {tools.length === 0 ? (
+          <div className="flex h-64 flex-col items-center justify-center rounded-lg border border-white/10 bg-white/5 p-8">
+            <p className="text-center text-lg text-white/70">No tools found matching your criteria</p>
+            <Button
+              variant="outline"
+              className="mt-4"
+              onClick={() => {
+                setSelectedCategories([])
+                setPriceRange([0, 1000])
+                setShowFreeOnly(false)
+                setSearchQuery("")
+              }}
+            >
+              Reset Filters
+            </Button>
+          </div>
+        ) : view === "grid" ? (
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {tools.map((tool) => (
+              <Card
+                key={tool.id}
+                className="overflow-hidden border-white/10 bg-white/5 transition-all duration-300 hover:border-purple-500/50 hover:bg-white/10"
+              >
+                <div className="relative h-48 w-full overflow-hidden">
+                  <Image
+                    src={tool.imageUrl || "/placeholder.svg?height=400&width=600"}
+                    alt={tool.name}
+                    fill
+                    className="object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                  <div className="absolute bottom-4 left-4">
+                    <Badge className="bg-white/20 text-white">{tool.categories[0]?.category.name || "General"}</Badge>
+                  </div>
+                  <div className="absolute right-4 top-4">
+                    <SaveToolButton
+                      toolId={tool.id}
+                      isSaved={tool.savedByCurrentUser}
+                      variant="ghost"
+                      size="sm"
+                      className="bg-black/50 hover:bg-black/70 text-white"
+                    />
+                  </div>
+                </div>
+                <CardContent className="p-4">
+                  <div className="mb-2 flex items-center justify-between">
+                    <h3 className="text-lg font-bold text-white">
+                      <Link href={`/tools/${tool.slug}`} className="hover:text-purple-300">
+                        {tool.name}
+                      </Link>
+                    </h3>
+                    <div className="flex items-center">
+                      <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
+                      <span className="ml-1 text-sm font-medium text-yellow-500">{tool.avgRating || 4.5}</span>
+                    </div>
+                  </div>
+                  <p className="mb-4 text-sm text-white/70 line-clamp-2">{tool.description}</p>
+                  <div className="flex items-center justify-between">
+                    <Badge variant="outline" className="border-white/10 text-white/70">
+                      {tool.pricing?.free === true ? "Free" : `From $${tool.pricing?.startingPrice || 0}/mo`}
+                    </Badge>
+                    <span className="text-xs text-white/50">{tool._count?.savedBy || 0} saves</span>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {tools.map((tool) => (
+              <div
+                key={tool.id}
+                className="flex flex-col overflow-hidden rounded-lg border border-white/10 bg-white/5 transition-all duration-300 hover:border-purple-500/50 hover:bg-white/10 sm:flex-row"
+              >
+                <div className="relative h-48 w-full sm:h-auto sm:w-48">
+                  <Image
+                    src={tool.imageUrl || "/placeholder.svg?height=400&width=600"}
+                    alt={tool.name}
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+                <div className="flex flex-1 flex-col p-4">
+                  <div className="mb-2 flex items-center justify-between">
+                    <h3 className="text-lg font-bold text-white">
+                      <Link href={`/tools/${tool.slug}`} className="hover:text-purple-300">
+                        {tool.name}
+                      </Link>
+                    </h3>
+                    <div className="flex items-center">
+                      <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
+                      <span className="ml-1 text-sm font-medium text-yellow-500">{tool.avgRating || 4.5}</span>
+                    </div>
+                  </div>
+                  <p className="mb-4 flex-1 text-sm text-white/70">{tool.description}</p>
+                  <div className="flex items-center justify-between">
+                    <div className="flex flex-wrap gap-2">
+                      <Badge className="bg-white/20 text-white">{tool.categories[0]?.category.name || "General"}</Badge>
+                      <Badge variant="outline" className="border-white/10 text-white/70">
+                        {tool.pricing?.free === true ? "Free" : `From $${tool.pricing?.startingPrice || 0}/mo`}
+                      </Badge>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-white/50">{tool._count?.savedBy || 0} saves</span>
+                      <SaveToolButton toolId={tool.id} isSaved={tool.savedByCurrentUser} variant="outline" size="sm" />
+                    </div>
+                  </div>
                 </div>
               </div>
-            </TabsContent>
+            ))}
+          </div>
+        )}
 
-            <TabsContent value="performance" className="mt-4">
-              <div className="rounded-lg border border-white/10">
-                <div className="max-h-[70vh] overflow-auto">
-                  <Table>
-                    <TableHeader>
-                      <TableRow className="border-white/10 hover:bg-white/5">
-                        <TableHead className="text-white">Metric</TableHead>
-                        {selectedToolsData.map((tool) => (
-                          <TableHead key={tool.id} className="text-center text-white">
-                            {tool.name}
-                          </TableHead>
-                        ))}
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {Object.keys(allTools[0].performance).map((metric) => (
-                        <TableRow key={metric} className="border-white/10 hover:bg-white/5">
-                          <TableCell className="font-medium text-white">
-                            {metric.replace(/([A-Z])/g, " $1").replace(/^./, (str) => str.toUpperCase())}
-                          </TableCell>
-                          {selectedToolsData.map((tool) => (
-                            <TableCell key={`${tool.id}-${metric}`} className="text-center">
-                              <div className="flex flex-col items-center">
-                                <span className="text-white">
-                                  {tool.performance[metric as keyof typeof tool.performance]}%
-                                </span>
-                                <div className="mt-1 h-2 w-24 overflow-hidden rounded-full bg-white/10">
-                                  <div
-                                    className="h-full bg-gradient-to-r from-purple-600 to-blue-500"
-                                    style={{
-                                      width: `${tool.performance[metric as keyof typeof tool.performance]}%`,
-                                    }}
-                                  />
-                                </div>
-                              </div>
-                            </TableCell>
-                          ))}
-                        </TableRow>
-                      ))}
-                      <TableRow className="border-white/10 hover:bg-white/5">
-                        <TableCell className="font-medium text-white">Overall Rating</TableCell>
-                        {selectedToolsData.map((tool) => (
-                          <TableCell key={`${tool.id}-rating`} className="text-center">
-                            <div className="flex flex-col items-center">
-                              <span className="text-white">{tool.rating}/5</span>
-                              <div className="mt-1 flex text-yellow-500">
-                                {[...Array(5)].map((_, i) => (
-                                  <Star
-                                    key={i}
-                                    className="h-4 w-4"
-                                    fill={
-                                      i < Math.floor(tool.rating)
-                                        ? "currentColor"
-                                        : i < tool.rating
-                                          ? "currentColor"
-                                          : "none"
-                                    }
-                                  />
-                                ))}
-                              </div>
-                            </div>
-                          </TableCell>
-                        ))}
-                      </TableRow>
-                    </TableBody>
-                  </Table>
-                </div>
-              </div>
-            </TabsContent>
-          </Tabs>
-        </DialogContent>
-      </Dialog>
+        {/* Load more button */}
+        {/* {tools.length > 0 && (
+          <div className="mt-8 text-center">
+            <Button variant="outline" className="border-white/10 hover:bg-white/10 hover:text-white">
+              Load More
+            </Button>
+          </div>
+        )} */}
+      </main>
+
+      <Footer />
+
     </div>
   )
 }

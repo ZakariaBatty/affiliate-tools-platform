@@ -29,8 +29,6 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
 export default async function BlogPostPage({ params }: any) {
   const resolvedParams = await params
 
-  console.log("params", params)
-
   const data = await getBlogPostDetail(resolvedParams.slug)
 
   if (!data) {
