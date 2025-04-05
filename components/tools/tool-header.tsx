@@ -44,12 +44,19 @@ export function ToolHeader({ tool, overallScore }: ToolHeaderProps) {
 
         <div className="flex-1">
           <div className="mb-2 flex flex-wrap items-center gap-2">
-            <Badge className="bg-white/10 text-white/70 hover:bg-white/20">{tool.category}</Badge>
+            {
+              tool.categories.map((cat: any, index: number) => (
+                <Badge key={index} className="bg-white/10 text-white/70 hover:bg-white/20">
+                  {cat.category.name}
+                </Badge>
+              ))
+            }
             <div className="flex items-center">
-              <span className="text-sm font-medium text-yellow-500">{tool.rating}</span>
+              <span className="text-sm font-medium text-yellow-500">{tool.avgRating}</span>
               <Star className="ml-1 h-4 w-4 fill-yellow-500 text-yellow-500" />
             </div>
-            {tool.price.hasFree && <Badge className="bg-green-600 text-white hover:bg-green-700">Free Plan</Badge>}
+            {tool.pricing.free && <Badge className="bg-green-600 text-white hover:bg-green-700">Free Plan</Badge>}
+            {tool.pricing.freeTrial && <Badge className="bg-green-600 text-white hover:bg-green-700">Free Trial</Badge>}
           </div>
 
           <h1 className="mb-2 text-3xl font-bold text-white">{tool.name}</h1>
@@ -58,7 +65,9 @@ export function ToolHeader({ tool, overallScore }: ToolHeaderProps) {
           <div className="flex flex-wrap gap-3">
             <Button className="bg-gradient-to-r from-purple-600 to-blue-500 text-white hover:opacity-90">
               <ExternalLink className="mr-2 h-4 w-4" />
-              Visit Website
+              <a href={tool.website} target="_blank" rel="noopener noreferrer">
+                Visit Website
+              </a>
             </Button>
             <Button
               variant="outline"
@@ -80,20 +89,30 @@ export function ToolHeader({ tool, overallScore }: ToolHeaderProps) {
         </div>
 
         <div className="flex flex-col items-center rounded-lg border border-white/10 bg-white/5 p-4 text-center">
-          <div className="text-3xl font-bold text-white">{overallScore}%</div>
-          <div className="text-sm text-white/70">Overall Score</div>
-          <div className="mt-2 flex">
-            {[...Array(5)].map((_, i) => (
-              <Star
-                key={i}
-                className="h-4 w-4"
-                fill={i < Math.floor(tool.rating) ? "#EAB308" : "none"}
-                color={i < Math.floor(tool.rating) ? "#EAB308" : "#6b7280"}
-              />
-            ))}
+          <div className="text-3xl font-bold text-white">
+            {overallScore}%
           </div>
-          <div className="mt-1 text-xs text-white/50">{tool.rating} out of 5</div>
+          <div className="text-sm text-white/70">Overall Score</div>
+
+          <div className="mt-2 flex">
+            {[...Array(5)].map((_, i) => {
+              const average = tool.ratings.reduce((sum: number, r: { rating: number }) => sum + r.rating, 0) / tool.ratings.length || 0;
+              return (
+                <Star
+                  key={i}
+                  className="h-4 w-4"
+                  fill={i < Math.round(average) ? "#EAB308" : "none"}
+                  color={i < Math.round(average) ? "#EAB308" : "#6b7280"}
+                />
+              );
+            })}
+          </div>
+
+          <div className="mt-1 text-xs text-white/50">
+            {tool.avgRating} out of 5
+          </div>
         </div>
+
       </div>
     </div>
   )

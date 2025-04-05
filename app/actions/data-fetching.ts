@@ -324,7 +324,7 @@ export const getToolDetail = cache(
                  }
                : false,
          },
-         take: 3,
+         take: 5,
       });
 
       // Calculate ratings for related tools
