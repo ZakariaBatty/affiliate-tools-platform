@@ -1,4 +1,6 @@
+import { withDb } from '@/lib/db';
 import prisma from '@/lib/prisma';
+import { Category, GetAllToolsResponseAdmin } from '@/types';
 
 export const getAdminStats = async () => {
    const totalUsers = await prisma.user.count();
@@ -44,3 +46,49 @@ export const getAdminStats = async () => {
 };
 
 //  page tools
+export const getAllToolsAdmin = async (): Promise<GetAllToolsResponseAdmin> => {
+   const tools = await withDb(() =>
+      prisma.tool.findMany({
+         include: {
+            categories: {
+               include: {
+                  category: true,
+               },
+            },
+            company: true,
+            ratings: true,
+            _count: {
+               select: {
+                  views: true,
+                  savedBy: true,
+                  ratings: true,
+               },
+            },
+         },
+      })
+   );
+
+   return tools.map((tool) => {
+      // Calculate average rating
+      const avgRating =
+         tool.ratings.length > 0
+            ? tool.ratings.reduce((sum, rating) => sum + rating.rating, 0) /
+              tool.ratings.length
+            : 0;
+
+      return {
+         ...tool,
+         avgRating: Number(avgRating.toFixed(1)), // Round to 1 decimal place
+      };
+   });
+};
+
+export const getCategoriesAdmin = async (): Promise<Category[]> => {
+   return await withDb(() =>
+      prisma.category.findMany({
+         orderBy: {
+            name: 'asc',
+         },
+      })
+   );
+};
