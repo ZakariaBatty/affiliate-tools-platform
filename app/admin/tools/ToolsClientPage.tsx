@@ -37,6 +37,7 @@ import {
 import { Category, Tag } from "@/types"
 import { AddToolSheet } from "@/components/admin/tools/add-tool-sheet"
 import { DeleteToolDialog } from "@/components/admin/tools/delete-tool-dialog"
+import { EditToolSheet } from "@/components/admin/tools/edit-tool-sheet"
 
 interface ALLToolsProps {
   initialTools: any[]
@@ -55,7 +56,6 @@ export default function ToolsClientPageAdmin({ initialTools, categories, tags }:
   const [selectedTool, setSelectedTool] = useState<any | null>(null)
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [addToolSheet, setAddToolSheet] = useState(false)
-
   // Filter tools
   useEffect(() => {
     let filteredTools = [...initialTools]
@@ -274,135 +274,14 @@ export default function ToolsClientPageAdmin({ initialTools, categories, tags }:
 
       {/* View Tool Sheet */}
       {selectedTool && (
-        <Sheet
-          open={viewToolSheet}
-          onOpenChange={(open) => {
-            setViewToolSheet(open)
-            setSidebarOpen(open)
-          }}
-        >
-          <SheetContent className="w-[70%] sm:max-w-[70%] overflow-y-auto" side="right">
-            <SheetHeader>
-              <SheetTitle>Tool Details</SheetTitle>
-              <SheetDescription>Detailed information about {selectedTool.name}</SheetDescription>
-            </SheetHeader>
-            <div className="grid gap-4 py-4 mt-6">
-              <div className="grid grid-cols-4 items-center gap-4">
-                <label htmlFor="name" className="text-right text-sm font-medium">
-                  Name
-                </label>
-                <Input id="name" defaultValue={selectedTool.name} className="col-span-3" />
-              </div>
-              <div className="grid grid-cols-4 items-start gap-4">
-                <label htmlFor="description" className="text-right text-sm font-medium pt-2">
-                  Description
-                </label>
-                <Textarea
-                  id="description"
-                  defaultValue={selectedTool.description}
-                  className="col-span-3 min-h-[100px]"
-                />
-              </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <label htmlFor="category" className="text-right text-sm font-medium">
-                  Category
-                </label>
-                <Select defaultValue={selectedTool.categories[0].category.name}>
-                  <SelectTrigger id="category" className="col-span-3">
-                    <SelectValue placeholder="Select category" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {categories.map((category) => (
-                      <SelectItem key={category.id} value={category.name}>
-                        {category.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <label htmlFor="website" className="text-right text-sm font-medium">
-                  Website URL
-                </label>
-                <Input id="website" defaultValue={selectedTool.website} className="col-span-3" />
-              </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <label htmlFor="company" className="text-right text-sm font-medium">
-                  Company
-                </label>
-                <Input id="company" defaultValue={selectedTool.company?.name || ""} className="col-span-3" />
-              </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <div className="text-right text-sm font-medium">Featured</div>
-                <div className="flex items-center space-x-2 col-span-3">
-                  <Switch id="featured" defaultChecked={selectedTool.featured} />
-                  <Label htmlFor="featured">Mark as featured tool</Label>
-                </div>
-              </div>
-              <div className="grid grid-cols-4 items-start gap-4">
-                <label htmlFor="pricing" className="text-right text-sm font-medium pt-2">
-                  Pricing Tiers
-                </label>
-                <div className="col-span-3 space-y-3">
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <Label htmlFor="free-tier" className="mb-1 block">
-                        Free Tier
-                      </Label>
-                      <Input id="free-tier" defaultValue="Limited features" />
-                    </div>
-                    <div>
-                      <Label htmlFor="free-price" className="mb-1 block">
-                        Price
-                      </Label>
-                      <Input id="free-price" defaultValue="$0" />
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <Label htmlFor="pro-tier" className="mb-1 block">
-                        Pro Tier
-                      </Label>
-                      <Input id="pro-tier" defaultValue="All features" />
-                    </div>
-                    <div>
-                      <Label htmlFor="pro-price" className="mb-1 block">
-                        Price
-                      </Label>
-                      <Input id="pro-price" defaultValue="$19/month" />
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <Label htmlFor="enterprise-tier" className="mb-1 block">
-                        Enterprise Tier
-                      </Label>
-                      <Input id="enterprise-tier" defaultValue="Custom solutions" />
-                    </div>
-                    <div>
-                      <Label htmlFor="enterprise-price" className="mb-1 block">
-                        Price
-                      </Label>
-                      <Input id="enterprise-price" defaultValue="Custom pricing" />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <SheetFooter className="mt-6">
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setEditToolSheet(false)
-                  setSidebarOpen(false)
-                }}
-              >
-                Cancel
-              </Button>
-              <Button className="bg-white text-black hover:bg-purple-600 hover:text-white">Save Changes</Button>
-            </SheetFooter>
-          </SheetContent>
-        </Sheet>
+        <EditToolSheet
+          editToolSheet={editToolSheet}
+          setEditToolSheet={setEditToolSheet}
+          setSidebarOpen={setSidebarOpen}
+          categories={categories}
+          tags={tags}
+          tool={selectedTool}
+        />
       )}
 
       {/* Delete Tool Sheet */}

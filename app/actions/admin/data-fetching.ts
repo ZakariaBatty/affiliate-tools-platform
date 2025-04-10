@@ -55,6 +55,11 @@ export const getAllToolsAdmin = async (): Promise<GetAllToolsResponseAdmin> => {
                   category: true,
                },
             },
+            tags: {
+               include: {
+                  tag: true,
+               },
+            },
             company: true,
             ratings: true,
             _count: {
@@ -64,6 +69,9 @@ export const getAllToolsAdmin = async (): Promise<GetAllToolsResponseAdmin> => {
                   ratings: true,
                },
             },
+         },
+         orderBy: {
+            createdAt: 'desc',
          },
       })
    );
