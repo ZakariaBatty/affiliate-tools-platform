@@ -14,7 +14,6 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle } from "@/components/ui/sheet"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
 import { Textarea } from "@/components/ui/textarea"
 import { Switch } from "@/components/ui/switch"
@@ -32,23 +31,20 @@ import {
   Star,
   ExternalLink,
   ImageIcon,
-  Link,
-  Tag,
   Building2,
-  Calendar,
   XCircle,
 } from "lucide-react"
-import { allTools } from "@/data/tools"
-import { Category, ToolFullAdmin } from "@/types"
-import Image from "next/image"
+import { Category, Tag } from "@/types"
+import { AddToolSheet } from "@/components/admin/tools/add-tool-sheet"
+import { DeleteToolDialog } from "@/components/admin/tools/delete-tool-dialog"
 
 interface ALLToolsProps {
-  initialTools: ToolFullAdmin[]
+  initialTools: any[]
   categories: Category[]
+  tags: Tag[]
 }
 
-export default function ToolsClientPageAdmin({ initialTools, categories }: ALLToolsProps) {
-
+export default function ToolsClientPageAdmin({ initialTools, categories, tags }: ALLToolsProps) {
   const [tools, setTools] = useState(initialTools)
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedCategory, setSelectedCategory] = useState("all")
@@ -56,56 +52,37 @@ export default function ToolsClientPageAdmin({ initialTools, categories }: ALLTo
   const [viewToolSheet, setViewToolSheet] = useState(false)
   const [editToolSheet, setEditToolSheet] = useState(false)
   const [deleteToolSheet, setDeleteToolSheet] = useState(false)
-  const [selectedTool, setSelectedTool] = useState<ToolFullAdmin | null>(null)
+  const [selectedTool, setSelectedTool] = useState<any | null>(null)
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [addToolSheet, setAddToolSheet] = useState(false)
-  console.log("selectedCategory", selectedCategory)
 
-  // Extract unique categories from tools
-  // const categories = [...new Set(allTools.map((tool) => tool.category))]
-
-  // const filteredTools = allTools.filter((tool) => {
-  //   const matchesSearch =
-  //     tool.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-  //     tool.description.toLowerCase().includes(searchQuery.toLowerCase())
-
-  //   const matchesCategory = selectedCategory === "all" || tool.category === selectedCategory
-  //   const matchesStatus =
-  //     selectedStatus === "all" ||
-  //     (selectedStatus === "featured" && tool.featured) ||
-  //     (selectedStatus === "not-featured" && !tool.featured)
-
-  //   return matchesSearch && matchesCategory && matchesStatus
-  // })
-
+  // Filter tools
   useEffect(() => {
-
     let filteredTools = [...initialTools]
 
     // Search filter
     if (searchQuery) {
-      filteredTools = filteredTools.filter((tool) =>
-        tool.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        tool.description.toLowerCase().includes(searchQuery.toLowerCase())
+      filteredTools = filteredTools.filter(
+        (tool) =>
+          tool.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          tool.description.toLowerCase().includes(searchQuery.toLowerCase()),
       )
     }
 
     // Category filter
     if (selectedCategory !== "all") {
       filteredTools = filteredTools.filter((tool) =>
-        tool.categories.some((cat) => cat.category.name === selectedCategory)
-      );
+        tool.categories.some((cat: any) => cat.category.name === selectedCategory),
+      )
     }
 
     // Status filter
     if (selectedStatus !== "all") {
-      filteredTools = filteredTools.filter((tool) =>
-        selectedStatus === "featured" ? tool.featured : !tool.featured
-      )
+      filteredTools = filteredTools.filter((tool) => (selectedStatus === "featured" ? tool.featured : !tool.featured))
     }
 
     setTools(filteredTools)
-  }, [searchQuery, selectedCategory, selectedStatus])
+  }, [searchQuery, selectedCategory, selectedStatus, initialTools])
 
   const handleViewTool = (tool: any) => {
     setSelectedTool(tool)
@@ -231,7 +208,11 @@ export default function ToolsClientPageAdmin({ initialTools, categories }: ALLTo
                     </div>
                   </TableCell>
                   <TableCell>
-                    <Badge variant="outline">{tool.categories.length > 0 ? `${tool.categories[0].category.name} + ${tool.categories.length}` : tool.categories[0].category.name}</Badge>
+                    <Badge variant="outline">
+                      {tool.categories.length > 0
+                        ? `${tool.categories[0].category.name} + ${tool.categories.length}`
+                        : tool.categories[0].category.name}
+                    </Badge>
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center">
@@ -305,303 +286,6 @@ export default function ToolsClientPageAdmin({ initialTools, categories }: ALLTo
               <SheetTitle>Tool Details</SheetTitle>
               <SheetDescription>Detailed information about {selectedTool.name}</SheetDescription>
             </SheetHeader>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
-              <div className="md:col-span-1 flex flex-col p-4 border rounded-lg">
-                <div className="w-full h-40 rounded-md bg-gray-100 flex items-center justify-center mb-4 relative overflow-hidden">
-                  <Image
-                    src={selectedTool.imageUrl || "/placeholder.svg?height=400&width=600"}
-                    alt={selectedTool.slug}
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-
-                <h3 className="text-xl font-bold">{selectedTool.name}</h3>
-                <div className="flex items-center mt-1 mb-2">
-                  <Star className="h-4 w-4 text-yellow-400 mr-1" />
-                  <span>{selectedTool.avgRating}</span>
-                  <span className="text-muted-foreground text-sm ml-2">({selectedTool._count?.ratings} reviews)</span>
-                </div>
-                <div className="flex items-center ">
-                  {selectedTool.categories.map(cat => (
-                    <Badge key={cat.category.id} className="w-fit mb-4 ml-2">{cat.category.name}</Badge>
-                  ))}
-                </div>
-                <div className="mt-auto">
-                  <Button
-                    className="w-full bg-white text-black hover:bg-purple-600 hover:text-white mb-2"
-                    onClick={() => {
-                      setViewToolSheet(false)
-                      setTimeout(() => {
-                        handleEditTool(selectedTool)
-                      }, 100)
-                    }}
-                  >
-                    <Edit className="mr-2 h-4 w-4" />
-                    Edit Tool
-                  </Button>
-                  <Button variant="outline" className="w-full">
-                    <ExternalLink className="mr-2 h-4 w-4" />
-                    <a href={selectedTool.website} target="_black">Visit Website</a>
-                  </Button>
-                </div>
-              </div>
-              <div className="md:col-span-2">
-                <Tabs defaultValue="overview">
-                  <TabsList className="mb-4">
-                    <TabsTrigger value="overview">Overview</TabsTrigger>
-                    <TabsTrigger value="stats">Statistics</TabsTrigger>
-                    <TabsTrigger value="reviews">Reviews</TabsTrigger>
-                  </TabsList>
-                  <TabsContent value="overview">
-                    <div className="space-y-4">
-                      <div>
-                        <h4 className="text-sm font-medium text-muted-foreground">Description</h4>
-                        <p className="mt-1">{selectedTool.description}</p>
-                      </div>
-
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                        <div className="flex items-start">
-                          <Link className="h-5 w-5 mr-2 text-muted-foreground" />
-                          <div>
-                            <h4 className="text-sm font-medium text-muted-foreground">Website</h4>
-                            <p className="text-blue-600 hover:underline">
-                              {selectedTool.website}
-                            </p>
-                          </div>
-                        </div>
-                        <div className="flex items-start">
-                          <Tag className="h-5 w-5 mr-2 text-muted-foreground" />
-                          <div>
-                            <h4 className="text-sm font-medium text-muted-foreground">Tags</h4>
-                            <div className="flex flex-wrap gap-1 mt-1">
-                              {/* <Badge variant="outline">AI</Badge>
-                              <Badge variant="outline">{selectedTool.category}</Badge>
-                              <Badge variant="outline">Productivity</Badge> */}
-                              {selectedTool.categories.map(cat => (
-                                <Badge key={cat.category.id} variant="outline" >{cat.category.name}</Badge>
-                              ))}
-                            </div>
-                          </div>
-                        </div>
-                        <div className="flex items-start">
-                          <Building2 className="h-5 w-5 mr-2 text-muted-foreground" />
-                          <div>
-                            <h4 className="text-sm font-medium text-muted-foreground">Company</h4>
-                            <p>{selectedTool.company?.name || "Independent"}</p>
-                          </div>
-                        </div>
-                        <div className="flex items-start">
-                          <Calendar className="h-5 w-5 mr-2 text-muted-foreground" />
-                          <div>
-                            <h4 className="text-sm font-medium text-muted-foreground">Added</h4>
-                            <p>{new Date().toLocaleDateString()}</p>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="mt-4">
-                        <h4 className="text-sm font-medium text-muted-foreground mb-2">Pricing</h4>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
-                          {selectedTool.pricing.free && (
-                            <div className="border rounded-lg p-3 ">
-                              <h5 className="font-medium">Free</h5>
-                              <p className="text-sm text-muted-foreground">$0/month</p>
-                            </div>
-                          )}
-
-                          <div className="border rounded-lg p-3 text-black/60 bg-purple-50">
-                            <h5 className="font-medium">Starting Price</h5>
-                            <p className="text-sm text-muted-foreground">{selectedTool.pricing.startingPrice} $</p>
-                          </div>
-
-                          {selectedTool.pricing.freeTrial && (
-                            <div className="border rounded-lg p-3 ">
-                              <h5 className="font-medium">Free Trial</h5>
-                              <p className="text-sm text-muted-foreground">14 days</p>
-                            </div>
-                          )}
-
-                        </div>
-                      </div>
-                    </div>
-                  </TabsContent>
-                  <TabsContent value="stats">
-                    <div className="space-y-4">
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div className="border rounded-lg p-4">
-                          <h4 className="text-sm font-medium text-muted-foreground">Page Views</h4>
-                          <p className="text-2xl font-bold mt-1">{selectedTool._count?.views}</p>
-                          <p className="text-sm text-green-600 mt-1">+18.7% vs last month</p>
-                        </div>
-                        <div className="border rounded-lg p-4">
-                          <h4 className="text-sm font-medium text-muted-foreground">Total saved</h4>
-                          <p className="text-2xl font-bold mt-1">{selectedTool._count?.savedBy}</p>
-                          <p className="text-sm text-green-600 mt-1">+22.4% vs last month</p>
-                        </div>
-                        <div className="border rounded-lg p-4">
-                          <h4 className="text-sm font-medium text-muted-foreground">Total reviews</h4>
-                          <p className="text-2xl font-bold mt-1">{selectedTool._count?.ratings}</p>
-                          <p className="text-sm text-green-600 mt-1">+5.3% vs last month</p>
-                        </div>
-                      </div>
-
-                      <div className="border rounded-lg p-4 mt-4">
-                        <h4 className="font-medium mb-3">Traffic Sources</h4>
-                        <div className="space-y-3">
-                          <div>
-                            <div className="flex items-center justify-between mb-1">
-                              <span className="text-sm">Organic Search</span>
-                              <span className="text-sm font-medium">45%</span>
-                            </div>
-                            <div className="w-full bg-gray-200 rounded-full h-2">
-                              <div className="bg-purple-600 h-2 rounded-full" style={{ width: "45%" }}></div>
-                            </div>
-                          </div>
-                          <div>
-                            <div className="flex items-center justify-between mb-1">
-                              <span className="text-sm">Direct</span>
-                              <span className="text-sm font-medium">30%</span>
-                            </div>
-                            <div className="w-full bg-gray-200 rounded-full h-2">
-                              <div className="bg-blue-600 h-2 rounded-full" style={{ width: "30%" }}></div>
-                            </div>
-                          </div>
-                          <div>
-                            <div className="flex items-center justify-between mb-1">
-                              <span className="text-sm">Referral</span>
-                              <span className="text-sm font-medium">15%</span>
-                            </div>
-                            <div className="w-full bg-gray-200 rounded-full h-2">
-                              <div className="bg-green-600 h-2 rounded-full" style={{ width: "15%" }}></div>
-                            </div>
-                          </div>
-                          <div>
-                            <div className="flex items-center justify-between mb-1">
-                              <span className="text-sm">Social</span>
-                              <span className="text-sm font-medium">10%</span>
-                            </div>
-                            <div className="w-full bg-gray-200 rounded-full h-2">
-                              <div className="bg-amber-600 h-2 rounded-full" style={{ width: "10%" }}></div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </TabsContent>
-                  <TabsContent value="reviews">
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between">
-                        <h4 className="font-medium">User Reviews</h4>
-                        <p className="text-sm text-muted-foreground">Total: {selectedTool._count?.ratings}</p>
-                      </div>
-
-                      <div className="border rounded-lg divide-y">
-                        <div className="p-4">
-                          <div className="flex items-center justify-between mb-2">
-                            <div className="flex items-center">
-                              <div className="w-8 h-8 rounded-full bg-gray-200 mr-2"></div>
-                              <span className="font-medium">John Doe</span>
-                            </div>
-                            <div className="flex">
-                              {[1, 2, 3, 4, 5].map((star) => (
-                                <Star
-                                  key={star}
-                                  className={`h-4 w-4 ${star <= 5 ? "text-yellow-400" : "text-gray-300"}`}
-                                  fill={star <= 5 ? "currentColor" : "none"}
-                                />
-                              ))}
-                            </div>
-                          </div>
-                          <p className="text-sm">
-                            This tool has completely transformed our content creation process. Highly recommended!
-                          </p>
-                          <p className="text-xs text-muted-foreground mt-1">Posted on Oct 15, 2023</p>
-                        </div>
-
-                        <div className="p-4">
-                          <div className="flex items-center justify-between mb-2">
-                            <div className="flex items-center">
-                              <div className="w-8 h-8 rounded-full bg-gray-200 mr-2"></div>
-                              <span className="font-medium">Sarah Johnson</span>
-                            </div>
-                            <div className="flex">
-                              {[1, 2, 3, 4, 5].map((star) => (
-                                <Star
-                                  key={star}
-                                  className={`h-4 w-4 ${star <= 4 ? "text-yellow-400" : "text-gray-300"}`}
-                                  fill={star <= 4 ? "currentColor" : "none"}
-                                />
-                              ))}
-                            </div>
-                          </div>
-                          <p className="text-sm">
-                            Great tool with lots of features. The interface could be more intuitive though.
-                          </p>
-                          <p className="text-xs text-muted-foreground mt-1">Posted on Oct 10, 2023</p>
-                        </div>
-
-                        <div className="p-4">
-                          <div className="flex items-center justify-between mb-2">
-                            <div className="flex items-center">
-                              <div className="w-8 h-8 rounded-full bg-gray-200 mr-2"></div>
-                              <span className="font-medium">Michael Chen</span>
-                            </div>
-                            <div className="flex">
-                              {[1, 2, 3, 4, 5].map((star) => (
-                                <Star
-                                  key={star}
-                                  className={`h-4 w-4 ${star <= 5 ? "text-yellow-400" : "text-gray-300"}`}
-                                  fill={star <= 5 ? "currentColor" : "none"}
-                                />
-                              ))}
-                            </div>
-                          </div>
-                          <p className="text-sm">
-                            Absolutely love this tool! It's saved me countless hours of work and the results are
-                            fantastic.
-                          </p>
-                          <p className="text-xs text-muted-foreground mt-1">Posted on Oct 5, 2023</p>
-                        </div>
-                      </div>
-
-                      <Button variant="outline" className="w-full">
-                        View All Reviews
-                      </Button>
-                    </div>
-                  </TabsContent>
-                </Tabs>
-              </div>
-            </div>
-            <SheetFooter className="mt-6">
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setViewToolSheet(false)
-                  setSidebarOpen(false)
-                }}
-              >
-                Close
-              </Button>
-            </SheetFooter>
-          </SheetContent>
-        </Sheet>
-      )}
-
-      {/* Edit Tool Sheet */}
-      {selectedTool && (
-        <Sheet
-          open={editToolSheet}
-          onOpenChange={(open) => {
-            setEditToolSheet(open)
-            setSidebarOpen(open)
-          }}
-        >
-          <SheetContent className="w-[70%] sm:max-w-[70%] overflow-y-auto" side="right">
-            <SheetHeader>
-              <SheetTitle>Edit Tool</SheetTitle>
-              <SheetDescription>Make changes to {selectedTool.name}'s information</SheetDescription>
-            </SheetHeader>
             <div className="grid gap-4 py-4 mt-6">
               <div className="grid grid-cols-4 items-center gap-4">
                 <label htmlFor="name" className="text-right text-sm font-medium">
@@ -623,14 +307,14 @@ export default function ToolsClientPageAdmin({ initialTools, categories }: ALLTo
                 <label htmlFor="category" className="text-right text-sm font-medium">
                   Category
                 </label>
-                <Select defaultValue={selectedTool.category} className="col-span-3">
-                  <SelectTrigger id="category">
+                <Select defaultValue={selectedTool.categories[0].category.name}>
+                  <SelectTrigger id="category" className="col-span-3">
                     <SelectValue placeholder="Select category" />
                   </SelectTrigger>
                   <SelectContent>
                     {categories.map((category) => (
-                      <SelectItem key={category} value={category}>
-                        {category}
+                      <SelectItem key={category.id} value={category.name}>
+                        {category.name}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -640,17 +324,13 @@ export default function ToolsClientPageAdmin({ initialTools, categories }: ALLTo
                 <label htmlFor="website" className="text-right text-sm font-medium">
                   Website URL
                 </label>
-                <Input
-                  id="website"
-                  defaultValue={`https://${selectedTool.name.toLowerCase().replace(/\s+/g, "")}.ai`}
-                  className="col-span-3"
-                />
+                <Input id="website" defaultValue={selectedTool.website} className="col-span-3" />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
                 <label htmlFor="company" className="text-right text-sm font-medium">
                   Company
                 </label>
-                <Input id="company" defaultValue={selectedTool.company || ""} className="col-span-3" />
+                <Input id="company" defaultValue={selectedTool.company?.name || ""} className="col-span-3" />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
                 <div className="text-right text-sm font-medium">Featured</div>
@@ -726,162 +406,31 @@ export default function ToolsClientPageAdmin({ initialTools, categories }: ALLTo
       )}
 
       {/* Delete Tool Sheet */}
-      {/* {selectedTool && (
-        <Sheet
+      {selectedTool && (
+
+        <DeleteToolDialog
           open={deleteToolSheet}
-          onOpenChange={(open) => {
+          onOpenChange={(open: any) => {
             setDeleteToolSheet(open)
             setSidebarOpen(open)
           }}
-        >
-          <SheetContent className="sm:max-w-[500px]" side="right">
-            <SheetHeader>
-              <SheetTitle>Delete Tool</SheetTitle>
-              <SheetDescription>
-                Are you sure you want to delete {selectedTool.name}? This action cannot be undone.
-              </SheetDescription>
-            </SheetHeader>
-            <div className="flex items-center justify-center py-8">
-              <div className="rounded-full bg-red-100 p-3">
-                <XCircle className="h-6 w-6 text-red-600" />
-              </div>
-            </div>
-            <SheetFooter>
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setDeleteToolSheet(false)
-                  setSidebarOpen(false)
-                }}
-              >
-                Cancel
-              </Button>
-              <Button variant="destructive">Delete Tool</Button>
-            </SheetFooter>
-          </SheetContent>
-        </Sheet>
-      )} */}
+          onCancel={() => {
+            setDeleteToolSheet(false)
+            setSidebarOpen(false)
+          }}
+          toolName={selectedTool.name}
+          toolId={selectedTool.id}
+        />
+      )}
 
       {/* Add Tool Sheet */}
-      {/* <Sheet
-        open={addToolSheet}
-        onOpenChange={(open) => {
-          setAddToolSheet(open)
-          if (!open) {
-            setTimeout(() => setSidebarOpen(false), 300)
-          } else {
-            setSidebarOpen(true)
-          }
-        }}
-      >
-        <SheetContent className="w-[70%] sm:max-w-[70%] overflow-y-auto" side="right">
-          <SheetHeader>
-            <SheetTitle>Add New Tool</SheetTitle>
-            <SheetDescription>Create a new tool listing</SheetDescription>
-          </SheetHeader>
-          <div className="grid gap-4 py-4 mt-6">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <label htmlFor="new-tool-name" className="text-right text-sm font-medium">
-                Name
-              </label>
-              <Input id="new-tool-name" placeholder="Enter tool name" className="col-span-3" />
-            </div>
-            <div className="grid grid-cols-4 items-start gap-4">
-              <label htmlFor="new-description" className="text-right text-sm font-medium pt-2">
-                Description
-              </label>
-              <Textarea
-                id="new-description"
-                placeholder="Enter tool description"
-                className="col-span-3 min-h-[100px]"
-              />
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <label htmlFor="new-category" className="text-right text-sm font-medium">
-                Category
-              </label>
-              <Select defaultValue="" className="col-span-3">
-                <SelectTrigger id="new-category">
-                  <SelectValue placeholder="Select category" />
-                </SelectTrigger>
-                <SelectContent>
-                  {categories.map((category) => (
-                    <SelectItem key={category} value={category}>
-                      {category}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <label htmlFor="new-website" className="text-right text-sm font-medium">
-                Website URL
-              </label>
-              <Input id="new-website" placeholder="Enter website URL" className="col-span-3" />
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <label htmlFor="new-company" className="text-right text-sm font-medium">
-                Company
-              </label>
-              <Input id="new-company" placeholder="Enter company name" className="col-span-3" />
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <div className="text-right text-sm font-medium">Featured</div>
-              <div className="flex items-center space-x-2 col-span-3">
-                <Switch id="new-featured" />
-                <Label htmlFor="new-featured">Mark as featured tool</Label>
-              </div>
-            </div>
-            <div className="grid grid-cols-4 items-start gap-4">
-              <label htmlFor="new-pricing" className="text-right text-sm font-medium pt-2">
-                Pricing Tiers
-              </label>
-              <div className="col-span-3 space-y-3">
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <Label htmlFor="new-free-tier" className="mb-1 block">
-                      Free Tier
-                    </Label>
-                    <Input id="new-free-tier" placeholder="Free tier features" />
-                  </div>
-                  <div>
-                    <Label htmlFor="new-free-price" className="mb-1 block">
-                      Price
-                    </Label>
-                    <Input id="new-free-price" placeholder="$0" />
-                  </div>
-                </div>
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <Label htmlFor="new-pro-tier" className="mb-1 block">
-                      Pro Tier
-                    </Label>
-                    <Input id="new-pro-tier" placeholder="Pro tier features" />
-                  </div>
-                  <div>
-                    <Label htmlFor="new-pro-price" className="mb-1 block">
-                      Price
-                    </Label>
-                    <Input id="new-pro-price" placeholder="$19/month" />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <SheetFooter className="mt-6">
-            <Button
-              variant="outline"
-              onClick={() => {
-                setAddToolSheet(false)
-                setTimeout(() => setSidebarOpen(false), 300)
-              }}
-            >
-              Cancel
-            </Button>
-            <Button className="bg-white text-black hover:bg-purple-600 hover:text-white">Create Tool</Button>
-          </SheetFooter>
-        </SheetContent>
-      </Sheet> */}
+      <AddToolSheet
+        addToolSheet={addToolSheet}
+        setAddToolSheet={setAddToolSheet}
+        setSidebarOpen={setSidebarOpen}
+        categories={categories}
+        tags={tags}
+      />
       {sidebarOpen && (
         <div
           className="fixed inset-0 bg-black/20 z-40"
@@ -897,4 +446,3 @@ export default function ToolsClientPageAdmin({ initialTools, categories }: ALLTo
     </div>
   )
 }
-

@@ -1,8 +1,17 @@
 import AdminSidebar from "@/components/admin/sidebar"
+import { getServerSession } from "next-auth";
+import { notFound, redirect } from "next/navigation";
 
 import { ReactNode } from "react";
+import { authOptions } from "../api/auth/[...nextauth]/route";
 
-export default function AdminLayout({ children }: { children: ReactNode }) {
+export default async function AdminLayout({ children }: { children: ReactNode }) {
+  const session = await getServerSession(authOptions)
+  console.log("session", session)
+  if (!session || session.user.role !== "ADMIN") {
+    notFound()
+  }
+
   return (
     <div className="flex min-h-screen">
       <AdminSidebar />
