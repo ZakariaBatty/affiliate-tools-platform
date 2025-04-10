@@ -272,7 +272,7 @@ export default function ToolsClientPageAdmin({ initialTools, categories, tags }:
         </Table>
       </div>
 
-      {/* View Tool Sheet */}
+      {/* idet Tool Sheet */}
       {selectedTool && (
         <EditToolSheet
           editToolSheet={editToolSheet}

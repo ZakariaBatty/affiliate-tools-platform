@@ -34,6 +34,7 @@ export function EditToolSheet({
   tool: any
 }) {
   const { toast } = useToast()
+  const [loading, setLoading] = useState(false)
   const [features, setFeatures] = useState<string[]>([])
   const [selectedCategories, setSelectedCategories] = useState<any[]>([])
   const [selectedTags, setSelectedTags] = useState<any[]>([])
@@ -66,8 +67,8 @@ export function EditToolSheet({
         featured: tool.featured || false
       })
       setFeatures(tool.features || [""])
-      setSelectedCategories(tool.categories || [])
-      setSelectedTags(tool.tags || [])
+      setSelectedCategories(tool.categories.map((item: any) => item.categoryId) || [])
+      setSelectedTags(tool.tags.map((item: any) => item.tagId) || [])
       setFree(tool.pricing?.free || false)
       setFreeTrial(tool.pricing?.freeTrial || false)
       setPricingModel(tool.pricing?.pricingModel || "Subscription")
@@ -85,7 +86,22 @@ export function EditToolSheet({
   }
 
 
+  const handleAddFeature = () => setFeatures([...features, ""])
+
+  const handleRemoveFeature = (index: number) => {
+    if (features.length > 1) {
+      setFeatures(features.filter((_, i) => i !== index))
+    }
+  }
+
+  const handleFeatureChange = (index: number, value: string) => {
+    const updated = [...features]
+    updated[index] = value
+    setFeatures(updated)
+  }
+
   const handleSubmit = async () => {
+    setLoading(true)
     const data = {
       id: tool.id,
       name: formValues.name,
@@ -108,26 +124,35 @@ export function EditToolSheet({
 
     const parsed = toolSchema.safeParse(data)
     if (!parsed.success) {
+      setLoading(false)
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+        description: "There was a problem with your request. Try again."
+      })
       console.error("Validation failed", parsed.error.format())
       return
     }
-    console.log("Parsed data:", parsed.data)
-    // const result = await updateTool(tool.id, parsed.data)
-    // if (result.success) {
-    //   toast({
-    //     variant: "default",
-    //     title: "Tool updated!",
-    //     description: "Your tool has been successfully updated."
-    //   })
-    //   setEditToolSheet(false)
-    // } else {
-    //   console.error("Failed to update tool:", result.error)
-    //   toast({
-    //     variant: "destructive",
-    //     title: "Uh oh! Something went wrong.",
-    //     description: "There was a problem with your request. Try again."
-    //   })
-    // }
+
+    const result = await updateTool(tool.id, parsed.data)
+    if (result.success) {
+      toast({
+        variant: "default",
+        title: "Tool updated!",
+        description: "Your tool has been successfully updated."
+      })
+      setEditToolSheet(false)
+      setLoading(false)
+      return
+    } else {
+      console.error("Failed to update tool:", result.error)
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+        description: "There was a problem with your request. Try again."
+      })
+      setLoading(true)
+    }
   }
 
   return (
@@ -156,16 +181,26 @@ export function EditToolSheet({
           <Label htmlFor="startingPrice">Starting Price</Label>
           <Input id="startingPrice" value={startingPrice} onChange={(e) => setStartingPrice(e.target.value)} />
 
-          <Label>Pricing Model</Label>
-          <Select value={pricingModel} onValueChange={setPricingModel}>
-            <SelectTrigger><SelectValue placeholder="Select pricing model" /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="Subscription">Subscription</SelectItem>
-              <SelectItem value="One-Time">One-Time</SelectItem>
-              <SelectItem value="Freemium">Freemium</SelectItem>
-            </SelectContent>
-          </Select>
-
+          <div className="space-y-2">
+            <Label className="text-right">Features</Label>
+            <div className="space-y-2">
+              {features.map((feature, index) => (
+                <div key={index} className="flex gap-2">
+                  <Input
+                    value={feature}
+                    onChange={(e) => handleFeatureChange(index, e.target.value)}
+                    placeholder={`Feature ${index + 1}`}
+                  />
+                  {features.length > 1 && (
+                    <Button type="button" variant="destructive" size="sm" onClick={() => handleRemoveFeature(index)}>Delete</Button>
+                  )}
+                </div>
+              ))}
+              <Button type="button" onClick={handleAddFeature} variant="outline" size="sm">
+                + Add Feature
+              </Button>
+            </div>
+          </div>
           <Label>Categories</Label>
           <Select onValueChange={(value) => {
             if (!selectedCategories.includes(value)) {
@@ -192,11 +227,8 @@ export function EditToolSheet({
 
           <Label>Tags</Label>
           <Select onValueChange={(value) => {
-            if (!selectedTags.some((t) => t.tagId === value)) {
-              const found = tags.find((t) => t.id === value)
-              if (found) {
-                setSelectedTags([...selectedTags, { tagId: found.id, tag: found }])
-              }
+            if (!selectedTags.includes(value)) {
+              setSelectedTags([...selectedTags, value])
             }
           }}>
             <SelectTrigger><SelectValue placeholder="Add tag" /></SelectTrigger>
@@ -207,12 +239,26 @@ export function EditToolSheet({
             </SelectContent>
           </Select>
           <div className="flex flex-wrap gap-2 mt-2">
-            {selectedTags.map((item) => (
-              <span key={item.tagId} className="bg-muted text-sm px-2 py-1 rounded-full cursor-pointer" onClick={() => setSelectedTags(selectedTags.filter((t) => t.tagId !== item.tagId))}>
-                {item.tag.name} ✕
-              </span>
-            ))}
+            {selectedTags.map((tagId, index) => {
+              const tag = tags.find((c) => c.id === tagId)
+              return (
+                <span key={index} className="bg-muted text-sm px-2 py-1 rounded-full cursor-pointer" onClick={() => setSelectedTags(selectedTags.filter((id) => id !== tagId))}>
+                  {tag?.name} ✕
+                </span>
+              )
+            })}
           </div>
+
+
+          <Label>Pricing Model</Label>
+          <Select value={pricingModel} onValueChange={setPricingModel}>
+            <SelectTrigger><SelectValue placeholder="Select pricing model" /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="Subscription">Subscription</SelectItem>
+              <SelectItem value="One-Time">One-Time</SelectItem>
+              <SelectItem value="Freemium">Freemium</SelectItem>
+            </SelectContent>
+          </Select>
           <div className="grid grid-cols-2 gap-4 py-4">
             <Label>Free</Label>
             <Switch checked={free} onCheckedChange={setFree} />
@@ -229,7 +275,7 @@ export function EditToolSheet({
         </div>
 
         <SheetFooter>
-          <Button onClick={handleSubmit}>Save Changes</Button>
+          <Button onClick={handleSubmit}>{loading ? 'loading ...' : 'Save Changes'}</Button>
         </SheetFooter>
       </SheetContent>
     </Sheet>
