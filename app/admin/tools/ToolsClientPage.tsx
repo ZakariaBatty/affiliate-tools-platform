@@ -38,6 +38,7 @@ import { Category, Tag } from "@/types"
 import { AddToolSheet } from "@/components/admin/tools/add-tool-sheet"
 import { DeleteToolDialog } from "@/components/admin/tools/delete-tool-dialog"
 import { EditToolSheet } from "@/components/admin/tools/edit-tool-sheet"
+import { OverViewToolSheet } from "@/components/admin/tools/view-tool-sheet"
 
 interface ALLToolsProps {
   initialTools: any[]
@@ -272,6 +273,16 @@ export default function ToolsClientPageAdmin({ initialTools, categories, tags }:
         </Table>
       </div>
 
+      {/* view Tool Sheet */}
+      {selectedTool && (
+        <OverViewToolSheet
+          viewToolSheet={viewToolSheet}
+          setViewToolSheet={setViewToolSheet}
+          setSidebarOpen={setSidebarOpen}
+          tool={selectedTool}
+          handleEditTool={handleEditTool}
+        />
+      )}
       {/* idet Tool Sheet */}
       {selectedTool && (
         <EditToolSheet
