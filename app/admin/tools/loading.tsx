@@ -1,6 +1,6 @@
 import { Skeleton } from "@/components/ui/skeleton";
 
-export default function ToolsLoadingPadmin() {
+export default function ToolsLoadingTable() {
   return (
     <div className="min-h-screen bg-black">
       <main className="container mx-auto px-4 py-16">
@@ -9,27 +9,29 @@ export default function ToolsLoadingPadmin() {
           <Skeleton className="mx-auto mt-4 h-6 w-2/3 bg-white/10" />
         </div>
 
-        <div className="mb-8">
-          <div className="flex flex-col gap-4 md:flex-row md:items-center">
-            <Skeleton className="h-10 w-full bg-white/10" />
-            <div className="flex items-center gap-2">
-              <Skeleton className="h-10 w-10 bg-white/10" />
-              <Skeleton className="h-10 w-10 bg-white/10" />
-              <Skeleton className="h-10 w-24 bg-white/10" />
-              <Skeleton className="hidden h-10 w-32 bg-white/10 md:block" />
-            </div>
-          </div>
-        </div>
-
-        <div className="mb-6 flex items-center justify-between">
-          <Skeleton className="h-6 w-40 bg-white/10" />
-          <Skeleton className="h-6 w-48 bg-white/10" />
-        </div>
-
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((i) => (
-            <Skeleton key={i} className="h-[350px] w-full bg-white/10" />
-          ))}
+        <div className="overflow-x-auto rounded-lg border border-white/10">
+          <table className="min-w-full divide-y divide-white/10">
+            <thead className="bg-white/5">
+              <tr>
+                {[...Array(5)].map((_, i) => (
+                  <th key={i} className="px-6 py-4 text-left">
+                    <Skeleton className="h-4 w-24 bg-white/10" />
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-white/10">
+              {[...Array(8)].map((_, rowIndex) => (
+                <tr key={rowIndex} className="bg-white/5">
+                  {[...Array(5)].map((_, colIndex) => (
+                    <td key={colIndex} className="px-6 py-4">
+                      <Skeleton className="h-4 w-full max-w-[100px] bg-white/10" />
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
 
         <div className="mt-8 text-center">
@@ -37,6 +39,5 @@ export default function ToolsLoadingPadmin() {
         </div>
       </main>
     </div>
-  )
+  );
 }
-
