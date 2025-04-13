@@ -113,7 +113,7 @@ export const getCategoriesWithCount = async (): Promise<Category[]> => {
             },
          },
          orderBy: {
-            name: 'asc',
+            name: 'desc',
          },
       })
    );
@@ -131,7 +131,7 @@ export const getTagsWithCount = async (): Promise<Tag[]> => {
             },
          },
          orderBy: {
-            name: 'asc',
+            name: 'desc',
          },
       })
    );

@@ -17,6 +17,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Search, MoreHorizontal, Plus, Edit, Trash, Tag, FileText } from "lucide-react"
 import { Category } from "@/types"
 import EditCategorySheet from "@/components/admin/blogs/categories/edit-category-sheet"
+import AddCategorySheet from "@/components/admin/blogs/categories/add-category-sheet"
 
 interface categories {
   initialCategories: Category[]
@@ -209,54 +210,11 @@ export default function CategoriesClientPage({ initialCategories }: categories) 
       )}
 
       {/* Add Category Sheet */}
-      <Sheet
-        open={addCategorySheet}
-        onOpenChange={(open) => {
-          setAddCategorySheet(open)
-          if (!open) {
-            setTimeout(() => setSidebarOpen(false), 300)
-          } else {
-            setSidebarOpen(true)
-          }
-        }}
-      >
-        <SheetContent className="sm:max-w-[500px]" side="right">
-          <SheetHeader>
-            <SheetTitle>Add New Category</SheetTitle>
-            <SheetDescription>Create a new blog category</SheetDescription>
-          </SheetHeader>
-          <div className="grid gap-4 py-4 mt-6">
-            <div>
-              <label htmlFor="new-category-name" className="text-sm font-medium mb-2 block">
-                Category Name
-              </label>
-              <Input id="new-category-name" placeholder="Enter category name" />
-            </div>
-            <div>
-              <label htmlFor="new-category-description" className="text-sm font-medium mb-2 block">
-                Description
-              </label>
-              <Textarea
-                id="new-category-description"
-                placeholder="Enter category description"
-                className="min-h-[100px]"
-              />
-            </div>
-          </div>
-          <SheetFooter className="mt-6">
-            <Button
-              variant="outline"
-              onClick={() => {
-                setAddCategorySheet(false)
-                setTimeout(() => setSidebarOpen(false), 300)
-              }}
-            >
-              Cancel
-            </Button>
-            <Button className="bg-white text-black hover:bg-purple-600 hover:text-white">Create Category</Button>
-          </SheetFooter>
-        </SheetContent>
-      </Sheet>
+      <AddCategorySheet
+        addCategorySheet={addCategorySheet}
+        setAddCategorySheet={setAddCategorySheet}
+        setSidebarOpen={setSidebarOpen}
+      />
       {sidebarOpen && (
         <div
           className="fixed inset-0 bg-black/20 z-40"

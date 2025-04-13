@@ -68,7 +68,7 @@ const EditCategorySheet = ({ editCategorySheet, setEditCategorySheet, setSidebar
               <Input id="name" name="name" defaultValue={selectedCategory.name} />
 
               {state?.error && (
-                <div className="text-red-500 text-sm mt-2">{typeof state.error === 'string' ? state.error : JSON.stringify(state.error.name && state.error.name[0])}</div>
+                <div className="text-red-500 text-sm mt-2">{typeof state.error === 'string' ? state.error : JSON.stringify(state.error.name && state.error.name.join(", "))}</div>
               )}
 
             </div>
@@ -93,7 +93,7 @@ const EditCategorySheet = ({ editCategorySheet, setEditCategorySheet, setSidebar
               />
 
               {state?.error && (
-                <div className="text-red-500 text-sm mt-2">{typeof state.error === 'string' ? state.error : JSON.stringify(state.error.description && state.error.description[0])}</div>
+                <div className="text-red-500 text-sm mt-2">{typeof state.error === 'string' ? state.error : JSON.stringify(state.error.description && state.error.description.join(", "))}</div>
               )}
             </div>
           </div>
