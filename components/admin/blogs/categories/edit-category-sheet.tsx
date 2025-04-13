@@ -27,9 +27,7 @@ const EditCategorySheet = ({ editCategorySheet, setEditCategorySheet, setSidebar
     return await updateCategory(selectedCategory.id, formData);
   };
 
-  const [state, formAction] = useActionState(updateCategoryWithId, undefined);
-
-  console.log('state', state);
+  const [state, formAction, isPending] = useActionState(updateCategoryWithId, undefined);
 
 
   useEffect(() => {
@@ -110,8 +108,8 @@ const EditCategorySheet = ({ editCategorySheet, setEditCategorySheet, setSidebar
             >
               Cancel
             </Button>
-            <Button type="submit" className="bg-white text-black hover:bg-purple-600 hover:text-white">
-              Save Changes
+            <Button disabled={isPending} type="submit" className="bg-white text-black hover:bg-purple-600 hover:text-white">
+              {isPending ? "Saving ...." : "Save Changes"}
             </Button>
           </SheetFooter>
         </form>

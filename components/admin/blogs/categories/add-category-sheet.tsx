@@ -29,7 +29,6 @@ const AddCategorySheet = ({
   setSidebarOpen,
 }: Props) => {
   const { toast } = useToast();
-  const { pending } = useFormStatus();
 
   const formRef = React.useRef<HTMLFormElement>(null);
 
@@ -37,7 +36,7 @@ const AddCategorySheet = ({
     return await createCategory(formData);
   };
 
-  const [state, formAction] = useActionState(handleCreateCategory, { error: "" });
+  const [state, formAction, isPending] = useActionState(handleCreateCategory, { error: "" });
 
 
   useEffect(() => {
@@ -106,8 +105,8 @@ const AddCategorySheet = ({
             >
               Cancel
             </Button>
-            <Button type="submit" className="bg-white text-black hover:bg-purple-600 hover:text-white">
-              {pending ? "creating ..." : "Create Category"}
+            <Button disabled={isPending} type="submit" className="bg-white text-black hover:bg-purple-600 hover:text-white">
+              {isPending ? "creating ..." : "Create Category"}
             </Button>
           </SheetFooter>
         </form>

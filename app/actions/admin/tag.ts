@@ -75,6 +75,9 @@ export async function updateTag(id: string, formData: FormData) {
    const { name } = validatedFields.data;
 
    try {
+      // Create slug from name
+      const slug = slugify(name);
+
       // Check if tag exists
       const existingTag = await prisma.tag.findUnique({
          where: { id },
@@ -89,6 +92,7 @@ export async function updateTag(id: string, formData: FormData) {
          where: { id },
          data: {
             name,
+            slug,
          },
       });
 
