@@ -18,6 +18,7 @@ import { Search, MoreHorizontal, Plus, Edit, Trash, Tag, FileText } from "lucide
 import { Category } from "@/types"
 import EditCategorySheet from "@/components/admin/blogs/categories/edit-category-sheet"
 import AddCategorySheet from "@/components/admin/blogs/categories/add-category-sheet"
+import { DeleteCategoryDialog } from "@/components/admin/blogs/categories/delete-category-dialog"
 
 interface categories {
   initialCategories: Category[]
@@ -173,40 +174,12 @@ export default function CategoriesClientPage({ initialCategories }: categories) 
 
       {/* Delete Category Sheet */}
       {selectedCategory && (
-        <Sheet
+        <DeleteCategoryDialog
           open={deleteCategorySheet}
-          onOpenChange={(open) => {
-            setDeleteCategorySheet(open)
-            setSidebarOpen(open)
-          }}
-        >
-          <SheetContent className="sm:max-w-[500px]" side="right">
-            <SheetHeader>
-              <SheetTitle>Delete Category</SheetTitle>
-              <SheetDescription>
-                Are you sure you want to delete the "{selectedCategory.name}" category? This will not delete the
-                associated posts, but they will no longer have this category assigned.
-              </SheetDescription>
-            </SheetHeader>
-            <div className="flex items-center justify-center py-8">
-              <div className="rounded-full bg-red-100 p-3">
-                <Trash className="h-6 w-6 text-red-600" />
-              </div>
-            </div>
-            <SheetFooter>
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setDeleteCategorySheet(false)
-                  setSidebarOpen(false)
-                }}
-              >
-                Cancel
-              </Button>
-              <Button variant="destructive">Delete Category</Button>
-            </SheetFooter>
-          </SheetContent>
-        </Sheet>
+          onOpenChange={setDeleteCategorySheet}
+          categoryName={selectedCategory?.name || ""}
+          cateId={selectedCategory?.id || ""}
+        />
       )}
 
       {/* Add Category Sheet */}
