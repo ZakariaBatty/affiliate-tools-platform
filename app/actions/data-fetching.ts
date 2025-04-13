@@ -156,7 +156,7 @@ export const getAllTools = cache(async (): Promise<GetAllToolsResponse> => {
                },
             },
             company: true,
-            ratings: true, // Include ratings
+            ratings: true,
             _count: {
                select: {
                   views: true,

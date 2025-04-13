@@ -96,6 +96,58 @@ export interface ToolFull {
    savedBy?: any[];
 }
 
+export interface ToolFullAdmin {
+   id: string;
+   name: string;
+   slug: string;
+   description: string;
+   longDescription: string;
+   website: string;
+   logo: string | null;
+   imageUrl: string | null;
+   companyId: string | null;
+   verified: boolean;
+   featured: boolean;
+   pricing: any;
+   features: any;
+   createdAt: Date;
+   updatedAt: Date;
+   categories: {
+      categoryId: string;
+      toolId: string;
+      createdAt: Date;
+      category: Category;
+   }[];
+   tags?: {
+      tagId: string;
+      toolId: string;
+      createdAt: Date;
+   }[];
+   company?: Company | null;
+   ratings: {
+      id: string;
+      toolId: string;
+      userId: string;
+      rating: number;
+      review: string | null;
+      createdAt: Date;
+      user?: {
+         id: string;
+         name: string | null;
+         image: string | null;
+      };
+   }[];
+   avgRating: number;
+   ratingDistribution?: Record<string, number>;
+   ratingPercentages?: Record<string, number>;
+   formattedRatings?: ToolRatingWithUser[];
+   _count?: {
+      views: number;
+      savedBy: number;
+      ratings: number;
+   };
+}
+
 export interface ToolRatingWithUser {
    id: string;
    rating: number;
@@ -254,6 +306,18 @@ export interface Tag {
    };
 }
 
+export interface TagFull {
+   id: string;
+   name: string;
+   slug: string;
+   createdAt: Date;
+   updatedAt: Date;
+   _count?: {
+      tools?: number;
+      blogs?: number;
+   };
+}
+
 // Company types
 export interface Company {
    id: string;
@@ -293,7 +357,9 @@ export type GetBlogTagsResponse = Tag[];
 export type GetBlogPostDetailResponse = BlogDetailResponse | null;
 export type GetPricingPlansResponse = Plan[];
 
-// Update the ratingDistribution type to be a Record
+// server action admin
+export type GetAllToolsResponseAdmin = ToolFullAdmin[];
+
 export interface RatingDistribution {
    '1': number;
    '2': number;

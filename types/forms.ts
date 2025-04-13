@@ -50,3 +50,24 @@ export interface CompanyProfileFormData {
    website?: string;
    logo?: string;
 }
+
+export interface ToolFormData {
+   name: string;
+   description: string;
+   longDescription: string;
+   logo?: string | null;
+   imageUrl?: string | null;
+   website: string;
+   verified?: boolean;
+   featured?: boolean;
+   categories: string[];
+   pricing?: {
+      free: boolean;
+      freeTrial: boolean;
+      pricingModel: string;
+      startingPrice: string;
+   };
+   features?: string[] | null;
+   companyId?: string | null;
+   tags?: string[];
+}

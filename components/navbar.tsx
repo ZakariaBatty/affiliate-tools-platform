@@ -330,16 +330,20 @@ function UserProfileDropdown({ user, onLogout, initials }: UserProfileDropdownPr
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuItem asChild>
-            <Link href="/dashboard" className="cursor-pointer">
+            <Link href={user.role === "ADMIN" ? "/admin" : user.role === "COMPANY" ? "/company-dashboard" : "/dashboard"} className="cursor-pointer">
               <LayoutDashboard className="mr-2 h-4 w-4" />
               <span>Dashboard</span>
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
-            <Link href="/dashboard" className="cursor-pointer">
-              <Settings className="mr-2 h-4 w-4" />
-              <span>Settings</span>
-            </Link>
+            {user.role !== "USER" && (
+              <Link href={user.role === "ADMIN" ? "/admin/settings" : "/company-dashboard/settings"} className="cursor-pointer">
+                <Settings className="mr-2 h-4 w-4" />
+                <span>Settings</span>
+              </Link>
+            )
+
+            }
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
