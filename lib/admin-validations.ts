@@ -1,3 +1,4 @@
+import { de } from '@faker-js/faker';
 import { z } from 'zod';
 
 export const toolSchema = z.object({
@@ -23,4 +24,14 @@ export const toolSchema = z.object({
    features: z.array(z.string()).min(1),
    companyId: z.string().optional().nullable(),
    tags: z.array(z.string()).optional(),
+});
+
+export const categorySchema = z.object({
+   name: z.string().min(2, 'Name must be at least 2 characters'),
+   description: z.string().optional(),
+   icon: z.string().optional().nullable(),
+});
+
+export const tagSchema = z.object({
+   name: z.string().min(2, 'Name must be at least 2 characters'),
 });

@@ -306,6 +306,18 @@ export interface Tag {
    };
 }
 
+export interface TagFull {
+   id: string;
+   name: string;
+   slug: string;
+   createdAt: Date;
+   updatedAt: Date;
+   _count?: {
+      tools?: number;
+      blogs?: number;
+   };
+}
+
 // Company types
 export interface Company {
    id: string;

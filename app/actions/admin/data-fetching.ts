@@ -101,6 +101,41 @@ export const getCategoriesAdmin = async (): Promise<Category[]> => {
    );
 };
 
+export const getCategoriesWithCount = async (): Promise<Category[]> => {
+   return await withDb(() =>
+      prisma.category.findMany({
+         include: {
+            _count: {
+               select: {
+                  blogs: true,
+                  tools: true,
+               },
+            },
+         },
+         orderBy: {
+            name: 'desc',
+         },
+      })
+   );
+};
+
+export const getTagsWithCount = async (): Promise<Tag[]> => {
+   return await withDb(() =>
+      prisma.tag.findMany({
+         include: {
+            _count: {
+               select: {
+                  blogs: true,
+                  tools: true,
+               },
+            },
+         },
+         orderBy: {
+            name: 'desc',
+         },
+      })
+   );
+};
 export const getTags = async (): Promise<Tag[]> => {
    return await withDb(() =>
       prisma.tag.findMany({
