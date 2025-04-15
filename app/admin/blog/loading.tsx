@@ -1,6 +1,6 @@
 import { Skeleton } from "@/components/ui/skeleton";
 
-export default function ToolsLoadingTable() {
+export default function BlogLoadingTable() {
   return (
     <div className="min-h-screen bg-black">
       <main className="container mx-auto px-4 py-16">

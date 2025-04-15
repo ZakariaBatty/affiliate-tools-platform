@@ -91,3 +91,16 @@ export function timeAgo(dateString: string | Date): string {
 
    return seconds < 10 ? 'just now' : `${Math.floor(seconds)} seconds ago`;
 }
+
+export function isValidAuthor(
+   author: unknown
+): author is { name: string; image: string; bio?: string; role?: string } {
+   return (
+      typeof author === 'object' &&
+      author !== null &&
+      'name' in author &&
+      'image' in author &&
+      typeof (author as any).name === 'string' &&
+      typeof (author as any).image === 'string'
+   );
+}

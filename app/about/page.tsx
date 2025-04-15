@@ -119,7 +119,7 @@ export default function AboutPage() {
         </section>
 
         {/* Team Section */}
-        <section className="bg-black py-20">
+        {/* <section className="bg-black py-20">
           <div className="container mx-auto px-4">
             <div className="mx-auto mb-12 max-w-3xl text-center">
               <h2 className="mb-4 text-3xl font-bold text-white md:text-4xl">Meet Our Team</h2>
@@ -176,7 +176,7 @@ export default function AboutPage() {
               ))}
             </div>
           </div>
-        </section>
+        </section> */}
 
         {/* Contact Section */}
         <section className="bg-gradient-to-b from-black/95 to-black py-20">

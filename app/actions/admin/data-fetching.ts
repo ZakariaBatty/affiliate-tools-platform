@@ -1,6 +1,13 @@
 import { withDb } from '@/lib/db';
 import prisma from '@/lib/prisma';
-import { Category, GetAllToolsResponseAdmin, Tag } from '@/types';
+import { formatDate, isValidAuthor } from '@/lib/utils';
+import {
+   Category,
+   GetAllBlogPostsResponse,
+   GetAllBlogPostsResponseFull,
+   GetAllToolsResponseAdmin,
+   Tag,
+} from '@/types';
 
 export const getAdminStats = async () => {
    const totalUsers = await prisma.user.count();
@@ -90,6 +97,95 @@ export const getAllToolsAdmin = async (): Promise<GetAllToolsResponseAdmin> => {
       };
    });
 };
+
+export const getALLBlogsAdmin =
+   async (): Promise<GetAllBlogPostsResponseFull> => {
+      const posts = await withDb(() =>
+         prisma.blog.findMany({
+            include: {
+               categories: {
+                  include: {
+                     category: true,
+                  },
+               },
+               tags: {
+                  include: {
+                     tag: true,
+                  },
+               },
+               _count: {
+                  select: {
+                     views: true,
+                     comments: true,
+                  },
+               },
+               comments: {
+                  include: {
+                     user: true,
+                  },
+                  orderBy: {
+                     createdAt: 'desc',
+                  },
+                  take: 10,
+               },
+            },
+            orderBy: {
+               createdAt: 'desc',
+            },
+         })
+      );
+      return posts.map((post) => ({
+         id: post.id,
+         title: post.title,
+         slug: post.slug,
+         content: post.content,
+         excerpt: post.excerpt,
+         coverImage: post.coverImage,
+         createdAt: post.createdAt,
+         updatedAt: post.updatedAt,
+         readingTime: post.readingTime,
+         viewCount: post._count.views,
+         commentCount: post._count.comments,
+         published: post.published,
+         featured: post.featured,
+         author:
+            post.author &&
+            typeof post.author === 'object' &&
+            'name' in post.author &&
+            'image' in post.author
+               ? (post.author as {
+                    name: string;
+                    image: string;
+                    bio?: string;
+                    role?: string;
+                 })
+               : {
+                    name: 'Anonymous',
+                    image: '/placeholder.svg?height=100&width=100',
+                    bio: 'Author bio',
+                 },
+         categories: post.categories.map((c) => ({
+            id: c.category.id,
+            name: c.category.name,
+            slug: c.category.slug,
+         })),
+         tags: post.tags.map((t) => ({
+            id: t.tag.id,
+            name: t.tag.name,
+            slug: t.tag.slug,
+         })),
+         comments: post.comments.map((comment) => ({
+            id: comment.id,
+            content: comment.content,
+            createdAt: comment.createdAt,
+            user: {
+               id: comment.user.id,
+               name: comment.user.name,
+               image: comment.user.image,
+            },
+         })),
+      }));
+   };
 
 export const getCategoriesAdmin = async (): Promise<Category[]> => {
    return await withDb(() =>
