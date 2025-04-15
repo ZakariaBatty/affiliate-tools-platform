@@ -2,11 +2,11 @@
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
-  output: 'standalone',
+  output: "standalone",
   experimental: {
-    serverComponentsExternalPackages: ['bcrypt'],
+    serverComponentsExternalPackages: ["bcrypt"],
   },
 }
 
-export default nextConfig;
+module.exports = nextConfig
 
