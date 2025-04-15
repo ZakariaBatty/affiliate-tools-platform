@@ -101,7 +101,7 @@ export default function ToolsClientPage({ initialTools, categories }: AllToolsPr
     setTools(filteredTools)
   }, [initialTools, searchQuery, selectedCategories, priceRange, showFreeOnly, sortBy])
 
-
+  console.log("Tools:", tools)
 
 
   return (

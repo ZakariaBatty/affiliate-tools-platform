@@ -65,7 +65,7 @@ export function ImageUpload({
       // Create form data for upload
       const formData = new FormData()
       formData.append("file", file)
-      formData.append("type", type) // Add the type to specify the folder
+      formData.append("type", type)
 
       // Upload to our API endpoint
       const response = await fetch("/api/upload", {
