@@ -46,9 +46,9 @@ services:
       ports:
          - '5432:5432'
       environment:
-         - POSTGRES_USER=${POSTGRES_USER:-postgres}
-         - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
-         - POSTGRES_DB=${POSTGRES_DB:-affiliate_tools}
+         - POSTGRES_USER=${POSTGRES_USER:-avnadmin}
+         - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-AVNS_Z-wdM2VyarurzKy88sa}
+         - POSTGRES_DB=${POSTGRES_DB:-defaultdb}
       volumes:
          - postgres-data:/var/lib/postgresql/data
       networks:
@@ -58,7 +58,7 @@ services:
       build:
          context: .
          dockerfile: Dockerfile
-         target: deps
+         target: builder
       command: sh -c "cd /app && npx prisma migrate deploy && if [ \"$SEED_DATABASE\" = \"true\" ]; then npx prisma db seed; fi"
       depends_on:
          - postgres
