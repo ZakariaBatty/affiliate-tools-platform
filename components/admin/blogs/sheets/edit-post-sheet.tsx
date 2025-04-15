@@ -200,9 +200,14 @@ export default function EditPostSheet({ post, categories, tags, open, onOpenChan
               Cover Image
             </label>
             <div className="col-span-3">
-              <ImageUpload value={formData.coverImage || "/placeholder.svg"} onChange={(url) => handleChange("coverImage", url)} />
+              <ImageUpload
+                value={formData.coverImage || ""}
+                onChange={(url) => handleChange("coverImage", url)}
+                type="blogs"
+              />
             </div>
           </div>
+
         </div>
         <SheetFooter className="mt-6">
           <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isLoading}>

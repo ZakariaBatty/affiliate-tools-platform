@@ -212,7 +212,11 @@ export default function CreatePostSheet({ categories, tags, open, onOpenChange, 
               Cover Image
             </label>
             <div className="col-span-3">
-              <ImageUpload value={formData.coverImage} onChange={(url) => handleChange("coverImage", url)} />
+              <ImageUpload
+                value={formData.coverImage}
+                onChange={(url) => handleChange("coverImage", url)}
+                type="blogs"
+              />
             </div>
           </div>
           <div className="grid grid-cols-4 items-center gap-4">

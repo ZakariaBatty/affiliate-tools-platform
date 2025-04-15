@@ -11,9 +11,19 @@ interface ImageUploadProps {
   value: string
   onChange: (url: string) => void
   className?: string
+  height?: string
+  label?: string
+  type?: "blogs" | "tools" // Add type prop to specify the folder
 }
 
-export function ImageUpload({ value, onChange, className = "" }: ImageUploadProps) {
+export function ImageUpload({
+  value,
+  onChange,
+  className = "",
+  height = "h-64",
+  label = "Upload Image",
+  type = "blogs", // Default to blogs
+}: ImageUploadProps) {
   const [isUploading, setIsUploading] = useState(false)
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -55,6 +65,7 @@ export function ImageUpload({ value, onChange, className = "" }: ImageUploadProp
       // Create form data for upload
       const formData = new FormData()
       formData.append("file", file)
+      formData.append("type", type) // Add the type to specify the folder
 
       // Upload to our API endpoint
       const response = await fetch("/api/upload", {
@@ -67,12 +78,11 @@ export function ImageUpload({ value, onChange, className = "" }: ImageUploadProp
       }
 
       const data = await response.json()
-      console.log("Upload response:", data)
       onChange(data.url) // This is the Cloudinary URL
 
       toast({
         title: "Image uploaded",
-        description: "Your image has been uploaded successfully",
+        description: `Your image has been uploaded to ${data.folder}`,
       })
     } catch (error) {
       console.error("Error uploading image:", error)
@@ -104,7 +114,7 @@ export function ImageUpload({ value, onChange, className = "" }: ImageUploadProp
     <div className={`space-y-4 ${className}`}>
       {displayUrl ? (
         <div className="relative rounded-md overflow-hidden border">
-          <img src={displayUrl || "/placeholder.svg"} alt="Uploaded" className="w-full h-64 object-cover" />
+          <img src={displayUrl || "/placeholder.svg"} alt="Uploaded" className={`w-full ${height} object-cover`} />
           <Button
             variant="destructive"
             size="icon"
@@ -137,12 +147,12 @@ export function ImageUpload({ value, onChange, className = "" }: ImageUploadProp
           {isUploading ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Uploading to Cloudinary...
+              Uploading...
             </>
           ) : (
             <>
               <Upload className="mr-2 h-4 w-4" />
-              Upload Image
+              {label}
             </>
           )}
         </Button>
