@@ -11,6 +11,3 @@ export async function withDb<T>(operation: () => Promise<T>): Promise<T> {
       throw error;
    }
 }
-
-// Example usage:
-// const users = await withDb(() => prisma.user.findMany())

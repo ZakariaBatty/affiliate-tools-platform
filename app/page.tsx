@@ -43,7 +43,7 @@ export default async function HomePage() {
           <PopularCategories categories={categories} />
         </Suspense>
       </div>
-      <CompareTools />
+      {/* <CompareTools /> */}
       {/* <TrackPerformance /> */}
       <div id="how-it-works">
         <HowItWorks />

@@ -7,8 +7,9 @@ import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetT
 import { Textarea } from "@/components/ui/textarea"
 import { Checkbox } from "@/components/ui/checkbox"
 import { toast } from "@/components/ui/use-toast"
-import { Category, Tag } from "@/types"
 import { MultiSelect } from "@/components/ui/multi-select"
+import { Category, Tag } from "@/types"
+import { ImageUpload } from "@/components/image-upload"
 
 interface CreatePostSheetProps {
   categories: Category[]
@@ -25,7 +26,7 @@ export default function CreatePostSheet({ categories, tags, open, onOpenChange, 
     slug: "",
     excerpt: "",
     content: "",
-    coverImage: "/placeholder.svg?height=300&width=600",
+    coverImage: "",
     published: false,
     featured: false,
     readingTime: 5,
@@ -85,7 +86,7 @@ export default function CreatePostSheet({ categories, tags, open, onOpenChange, 
         slug: "",
         excerpt: "",
         content: "",
-        coverImage: "/placeholder.svg?height=300&width=600",
+        coverImage: "",
         published: false,
         featured: false,
         readingTime: 5,
@@ -200,28 +201,19 @@ export default function CreatePostSheet({ categories, tags, open, onOpenChange, 
             </label>
             <Input
               id="readingTime"
-              min={2}
               type="number"
-              value={formData.readingTime ?? ''}
-              onChange={(e) => {
-                const value = e.target.value;
-                handleChange("readingTime", value === '' ? 5 : Number.parseInt(value));
-              }}
+              value={formData.readingTime}
+              onChange={(e) => handleChange("readingTime", Number.parseInt(e.target.value))}
               className="col-span-3"
             />
-
           </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <label htmlFor="coverImage" className="text-right text-sm font-medium">
-              Cover Image URL
+          <div className="grid grid-cols-4 items-start gap-4">
+            <label htmlFor="coverImage" className="text-right text-sm font-medium pt-2">
+              Cover Image
             </label>
-            <Input
-              id="coverImage"
-              value={formData.coverImage}
-              onChange={(e) => handleChange("coverImage", e.target.value)}
-              className="col-span-3"
-              placeholder="https://example.com/image.jpg"
-            />
+            <div className="col-span-3">
+              <ImageUpload value={formData.coverImage} onChange={(url) => handleChange("coverImage", url)} />
+            </div>
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
             <div className="text-right text-sm font-medium">Status</div>
@@ -253,22 +245,6 @@ export default function CreatePostSheet({ categories, tags, open, onOpenChange, 
               >
                 Featured Post
               </label>
-            </div>
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <label htmlFor="featured-image" className="text-right text-sm font-medium">
-              Featured Image Preview
-            </label>
-            <div className="col-span-3">
-              <div className="border rounded-md p-4 mb-2">
-                <div className="flex items-center justify-center h-40 bg-gray-100 rounded-md">
-                  <img
-                    src={formData.coverImage || "/placeholder.svg?height=160&width=300"}
-                    alt="Featured"
-                    className="h-full object-cover rounded-md"
-                  />
-                </div>
-              </div>
             </div>
           </div>
         </div>

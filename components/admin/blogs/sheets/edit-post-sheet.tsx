@@ -9,6 +9,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { toast } from "@/components/ui/use-toast"
 import { MultiSelect } from "@/components/ui/multi-select"
 import { BlogFull, Category, Tag } from "@/types"
+import { ImageUpload } from "@/components/image-upload"
 
 interface EditPostSheetProps {
   post: BlogFull
@@ -162,17 +163,6 @@ export default function EditPostSheet({ post, categories, tags, open, onOpenChan
             />
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
-            <label htmlFor="coverImage" className="text-right text-sm font-medium">
-              Cover Image URL
-            </label>
-            <Input
-              id="coverImage"
-              value={formData.coverImage || ""}
-              onChange={(e) => handleChange("coverImage", e.target.value)}
-              className="col-span-3"
-            />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
             <div className="text-right text-sm font-medium">Status</div>
             <div className="col-span-3 flex items-center space-x-2">
               <Checkbox
@@ -204,20 +194,13 @@ export default function EditPostSheet({ post, categories, tags, open, onOpenChan
               </label>
             </div>
           </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <label htmlFor="featured-image" className="text-right text-sm font-medium">
-              Featured Image Preview
+
+          <div className="grid grid-cols-4 items-start gap-4">
+            <label htmlFor="coverImage" className="text-right text-sm font-medium pt-2">
+              Cover Image
             </label>
             <div className="col-span-3">
-              <div className="border rounded-md p-4 mb-2">
-                <div className="flex items-center justify-center h-40 bg-gray-100 rounded-md">
-                  <img
-                    src={formData.coverImage || "/placeholder.svg?height=160&width=300"}
-                    alt="Featured"
-                    className="h-full object-cover rounded-md"
-                  />
-                </div>
-              </div>
+              <ImageUpload value={formData.coverImage || "/placeholder.svg"} onChange={(url) => handleChange("coverImage", url)} />
             </div>
           </div>
         </div>
