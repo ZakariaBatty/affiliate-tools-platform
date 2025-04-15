@@ -14,6 +14,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Calendar, Eye, Edit, ExternalLink, FileText, MoreHorizontal, Trash, User, MessageSquare } from "lucide-react"
 import { formatDate } from "@/lib/utils"
 import { BlogFull } from "@/types"
+import Image from "next/image"
 
 interface BlogPostsTableProps {
   blog: BlogFull[]
@@ -61,7 +62,13 @@ export default function BlogPostsTable({ blog, onView, onEdit, onDelete }: BlogP
                 <TableCell>
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-md bg-gray-100 flex items-center justify-center">
-                      <FileText className="h-5 w-5 text-gray-500" />
+                      <Image
+                        src={post.coverImage || "/placeholder.svg?height=40&width=40"}
+                        alt={post.title}
+                        width={40}
+                        height={40}
+                        className="object-cover w-full h-full"
+                      />
                     </div>
                     <div>
                       <p className="font-medium">{post.title}</p>

@@ -35,6 +35,7 @@ import { AddToolSheet } from "@/components/admin/tools/add-tool-sheet"
 import { DeleteToolDialog } from "@/components/admin/tools/delete-tool-dialog"
 import { EditToolSheet } from "@/components/admin/tools/edit-tool-sheet"
 import { OverViewToolSheet } from "@/components/admin/tools/view-tool-sheet"
+import Image from "next/image"
 
 interface ALLToolsProps {
   initialTools: any[]
@@ -195,8 +196,14 @@ export default function ToolsClientPageAdmin({ initialTools, categories, tags }:
                 <TableRow key={tool.id}>
                   <TableCell>
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-md bg-gray-100 flex items-center justify-center">
-                        <ImageIcon className="h-5 w-5 text-gray-500" />
+                      <div className="w-10 h-10 rounded-md bg-gray-100 overflow-hidden">
+                        <Image
+                          src={tool.imageUrl || "/placeholder.png"}
+                          alt={tool.name}
+                          width={40}
+                          height={40}
+                          className="object-cover w-full h-full"
+                        />
                       </div>
                       <div>
                         <p className="font-medium">{tool.name}</p>
