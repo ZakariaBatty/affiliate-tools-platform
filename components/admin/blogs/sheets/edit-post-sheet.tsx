@@ -155,8 +155,10 @@ export default function EditPostSheet({ post, categories, tags, open, onOpenChan
               id="readingTime"
               type="number"
               value={formData.readingTime}
-              onChange={(e) => handleChange("readingTime", Number.parseInt(e.target.value))}
-              className="col-span-3"
+              onChange={(e) => {
+                const value = e.target.value;
+                handleChange("readingTime", value === '' ? 5 : Number.parseInt(value));
+              }} className="col-span-3"
             />
           </div>
           <div className="grid grid-cols-4 items-center gap-4">

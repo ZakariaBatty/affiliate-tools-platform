@@ -200,11 +200,16 @@ export default function CreatePostSheet({ categories, tags, open, onOpenChange, 
             </label>
             <Input
               id="readingTime"
+              min={2}
               type="number"
-              value={formData.readingTime}
-              onChange={(e) => handleChange("readingTime", Number.parseInt(e.target.value))}
+              value={formData.readingTime ?? ''}
+              onChange={(e) => {
+                const value = e.target.value;
+                handleChange("readingTime", value === '' ? 5 : Number.parseInt(value));
+              }}
               className="col-span-3"
             />
+
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
             <label htmlFor="coverImage" className="text-right text-sm font-medium">
