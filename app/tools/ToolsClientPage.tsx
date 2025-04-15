@@ -321,7 +321,7 @@ export default function ToolsClientPage({ initialTools, categories }: AllToolsPr
                   <div className="absolute bottom-4 left-4">
                     <Badge className="bg-white/20 text-white">{tool.categories[0]?.category.name || "General"}</Badge>
                   </div>
-                  <div className="absolute right-4 top-4">
+                  {/* <div className="absolute right-4 top-4">
                     <SaveToolButton
                       toolId={tool.id}
                       isSaved={tool.savedByCurrentUser}
@@ -329,7 +329,7 @@ export default function ToolsClientPage({ initialTools, categories }: AllToolsPr
                       size="sm"
                       className="bg-black/50 hover:bg-black/70 text-white"
                     />
-                  </div>
+                  </div> */}
                 </div>
                 <CardContent className="p-4">
                   <div className="mb-2 flex items-center justify-between">

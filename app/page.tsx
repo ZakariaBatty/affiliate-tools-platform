@@ -36,7 +36,7 @@ export default async function HomePage() {
       <Suspense fallback={<Loading />}>
         <FeaturedTools tools={featuredTools} />
       </Suspense>
-      <StickyQuickAccessTools />
+      {/* <StickyQuickAccessTools /> */}
       <QuickAccessTools />
       <div id="categories">
         <Suspense fallback={<Loading />}>
