@@ -17,6 +17,7 @@ import {
 import { toolSchema } from "@/lib/admin-validations"
 import { updateTool } from "@/app/actions/admin/tools"
 import { useToast } from "@/components/ui/use-toast"
+import { ImageUpload } from "@/components/image-upload"
 
 export function EditToolSheet({
   editToolSheet,
@@ -48,6 +49,7 @@ export function EditToolSheet({
     description: "",
     longDescription: "",
     imageUrl: "",
+    logo: "",
     website: "",
     companyId: null,
     verified: false,
@@ -61,6 +63,7 @@ export function EditToolSheet({
         description: tool.description || "",
         longDescription: tool.longDescription || "",
         imageUrl: tool.imageUrl || "",
+        logo: tool.logo,
         website: tool.website || "",
         companyId: tool.companyId || null,
         verified: tool.verified || false,
@@ -201,6 +204,38 @@ export function EditToolSheet({
               </Button>
             </div>
           </div>
+
+          {/* Cover Image Upload */}
+          <div className="grid grid-cols-4 items-start gap-4">
+            <Label className="text-right pt-2">Cover Image</Label>
+            <div className="col-span-3">
+              <ImageUpload
+                value={formValues.imageUrl}
+                onChange={(url) => setFormValues((prev) => ({ ...prev, imageUrl: url }))}
+                height="h-48"
+                label="Upload Cover Image"
+                type="tools"
+              />
+            </div>
+          </div>
+
+          {/* Logo Upload */}
+          <div className="grid grid-cols-4 items-start gap-4">
+            <Label className="text-right pt-2">Logo</Label>
+            <div className="col-span-3">
+              <ImageUpload
+                value={formValues.logo}
+                onChange={(url) => setFormValues((prev) => ({ ...prev, logo: url }))}
+                height="h-32"
+                label="Upload Logo"
+                type="tools"
+              />
+              <p className="text-xs text-muted-foreground mt-1">
+                For best results, upload a square logo with transparent background
+              </p>
+            </div>
+          </div>
+
           <Label>Categories</Label>
           <Select onValueChange={(value) => {
             if (!selectedCategories.includes(value)) {

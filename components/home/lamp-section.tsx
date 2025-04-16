@@ -3,6 +3,7 @@
 import { LampDemo } from "@/components/ui/lamp-advanced"
 import { Button } from "@/components/ui/button"
 import { motion } from "framer-motion"
+import Link from "next/link"
 
 export default function LampSection() {
   return (
@@ -22,7 +23,9 @@ export default function LampSection() {
             time on solutions that don't work.
           </p>
           <Button className="bg-gradient-to-r from-cyan-500 to-blue-500 text-white hover:opacity-90" size="lg">
-            Explore All Tools
+            <Link href="/tools" className="flex items-center">
+              Explore All Tools
+            </Link>
           </Button>
         </motion.div>
       </div>

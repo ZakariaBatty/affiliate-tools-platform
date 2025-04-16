@@ -12,6 +12,7 @@ interface Tool {
   id: string
   name: string
   image: string
+  slug: string
   category: string
   rating: number
   savedByCurrentUser?: boolean
@@ -42,7 +43,7 @@ export default function FeaturedTools({ tools }: FeaturedToolsProps) {
         <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {tools.map((tool, index) => (
             <div key={tool.id} className="relative">
-              <Link href={`/tools/${tool.id}`} className="block">
+              <Link href={`/tools/${tool.slug}`} className="block">
                 <motion.div
                   className="group relative overflow-hidden rounded-xl bg-gray-900 transition-all duration-300 h-full"
                   onMouseEnter={() => setHoveredIndex(index)}
@@ -95,7 +96,7 @@ export default function FeaturedTools({ tools }: FeaturedToolsProps) {
                   </div>
                 </motion.div>
               </Link>
-              <div className="absolute top-4 right-4 z-10">
+              {/* <div className="absolute top-4 right-4 z-10">
                 <SaveToolButton
                   toolId={tool.id}
                   isSaved={tool.savedByCurrentUser}
@@ -103,7 +104,7 @@ export default function FeaturedTools({ tools }: FeaturedToolsProps) {
                   size="sm"
                   className="bg-black/50 hover:bg-black/70 text-white"
                 />
-              </div>
+              </div> */}
             </div>
           ))}
         </div>

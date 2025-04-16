@@ -7,7 +7,9 @@
       "build": "next build",
       "start": "next start",
       "lint": "next lint",
-      "seed": "ts-node prisma/seed.ts"
+      "seed": "ts-node prisma/seed.ts",
+      "dev:docker": "docker-compose -f docker-compose.dev.yml up --build",
+      "pro:docker": "docker-compose -f docker-compose.yml up --build"
    },
    "prisma": {
       "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
@@ -53,6 +55,7 @@
       "bcrypt": "^5.1.1",
       "bcryptjs": "latest",
       "class-variance-authority": "^0.7.1",
+      "cloudinary": "^2.6.0",
       "clsx": "^2.1.1",
       "cmdk": "1.0.4",
       "csrf": "^3.1.0",

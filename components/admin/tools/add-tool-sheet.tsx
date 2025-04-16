@@ -1,29 +1,26 @@
 "use client"
 
+import type React from "react"
+
 import { useState } from "react"
-import {
-  Sheet, SheetContent, SheetDescription, SheetFooter,
-  SheetHeader, SheetTitle,
-} from "@/components/ui/sheet"
+import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle } from "@/components/ui/sheet"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Switch } from "@/components/ui/switch"
-import {
-  Select, SelectContent, SelectItem,
-  SelectTrigger, SelectValue,
-} from "@/components/ui/select"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { toolSchema } from "@/lib/admin-validations"
 import { createTool } from "@/app/actions/admin/tools"
 import { useToast } from "@/components/ui/use-toast"
+import { ImageUpload } from "@/components/image-upload"
 
 export function AddToolSheet({
   addToolSheet,
   setAddToolSheet,
   setSidebarOpen,
   categories,
-  tags
+  tags,
 }: {
   addToolSheet: boolean
   setAddToolSheet: (open: boolean) => void
@@ -46,6 +43,7 @@ export function AddToolSheet({
     description: "",
     longDescription: "",
     imageUrl: "",
+    logo: "",
     website: "",
     companyId: null,
     verified: false,
@@ -79,6 +77,8 @@ export function AddToolSheet({
       name: formValues.name,
       description: formValues.description,
       longDescription: formValues.longDescription,
+      imageUrl: formValues.imageUrl,
+      logo: formValues.logo,
       website: formValues.website,
       companyId: formValues.companyId,
       categories: selectedCategories,
@@ -97,6 +97,11 @@ export function AddToolSheet({
     const parsed = toolSchema.safeParse(data)
     if (!parsed.success) {
       console.error("Validation failed", parsed.error.format())
+      toast({
+        variant: "destructive",
+        title: "Validation Error",
+        description: "Please check the form for errors and try again.",
+      })
       return
     }
 
@@ -120,13 +125,15 @@ export function AddToolSheet({
   }
 
   return (
-    <Sheet open={addToolSheet} onOpenChange={(open) => {
-      setAddToolSheet(open)
-      if (!open) setTimeout(() => setSidebarOpen(false), 300)
-      else setSidebarOpen(true)
-    }}>
+    <Sheet
+      open={addToolSheet}
+      onOpenChange={(open) => {
+        setAddToolSheet(open)
+        if (!open) setTimeout(() => setSidebarOpen(false), 300)
+        else setSidebarOpen(true)
+      }}
+    >
       <SheetContent className="w-[70%] sm:max-w-[70%] overflow-y-auto" side="right">
-
         <SheetHeader>
           <SheetTitle>Add New Tool</SheetTitle>
           <SheetDescription>Create a new tool listing</SheetDescription>
@@ -134,75 +141,146 @@ export function AddToolSheet({
 
         <div className="grid gap-4 py-4 mt-6">
           <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="name" className="text-right">Name</Label>
-            <Input id="name" value={formValues.name} onChange={handleInputChange} className="col-span-3" placeholder="Enter tool name" />
+            <Label htmlFor="name" className="text-right">
+              Name
+            </Label>
+            <Input
+              id="name"
+              value={formValues.name}
+              onChange={handleInputChange}
+              className="col-span-3"
+              placeholder="Enter tool name"
+            />
           </div>
 
           <div className="grid grid-cols-4 items-start gap-4">
-            <Label htmlFor="description" className="text-right pt-2">Short Description</Label>
-            <Textarea id="description" value={formValues.description} onChange={handleInputChange} className="col-span-3 min-h-[100px]" placeholder="Enter tool short description" />
+            <Label htmlFor="description" className="text-right pt-2">
+              Short Description
+            </Label>
+            <Textarea
+              id="description"
+              value={formValues.description}
+              onChange={handleInputChange}
+              className="col-span-3 min-h-[100px]"
+              placeholder="Enter tool short description"
+            />
           </div>
 
           <div className="grid grid-cols-4 items-start gap-4">
-            <Label htmlFor="longDescription" className="text-right pt-2">Long Description</Label>
-            <Textarea id="longDescription" value={formValues.longDescription} onChange={handleInputChange} className="col-span-3 min-h-[100px]" placeholder="Enter tool long description" />
+            <Label htmlFor="longDescription" className="text-right pt-2">
+              Long Description
+            </Label>
+            <Textarea
+              id="longDescription"
+              value={formValues.longDescription}
+              onChange={handleInputChange}
+              className="col-span-3 min-h-[100px]"
+              placeholder="Enter tool long description"
+            />
+          </div>
+
+          {/* Cover Image Upload */}
+          <div className="grid grid-cols-4 items-start gap-4">
+            <Label className="text-right pt-2">Cover Image</Label>
+            <div className="col-span-3">
+              <ImageUpload
+                value={formValues.imageUrl}
+                onChange={(url) => setFormValues((prev) => ({ ...prev, imageUrl: url }))}
+                height="h-48"
+                label="Upload Cover Image"
+                type="tools"
+              />
+            </div>
+          </div>
+
+          {/* Logo Upload */}
+          <div className="grid grid-cols-4 items-start gap-4">
+            <Label className="text-right pt-2">Logo</Label>
+            <div className="col-span-3">
+              <ImageUpload
+                value={formValues.logo}
+                onChange={(url) => setFormValues((prev) => ({ ...prev, logo: url }))}
+                height="h-32"
+                label="Upload Logo"
+                type="tools"
+              />
+              <p className="text-xs text-muted-foreground mt-1">
+                For best results, upload a square logo with transparent background
+              </p>
+            </div>
           </div>
 
           <div className="grid grid-cols-4 items-start gap-4">
             <Label className="text-right pt-2">Categories</Label>
             <div className="col-span-3">
-              <Select onValueChange={(value) => {
-                if (!selectedCategories.includes(value)) {
-                  setSelectedCategories([...selectedCategories, value])
-                }
-              }}>
+              <Select
+                onValueChange={(value) => {
+                  if (!selectedCategories.includes(value)) {
+                    setSelectedCategories([...selectedCategories, value])
+                  }
+                }}
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Select categories" />
                 </SelectTrigger>
                 <SelectContent>
                   {categories.map((cat) => (
-                    <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>
+                    <SelectItem key={cat.id} value={cat.id}>
+                      {cat.name}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
-              <div className="mt-2 text-sm text-muted-foreground">
-                Selected: {selectedCategories.length || "None"}
-              </div>
+              <div className="mt-2 text-sm text-muted-foreground">Selected: {selectedCategories.length || "None"}</div>
             </div>
           </div>
 
           <div className="grid grid-cols-4 items-start gap-4">
             <Label className="text-right pt-2">Tags</Label>
             <div className="col-span-3">
-              <Select onValueChange={(value) => {
-                if (!selectedTags.includes(value)) {
-                  setSelectedTags([...selectedTags, value])
-                }
-              }}>
+              <Select
+                onValueChange={(value) => {
+                  if (!selectedTags.includes(value)) {
+                    setSelectedTags([...selectedTags, value])
+                  }
+                }}
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Select tags" />
                 </SelectTrigger>
                 <SelectContent>
                   {tags.map((tag) => (
-                    <SelectItem key={tag.id} value={tag.id}>{tag.name}</SelectItem>
+                    <SelectItem key={tag.id} value={tag.id}>
+                      {tag.name}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
-              <div className="mt-2 text-sm text-muted-foreground">
-                Selected: {selectedTags.length || "None"}
-              </div>
+              <div className="mt-2 text-sm text-muted-foreground">Selected: {selectedTags.length || "None"}</div>
             </div>
           </div>
 
           <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="website" className="text-right">Website URL</Label>
-            <Input id="website" value={formValues.website} onChange={handleInputChange} className="col-span-3" placeholder="Enter website URL" />
+            <Label htmlFor="website" className="text-right">
+              Website URL
+            </Label>
+            <Input
+              id="website"
+              value={formValues.website}
+              onChange={handleInputChange}
+              className="col-span-3"
+              placeholder="Enter website URL"
+            />
           </div>
 
           <div className="grid grid-cols-4 items-center gap-4">
             <Label className="text-right">Featured</Label>
             <div className="flex items-center space-x-2 col-span-3">
-              <Switch id="featured" checked={formValues.featured} onCheckedChange={(val) => setFormValues(prev => ({ ...prev, featured: val }))} />
+              <Switch
+                id="featured"
+                checked={formValues.featured}
+                onCheckedChange={(val) => setFormValues((prev) => ({ ...prev, featured: val }))}
+              />
               <Label htmlFor="featured">Mark as featured</Label>
             </div>
           </div>
@@ -210,7 +288,11 @@ export function AddToolSheet({
           <div className="grid grid-cols-4 items-center gap-4">
             <Label className="text-right">Verified</Label>
             <div className="flex items-center space-x-2 col-span-3">
-              <Switch id="verified" checked={formValues.verified} onCheckedChange={(val) => setFormValues(prev => ({ ...prev, verified: val }))} />
+              <Switch
+                id="verified"
+                checked={formValues.verified}
+                onCheckedChange={(val) => setFormValues((prev) => ({ ...prev, verified: val }))}
+              />
               <Label htmlFor="verified">Mark as verified</Label>
             </div>
           </div>
@@ -226,7 +308,9 @@ export function AddToolSheet({
                     placeholder={`Feature ${index + 1}`}
                   />
                   {features.length > 1 && (
-                    <Button type="button" variant="destructive" size="sm" onClick={() => handleRemoveFeature(index)}>Delete</Button>
+                    <Button type="button" variant="destructive" size="sm" onClick={() => handleRemoveFeature(index)}>
+                      Delete
+                    </Button>
                   )}
                 </div>
               ))}
@@ -262,17 +346,24 @@ export function AddToolSheet({
 
               <div className="space-y-1">
                 <Label>Starting Price</Label>
-                <Input value={startingPrice} onChange={(e) => setStartingPrice(e.target.value)} placeholder="e.g., $9.99" />
+                <Input
+                  value={startingPrice}
+                  onChange={(e) => setStartingPrice(e.target.value)}
+                  placeholder="e.g., $9.99"
+                />
               </div>
             </div>
           </div>
         </div>
 
         <SheetFooter className="mt-6">
-          <Button variant="outline" onClick={() => {
-            setAddToolSheet(false)
-            setTimeout(() => setSidebarOpen(false), 300)
-          }}>
+          <Button
+            variant="outline"
+            onClick={() => {
+              setAddToolSheet(false)
+              setTimeout(() => setSidebarOpen(false), 300)
+            }}
+          >
             Cancel
           </Button>
           <Button onClick={handleSubmit} className="bg-white text-black hover:bg-purple-600 hover:text-white">

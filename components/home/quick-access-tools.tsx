@@ -9,28 +9,28 @@ const quickAccessTools = [
     name: "SEO Analyzer",
     description: "Analyze your website's SEO performance and get actionable insights",
     icon: Search,
-    href: "/tools/seo-analyzer",
+    href: "/tools",
   },
   {
     id: 2,
     name: "Social Media Scheduler",
     description: "Schedule and manage your social media posts in one place",
     icon: Megaphone,
-    href: "/tools/social-media-scheduler",
+    href: "/tools",
   },
   {
     id: 3,
     name: "Code Editor",
     description: "Write, test, and debug code online with our code editor",
     icon: Code,
-    href: "/tools/code-editor",
+    href: "/tools",
   },
   {
     id: 4,
     name: "Dashboard Builder",
     description: "Create custom dashboards to track your business metrics",
     icon: LayoutDashboard,
-    href: "/tools/dashboard-builder",
+    href: "/tools",
   },
 ]
 

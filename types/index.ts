@@ -243,6 +243,8 @@ export interface BlogFull {
    readingTime: number;
    viewCount: number;
    commentCount: number;
+   published?: boolean;
+   featured?: boolean;
    author: {
       name: string;
       image: string;
@@ -351,6 +353,8 @@ export type GetAllToolsResponse = ToolFull[];
 export type GetAllCategoriesResponse = Category[];
 export type GetToolDetailResponse = ToolDetailResponse | null;
 export type GetAllBlogPostsResponse = BlogBasic[];
+export type GetAllBlogPostsResponseFull = BlogFull[];
+
 export type GetFeaturedBlogPostsForSliderResponse = BlogBasic[];
 export type GetBlogCategoriesResponse = Category[];
 export type GetBlogTagsResponse = Tag[];
