@@ -8,6 +8,11 @@ on:
    schedule:
       - cron: '0 0 * * 0' # Run every Sunday at midnight
 
+permissions:
+   security-events: write
+   actions: read
+   contents: read
+
 jobs:
    security-scan:
       name: Security Scan
@@ -25,15 +30,12 @@ jobs:
            run: npm ci --legacy-peer-deps
 
          - name: Run npm audit
-           run: |
-              echo "Running npm audit..."
-              npm audit --audit-level=high || echo "Vulnerabilities found, check logs."
-           continue-on-error: true
+           run: npm audit --audit-level=high
 
          - name: Initialize CodeQL
-           uses: github/codeql-action/init@v2
+           uses: github/codeql-action/init@v3
            with:
               languages: javascript
 
          - name: Run CodeQL Analysis
-           uses: github/codeql-action/analyze@v2
+           uses: github/codeql-action/analyze@v3
