@@ -1,11 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  swcMinify: true,
   output: "standalone",
-  experimental: {
-    serverComponentsExternalPackages: ["bcrypt"],
-  },
+  serverExternalPackages: ["bcrypt"], // تم نقلها من experimental إلى هنا
   eslint: {
     ignoreDuringBuilds: true,
   },
@@ -18,4 +15,4 @@ const nextConfig = {
   },
 }
 
-module.exports = nextConfig
+module.exports = nextConfig;
