@@ -41,6 +41,14 @@ jobs:
          - name: Install dependencies
            run: npm ci --legacy-peer-deps
 
+         - name: Set correct DATABASE_URL based on branch
+           run: |
+              if [ "${{ github.ref_name }}" = "main" ]; then
+                echo "DATABASE_URL=${{ secrets.DATABASE_URL_PROD }}" >> $GITHUB_ENV
+              else
+                echo "DATABASE_URL=${{ secrets.DATABASE_URL_DEV }}" >> $GITHUB_ENV
+              fi
+
          - name: Build application
            run: npm run build
            env:
@@ -103,7 +111,7 @@ jobs:
          - name: Run migrations
            run: npx prisma migrate deploy
            env:
-              DATABASE_URL: ${{ secrets.DATABASE_URL }}
+              DATABASE_URL: ${{ secrets.DATABASE_URL_PROD }}
 
    deploy-develop:
       name: Deploy (Develop)
@@ -118,8 +126,8 @@ jobs:
            with:
               zeit-token: ${{ secrets.VERCELTOKEN }}
               vercel-token: ${{ secrets.VERCELTOKEN }}
-              vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-              vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+              vercel-org-id: ${{ secrets.VERCEL_ORG_ID_DEV }}
+              vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID_DEV }}
               vercel-args: '--prod=false'
 
    deploy-main:

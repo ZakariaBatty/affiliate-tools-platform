@@ -25,7 +25,7 @@ RUN npx prisma generate
 
 # Set environment variables (optional: if needed during build)
 ARG DATABASE_URL
-ENV DATABASE_URL=$DATABASE_URL
+ENV DATABASE_URL=$DATABASE_URL_PROD
 
 # Build the Next.js application
 RUN npm run build

@@ -7,7 +7,6 @@
       "build": "prisma generate && next build",
       "start": "next start",
       "lint": "next lint",
-      "seed": "ts-node prisma/seed.ts",
       "dev:docker": "docker-compose -f docker-compose.dev.yml up --build",
       "pro:docker": "docker-compose -f docker-compose.yml up --build"
    },
