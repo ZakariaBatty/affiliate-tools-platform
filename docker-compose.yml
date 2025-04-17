@@ -46,9 +46,9 @@ services:
       ports:
          - '5432:5432'
       environment:
-         - POSTGRES_USER=${POSTGRES_USER}
-         - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-         - POSTGRES_DB=${POSTGRES_DB}
+         - POSTGRES_USER=${POSTGRES_USER_PROD}
+         - POSTGRES_PASSWORD=${POSTGRES_PASSWORD_PROD}
+         - POSTGRES_DB=${POSTGRES_DB_PROD}
       volumes:
          - postgres-data:/var/lib/postgresql/data
       networks:
@@ -63,7 +63,7 @@ services:
       depends_on:
          - postgres
       environment:
-         - DATABASE_URL=${DATABASE_URL}
+         - DATABASE_URL=${DATABASE_URL_PROD}
          - SEED_DATABASE=${SEED_DATABASE:-false}
       networks:
          - app-network
