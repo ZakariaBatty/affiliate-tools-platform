@@ -105,18 +105,36 @@ jobs:
            env:
               DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
-   deploy:
-      name: Deploy
+   deploy-develop:
+      name: Deploy (Develop)
       runs-on: ubuntu-latest
-      needs: [build, migrate]
+      needs: build
+      if: github.ref == 'refs/heads/develop'
       steps:
          - uses: actions/checkout@v3
 
-         - name: Deploy to Vercel
+         - name: Deploy to Vercel (Preview)
            uses: amondnet/vercel-action@v20
            with:
               zeit-token: ${{ secrets.VERCELTOKEN }}
               vercel-token: ${{ secrets.VERCELTOKEN }}
               vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
               vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-              vercel-args: ${{ github.ref == 'refs/heads/main' && '--prod' || '--pre' }}
+              vercel-args: '--pre'
+
+   deploy-main:
+      name: Deploy (Main)
+      runs-on: ubuntu-latest
+      needs: [build, migrate]
+      if: github.ref == 'refs/heads/main'
+      steps:
+         - uses: actions/checkout@v3
+
+         - name: Deploy to Vercel (Production)
+           uses: amondnet/vercel-action@v20
+           with:
+              zeit-token: ${{ secrets.VERCELTOKEN }}
+              vercel-token: ${{ secrets.VERCELTOKEN }}
+              vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+              vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+              vercel-args: '--prod'
