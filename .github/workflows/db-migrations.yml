@@ -8,9 +8,10 @@ on:
          - 'prisma/migrations/**'
 
 jobs:
-   migrate:
+   db-migrate:
       name: Run Migrations
       runs-on: ubuntu-latest
+
       steps:
          - uses: actions/checkout@v3
 
@@ -23,7 +24,13 @@ jobs:
          - name: Install dependencies
            run: npm ci --legacy-peer-deps
 
-         - name: Run migrations
+         - name: Generate Prisma Client
+           run: npx prisma generate
+
+         - name: Run Migrations
            run: npx prisma migrate deploy
            env:
               DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
+         - name: ✅ Migrations Applied Successfully
+           run: echo "Database schema is up to date!"
