@@ -1,0 +1,45 @@
+name: Create PR from develop to main
+
+on:
+   workflow_run:
+      workflows: ['CI/CD Pipeline']
+      types:
+         - completed
+
+jobs:
+   create-pr:
+      if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'develop' }}
+      runs-on: ubuntu-latest
+
+      steps:
+         - name: Checkout repo
+           uses: actions/checkout@v3
+
+         - name: Check for existing PR
+           id: check_pr
+           uses: actions/github-script@v7
+           with:
+              script: |
+                 const { data: pulls } = await github.rest.pulls.list({
+                   owner: context.repo.owner,
+                   repo: context.repo.repo,
+                   state: "open",
+                   head: `${context.repo.owner}:develop`,
+                   base: "main"
+                 });
+
+                 if (pulls.length > 0) {
+                   core.setOutput("exists", "true");
+                 } else {
+                   core.setOutput("exists", "false");
+                 }
+
+         - name: Create Pull Request
+           if: steps.check_pr.outputs.exists == 'false'
+           uses: peter-evans/create-pull-request@v5
+           with:
+              token: ${{ secrets.GITHUB_TOKEN }}
+              title: 'Merge develop into main'
+              body: 'Automatic PR generated after successful pipeline from develop to main.'
+              base: main
+              head: develop
