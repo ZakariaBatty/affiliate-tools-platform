@@ -104,13 +104,13 @@ export default function Navbar() {
           >
             Blog
           </Link>
-          <Link
+          {/* <Link
             href="/#categories"
             onClick={() => scrollToSection("categories")}
             className="text-sm text-white/70 hover:text-white transition-colors"
           >
             Categories
-          </Link>
+          </Link> */}
           <Link
             href="/#how-it-works"
             onClick={() => scrollToSection("how-it-works")}
