@@ -120,7 +120,7 @@ jobs:
               vercel-token: ${{ secrets.VERCELTOKEN }}
               vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
               vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-              vercel-args: '--pre'
+              vercel-args: '--prod=false'
 
    deploy-main:
       name: Deploy (Main)
