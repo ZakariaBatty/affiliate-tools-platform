@@ -8,38 +8,35 @@ on:
 
 jobs:
    create-pr:
-      if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'develop' }}
+      if: ${{ github.event.workflow_run.conclusion == 'success' }}
       runs-on: ubuntu-latest
 
       steps:
          - name: Checkout repo
            uses: actions/checkout@v3
 
-         - name: Check for existing PR
-           id: check_pr
+         - name: Create PR if it doesn't exist
            uses: actions/github-script@v7
            with:
+              github-token: ${{ secrets.GITHUB_TOKEN }}
               script: |
                  const { data: pulls } = await github.rest.pulls.list({
                    owner: context.repo.owner,
                    repo: context.repo.repo,
-                   state: "open",
-                   head: `${context.repo.owner}:develop`,
-                   base: "main"
+                   state: "open"
                  });
 
-                 if (pulls.length > 0) {
-                   core.setOutput("exists", "true");
-                 } else {
-                   core.setOutput("exists", "false");
-                 }
+                 const prExists = pulls.some(pr => pr.head.ref === 'develop' && pr.base.ref === 'main');
 
-         - name: Create Pull Request
-           if: steps.check_pr.outputs.exists == 'false'
-           uses: peter-evans/create-pull-request@v5
-           with:
-              token: ${{ secrets.GITHUB_TOKEN }}
-              title: 'Merge develop into main'
-              body: 'Automatic PR generated after successful pipeline from develop to main.'
-              base: main
-              head: develop
+                 if (!prExists) {
+                   await github.rest.pulls.create({
+                     owner: context.repo.owner,
+                     repo: context.repo.repo,
+                     title: "Merge develop into main",
+                     head: "develop",
+                     base: "main",
+                     body: "Automatic PR after successful workflow."
+                   });
+                 } else {
+                   console.log("PR already exists from develop to main.");
+                 }
