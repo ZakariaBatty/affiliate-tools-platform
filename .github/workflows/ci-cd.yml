@@ -59,8 +59,6 @@ jobs:
               GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLECLIENTSECRET }}
               GITHUB_CLIENT_ID: ${{ secrets.GITHUBCLIENTID }}
               GITHUB_CLIENT_SECRET: ${{ secrets.GITHUBCLIENTSECRET }}
-              #   UPSTASH_REDIS_REST_URL: ${{ secrets.UPSTASH_REDIS_REST_URL }}
-              #   UPSTASH_REDIS_REST_TOKEN: ${{ secrets.UPSTASH_REDIS_REST_TOKEN }}
               CLOUDINARY_NAME: ${{ secrets.CLOUDINARY_NAME }}
               CLOUDINARY_API_KEY: ${{ secrets.CLOUDINARY_API_KEY }}
               CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
@@ -98,6 +96,8 @@ jobs:
       if: github.ref == 'refs/heads/main'
       steps:
          - uses: actions/checkout@v3
+           with:
+              fetch-depth: 0
 
          - name: Set up Node.js
            uses: actions/setup-node@v3
@@ -108,7 +108,19 @@ jobs:
          - name: Install dependencies
            run: npm ci --legacy-peer-deps
 
+         - name: Check for new migrations
+           id: migrations
+           run: |
+              if git diff --quiet origin/main HEAD -- prisma/migrations/; then
+                echo "no new migrations"
+                echo "run_migrate=false" >> $GITHUB_OUTPUT
+              else
+                echo "new migrations detected"
+                echo "run_migrate=true" >> $GITHUB_OUTPUT
+              fi
+
          - name: Run migrations
+           if: steps.migrations.outputs.run_migrate == 'true'
            run: npx prisma migrate deploy
            env:
               DATABASE_URL: ${{ secrets.DATABASE_URL_PROD }}
