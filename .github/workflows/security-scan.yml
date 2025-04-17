@@ -36,6 +36,10 @@ jobs:
            uses: github/codeql-action/init@v3
            with:
               languages: javascript
+           env:
+              GITHUB_TOKEN: ${{ secrets.PERSONAL_GITHUB_TOKEN }}
 
          - name: Run CodeQL Analysis
            uses: github/codeql-action/analyze@v3
+           env:
+              GITHUB_TOKEN: ${{ secrets.PERSONAL_GITHUB_TOKEN }}

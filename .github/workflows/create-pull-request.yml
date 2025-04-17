@@ -1,0 +1,32 @@
+name: Create Pull Request from Develop to Main
+
+on:
+   workflow_run:
+      workflows: ['CI/CD Pipeline'] # smiya dyal workflow ci-cd.yml
+      types:
+         - completed
+
+jobs:
+   create-pull-request:
+      if: ${{ github.event.workflow_run.conclusion == 'success' }}
+      runs-on: ubuntu-latest
+      steps:
+         - name: Checkout repo
+           uses: actions/checkout@v3
+
+         - name: Set up Git
+           run: |
+              git config --global user.email "action@github.com"
+              git config --global user.name "GitHub Action"
+
+         - name: Create pull request
+           uses: devops-infra/action-pull-request@v0.5.3
+           with:
+              github_token: ${{ secrets.GITHUB_TOKEN }}
+              source_branch: develop
+              target_branch: main
+              title: 'Auto PR: Merge develop into main'
+              body: |
+                 This pull request was automatically created by a GitHub Action
+                 after successful CI/CD run on the develop branch.
+              allow_no_diff: false
